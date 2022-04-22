@@ -1,0 +1,27 @@
+[
+  {
+    "model": "accounts.role",
+    "pk": 1,
+    "fields": {
+      "name": "admin",
+      "description": "The Administrator has the power to manage this application.",
+      "users": [1]
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 2,
+    "fields": {
+      "name": "faculty",
+      "description": "The Faculty has the power to manage tests, question bank and batches."
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 3,
+    "fields": {
+      "name": "student",
+      "description": "The Student can take tests, interact and has much more functionalities."
+    }
+  }
+]

@@ -1,0 +1,10 @@
+<div class="col-12" id="user-create-success">
+    <div class="card bg-success text-white mb-4">
+        <div class="card-body">The user has been created successfullY</div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+            <button class="button" hx-get="{% url 'users' %}" 
+          hx-target="#user-create-success"
+          hx-swap="outerHTML">Create Another User</button>
+        </div>
+    </div>
+</div>
