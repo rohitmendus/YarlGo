@@ -12,5 +12,6 @@ urlpatterns = [
         name="logout"),
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
     path('users/', views.UserFormView.as_view(), name="users"),
-    path('get_user_form/', views.get_user_form, name="get_user_form")
+    path('accounts/get_user_form/', views.get_user_form, name="get_user_form"),
+    path('accounts/check_username/', views.check_username, name="check_username"),
 ]

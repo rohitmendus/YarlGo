@@ -8,12 +8,20 @@ from django.views.generic.edit import FormView
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.http import HttpResponse
 
 def get_user_form(request):
 	form = CustomUserCreationForm()
 	context = {'form': form, 'password': User.objects.make_random_password()}
 	context['roles'] = Role.objects.values_list('name', flat=True)
 	return render(request, 'accounts/create_user_form.html', context)
+
+def check_username(request):
+	username = request.GET.get('username')
+	if User.objects.filter(username=username).exists():
+		return HttpResponse("<span style='color:red;'>This username already exixts!</span>")
+	else:
+		return HttpResponse("<span style='color:green;'>This username is available</span>")
 
 # Create your views here.
 class DashboardView(LoginRequiredMixin, TemplateView):

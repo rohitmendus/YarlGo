@@ -4,13 +4,13 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <div class="form-floating mb-3 mb-md-0">
-            	{% render_field form.first_name class="form-control" placeholder=form.first_name.label id="inputFirstName" %}
+            	{% render_field form.first_name required="required" class="form-control" placeholder=form.first_name.label id="inputFirstName" %}
                 <label for="inputFirstName">First name</label>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-floating">
-            	{% render_field form.last_name class="form-control" placeholder=form.last_name.label id="inputLastName" %}
+            	{% render_field form.last_name required="required" class="form-control" placeholder=form.last_name.label id="inputLastName" %}
                 <label for="inputLastName">Last name</label>
             </div>
         </div>
@@ -18,20 +18,21 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <div class="form-floating mb-3 mb-md-0">
-            	{% render_field form.username class="form-control" placeholder=form.username.label id="inputUsername" %}
+            	{% render_field form.username required="required" class="form-control" placeholder=form.username.label id="inputUsername" hx-get="/accounts/check_username/" hx-trigger="keyup" hx-target="#username-error" hx-swap="innerHTML"%}
                 <label for="inputUsername">Username</label>
+                <div id="username-error"></div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-floating mb-3 mb-md-0">
-		    	{% render_field form.email class="form-control" placeholder=form.email.label id="inputEmail" %}
+		    	{% render_field form.email required="required" class="form-control" placeholder=form.email.label id="inputEmail" %}
 		        <label for="inputEmail">Email address</label>
 		    </div>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <select class="form-select" multiple aria-label="Default select example" name="user_role">
+            <select class="form-select" multiple aria-label="Default select example" name="user_role" required>
                 {% for role in roles %}
                 <option value="{{role}}">{{role}}</option>
                 {% endfor %}
@@ -53,6 +54,6 @@
         </div>
     </div>
     <div class="mt-4 mb-0">
-        <div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create User"></input></div>
+        <div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create User" id="create-user-btn"></input></div>
     </div>
 </form>

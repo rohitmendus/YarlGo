@@ -1,12 +1,3 @@
-/*!
-    * Start Bootstrap - SB Admin v7.0.5 (https://startbootstrap.com/template/sb-admin)
-    * Copyright 2013-2022 Start Bootstrap
-    * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-sb-admin/blob/master/LICENSE)
-    */
-    // 
-// Scripts
-// 
-
 window.addEventListener('DOMContentLoaded', event => {
 
     // Toggle the side navigation
@@ -23,4 +14,15 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
+});
+
+$(document).ready(function(){
+    $('#username-error').on('DOMSubtreeModified', function(){
+        let elem = $(this).children('span')[0];
+        if (elem.style.color==="red"){
+            $('#create-user-btn').attr('disabled', true);
+        } else {
+            $('#create-user-btn').attr('disabled', false);
+        }
+    });
 });
