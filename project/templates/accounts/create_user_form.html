@@ -1,0 +1,58 @@
+{% load widget_tweaks %}
+<form class="col-12" hx-post="{% url 'users' %}" hx-swap="outerHTML">
+	{% csrf_token %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+            	{% render_field form.first_name class="form-control" placeholder=form.first_name.label id="inputFirstName" %}
+                <label for="inputFirstName">First name</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+            	{% render_field form.last_name class="form-control" placeholder=form.last_name.label id="inputLastName" %}
+                <label for="inputLastName">Last name</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+            	{% render_field form.username class="form-control" placeholder=form.username.label id="inputUsername" %}
+                <label for="inputUsername">Username</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+		    	{% render_field form.email class="form-control" placeholder=form.email.label id="inputEmail" %}
+		        <label for="inputEmail">Email address</label>
+		    </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <select class="form-select" multiple aria-label="Default select example" name="user_role">
+                {% for role in roles %}
+                <option value="{{role}}">{{role}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3 d-none">
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+            	{% render_field form.password1 class="form-control" placeholder=form.password1.label id="inputPassword" value=password %}
+                <label for="inputPassword">Password</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+            	{% render_field form.password2 class="form-control" placeholder=form.password2.label id="inputPasswordConfirm" value=password %}
+                <label for="inputPasswordConfirm">Confirm Password</label>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 mb-0">
+        <div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create User"></input></div>
+    </div>
+</form>
