@@ -3,6 +3,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('', views.redirect_dashboard),
     path('accounts/login/',
         auth_views.LoginView.as_view(template_name='accounts/login.html', 
             redirect_authenticated_user=True),
@@ -11,7 +12,14 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name="logout"),
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
-    path('users/', views.UserFormView.as_view(), name="users"),
-    path('accounts/get_user_form/', views.get_user_form, name="get_user_form"),
-    path('accounts/check_username/', views.check_username, name="check_username"),
+    path('users/', views.UsersView.as_view(), name="users"),
 ]
+
+htmx_urlpatterns = [
+    path('users/get_user_form/', views.get_user_form, name="get_user_form"),
+    path('users/check_username/', views.check_username, name="check_username"),
+    path('users/create_user/', views.CreateUserView.as_view(), name="create_user"),
+    path('users/delete_user/<int:id>/', views.DeleteUserView.as_view(), name="delete_user"),
+]
+
+urlpatterns += htmx_urlpatterns

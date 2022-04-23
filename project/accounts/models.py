@@ -38,15 +38,11 @@ class Profile(models.Model):
 
 	@property
 	def full_name(self):
-		return self.user.first_name + " " + self.user.last_name
+		return f'{self.user.first_name} {self.user.last_name}'
 
 	@property
-	def username(self):
-		return self.user.username
-
-	@property
-	def email(self):
-		return self.user.email
+	def role(self):
+		return self.user.roles.all()[0]
 
 class Role(models.Model):
 	name = models.CharField(max_length=100, blank=False, null=False)

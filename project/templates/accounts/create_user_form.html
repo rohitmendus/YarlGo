@@ -1,5 +1,5 @@
 {% load widget_tweaks %}
-<form class="col-12" hx-post="{% url 'users' %}" hx-swap="outerHTML">
+<form class="col-12" action="{% url 'create_user' %}" method="post" id="create-user-form">
 	{% csrf_token %}
     <div class="row mb-3">
         <div class="col-md-6">
@@ -18,7 +18,7 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <div class="form-floating mb-3 mb-md-0">
-            	{% render_field form.username required="required" class="form-control" placeholder=form.username.label id="inputUsername" hx-get="/accounts/check_username/" hx-trigger="keyup" hx-target="#username-error" hx-swap="innerHTML"%}
+            	{% render_field form.username required="required" class="form-control" placeholder=form.username.label id="inputUsername" hx-get="/users/check_username/" hx-trigger="keyup" hx-target="#username-error" hx-swap="innerHTML"%}
                 <label for="inputUsername">Username</label>
                 <div id="username-error"></div>
             </div>
