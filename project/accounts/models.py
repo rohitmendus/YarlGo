@@ -42,7 +42,10 @@ class Profile(models.Model):
 
 	@property
 	def role(self):
-		return self.user.roles.all()[0]
+		try:
+			return str(self.user.roles.all()[0]).strip()
+		except:
+			return ""
 
 class Role(models.Model):
 	name = models.CharField(max_length=100, blank=False, null=False)

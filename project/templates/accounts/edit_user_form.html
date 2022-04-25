@@ -1,0 +1,61 @@
+{% load widget_tweaks %}
+<form id="edit-user-form" method="post" action="{% url 'edit_user' form.instance.id %}">
+	{% csrf_token %}
+	<div class="modal-header">
+		<h5 class="modal-title" id="editModalLabel">Edit User</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body">
+		<div class="row mb-3">
+	        <div class="col-md-6">
+	            <div class="form-floating mb-3 mb-md-0">
+	            	{% render_field form.first_name required="required" class="form-control" placeholder=form.first_name.label id="editFirstName" %}
+	                <label for="editFirstName">First name</label>
+	            </div>
+	        </div>
+	        <div class="col-md-6">
+	            <div class="form-floating">
+	            	{% render_field form.last_name required="required" class="form-control" placeholder=form.last_name.label id="editLastName" %}
+	                <label for="editLastName">Last name</label>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="row mb-3">
+	        <div class="col-md-6">
+	            <div class="form-floating mb-3 mb-md-0">
+	            	{% render_field form.username required="required" class="form-control" placeholder=form.username.label id="editUsername" hx-get="/users/check_username/" hx-trigger="keyup" hx-target="#username-edit-error" hx-swap="innerHTML"%}
+	                <label for="editUsername">Username</label>
+	                <div id="username-edit-error"></div>
+	            </div>
+	        </div>
+	        <div class="col-md-6">
+	            <div class="form-floating mb-3 mb-md-0">
+			    	{% render_field form.email required="required" class="form-control" placeholder=form.email.label id="editEmail" %}
+			        <label for="editEmail">Email address</label>
+			    </div>
+	        </div>
+	    </div>
+	    <div class="row mb-3">
+	        <div class="col-md-12">
+	            <select class="form-select" multiple aria-label="Default select example" name="user_edit_role" required>
+	                {% for role in roles %}
+	                {% if user_role == role %}
+	                <option value="{{role}}" selected>{{role}}</option>
+	                {% else %}
+	                <option value="{{role}}">{{role}}</option>
+	                {% endif %}
+	                {% endfor %}
+	            </select>
+	        </div>
+	    </div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		<button type="submit" class="btn btn-primary" id="edit-user-btn">Save Changes</button>
+	</div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#edit-user-modal').modal('show');
+	});
+</script>

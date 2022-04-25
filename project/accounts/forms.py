@@ -7,3 +7,8 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('first_name','last_name', 'username', 'email', 'password1', 'password2')
+
+# class UserEditForm(forms.Form):
+#     class Meta:
+#         model = User
+#         fields = ('first_name','last_name', 'username', 'email')

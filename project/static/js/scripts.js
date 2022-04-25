@@ -20,7 +20,7 @@ function refresh_user_table(response){
     let table = $('#user-table');
     table.empty();
     table.append(response);
-    const datatablesSimple = document.getElementById('datatablesSimple');
+    const datatablesSimple = document.getElementById('user-list-table');
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
@@ -39,10 +39,20 @@ $(document).ready(function(){
         }
     });
 
+    $(document).on('DOMSubtreeModified', '#username-edit-error', function(){
+        let elem = $(this).children('span')[0];
+        console.log(elem)
+        if (elem.style.color==="red"){
+            $('#edit-user-btn').attr('disabled', true);
+        } else {
+            $('#edit-user-btn').attr('disabled', false);
+        }
+    });
+
     $('#create-user-form').on('submit', function(e){
         e.preventDefault();
         const url = $(this).attr('action');
-        data = $(this).serialize();
+        const data = $(this).serialize();
         $.ajax({
             url: url,
             data: data,
@@ -52,6 +62,7 @@ $(document).ready(function(){
                 submit_response.empty();
                 submit_response.append(response.response1);
                 refresh_user_table(response.response2)
+                htmx.process(document)
             }
         });
     });
@@ -69,10 +80,41 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    $('#dlt-user-success').removeClass('d-none');
                     refresh_user_table(response);
+                    $('#dlt-user-success').removeClass('d-none');
                 }
             });
         })
+    });
+
+    $('.close-alert').click(function(){
+        $(this).parent().addClass('d-none');
+    });
+
+    $(document).on('submit', '#edit-user-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-user-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_user_table(response.table_response)
+                    $('#edit-user-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-user-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-user-fail').removeClass('d-none');
+                }
+                htmx.process(document)
+            }
+        });
     });
 });

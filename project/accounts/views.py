@@ -5,6 +5,7 @@ from .forms import CustomUserCreationForm
 from .models import Profile, Role
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
+from django.views.generic.edit import UpdateView
 from django.views import View
 from django.conf import settings
 from django.core.mail import send_mail
@@ -85,6 +86,50 @@ class DeleteUserView(View):
 		table_response = render_to_string(self.table, {'users': Profile.objects.all(),
 			'roles': Role.objects.values_list('name', flat=True)})
 		return JsonResponse(table_response, safe=False)
+
+class EditUserView(UpdateView):
+	template_name = 'accounts/edit_user_form.html'
+	model = User
+	fields = ['first_name','last_name', 'username', 'email']
+	roles = Role.objects.values_list('name', flat=True)
+	table = 'accounts/user_list.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['roles'] = self.roles
+		context['user_role'] = Profile.objects.get(user_id=self.kwargs.get('pk')).role
+		return context
+
+	def form_valid(self, form):
+		user_roles = self.request.POST.getlist('user_edit_role')
+		user = form.save()
+		for role in user.roles.all():
+			if role.name not in user_roles:
+				role.users.remove(user)
+		for role_name in user_roles:
+			role = Role.objects.get(name=role_name)
+			role.users.add(user)
+
+		# Reponse
+		table_response = render_to_string(self.table, {'users': Profile.objects.all(),
+			'roles': Role.objects.values_list('name', flat=True)})
+
+		response = {'success': True, 'table_response': table_response}
+		return JsonResponse(response)
+
+	def form_invalid(self, form):
+		error_messages = []
+		errors = json.loads(form.errors.as_json())
+		for x in errors:
+			for y in errors[x]:
+				error_messages.append(y['message'])
+		
+		# Reponse
+		table_response = render_to_string(self.table, {'users': Profile.objects.all(),
+			'roles': Role.objects.values_list('name', flat=True)})
+		response = {'success': False, 'errors': error_messages}
+		return JsonResponse(response)
+
 
 # Create your views here.
 class DashboardView(LoginRequiredMixin, TemplateView):
