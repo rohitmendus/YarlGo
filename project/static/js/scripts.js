@@ -26,11 +26,12 @@ function refresh_user_table(response){
     }
     $("#role-filter").on('change', function() {
         table.search(this.value);
-    });  
+    });
+    htmx.process(document)
 }
 
 $(document).ready(function(){
-    $('#username-error').on('DOMSubtreeModified', function(){
+    $(document).on('DOMSubtreeModified', '#username-error', function(){
         let elem = $(this).children('span')[0];
         if (elem.style.color==="red"){
             $('#create-user-btn').attr('disabled', true);
@@ -62,7 +63,7 @@ $(document).ready(function(){
                 submit_response.empty();
                 submit_response.append(response.response1);
                 refresh_user_table(response.response2)
-                htmx.process(document)
+                // htmx.process($('#create-user'))
             }
         });
     });
@@ -113,7 +114,7 @@ $(document).ready(function(){
                     }
                     $('#edit-user-fail').removeClass('d-none');
                 }
-                htmx.process(document)
+                // htmx.process(document)
             }
         });
     });

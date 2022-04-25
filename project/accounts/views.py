@@ -1,17 +1,24 @@
+# Response functions
+from django.template.loader import render_to_string
+from django.http import HttpResponse, JsonResponse
+import json
 from django.shortcuts import render, redirect
+# Mixins
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+# Forms
 from .forms import CustomUserCreationForm
+# Models
 from .models import Profile, Role
+from django.contrib.auth.models import User
+# CBS Views
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from django.views import View
+# Others
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.http import HttpResponse, JsonResponse
-import json
+
 
 def redirect_dashboard(request):
 	return redirect('/dashboard')
