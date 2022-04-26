@@ -3,8 +3,10 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 import json
 from django.shortcuts import render, redirect
-# Mixins
+# Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from .mixins import AdminRedirectMixin
 # Forms
 from .forms import CustomUserCreationForm
 # Models
@@ -19,16 +21,18 @@ from django.views import View
 from django.conf import settings
 from django.core.mail import send_mail
 
-
+@login_required
 def redirect_dashboard(request):
 	return redirect('/dashboard')
 
+@login_required
 def get_user_form(request):
 	form = CustomUserCreationForm()
 	context = {'form': form, 'password': User.objects.make_random_password()}
 	context['roles'] = Role.objects.values_list('name', flat=True)
 	return render(request, 'accounts/create_user_form.html', context)
 
+@login_required
 def check_username(request):
 	username = request.GET.get('username')
 	if User.objects.filter(username=username).exists():
@@ -36,7 +40,11 @@ def check_username(request):
 	else:
 		return HttpResponse("<span style='color:green;'>This username is available</span>")
 
-class CreateUserView(View):
+@login_required
+def unauthorized(request):
+	return render(request, 'errors/401.html')
+
+class CreateUserView(LoginRequiredMixin, AdminRedirectMixin, View):
 	submit_response = 'accounts/create_user_response.html'
 	table = 'accounts/user_list.html'
 	def post(self, request):
@@ -82,7 +90,7 @@ class CreateUserView(View):
 		}
 		return JsonResponse(response)
 
-class DeleteUserView(View):
+class DeleteUserView(LoginRequiredMixin, AdminRedirectMixin, View):
 	table = 'accounts/user_list.html'
 	def post(self, request, id):
 		# Deleting user
@@ -94,7 +102,7 @@ class DeleteUserView(View):
 			'roles': Role.objects.values_list('name', flat=True)})
 		return JsonResponse(table_response, safe=False)
 
-class EditUserView(UpdateView):
+class EditUserView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 	template_name = 'accounts/edit_user_form.html'
 	model = User
 	fields = ['first_name','last_name', 'username', 'email']
@@ -141,7 +149,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 	template_name = "accounts/dashboard.html"
 
 
-class UsersView(ListView):
+class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "accounts/users.html"
 	model = Profile
 	context_object_name = "users"

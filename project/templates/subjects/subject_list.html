@@ -1,15 +1,16 @@
 <div class="card mb-4 mt-5 mx-5">
 	<div class="card-header">
 		<i class="fas fa-table me-1"></i>
-		Exam Categories
+		Subjects
 	</div>
 	<div class="card-body">
-		<table class="datatablesSimple" id="exam-list-table">
+		<table class="datatablesSimple" id="subject-list-table">
 			<thead>
 				<tr>
 					<th>Name</th>
 					<th>Description</th>
-					<th>Main Exam</th>
+					<th>Examiners</th>
+					<th>Staff</th>
 					<th>Created By</th>
 					<th>Date Created</th>
 					<th>Modified By</th>
@@ -22,7 +23,8 @@
 				<tr>
 					<th>Name</th>
 					<th>Description</th>
-					<th>Main Exam</th>
+					<th>Examiners</th>
+					<th>Staff</th>
 					<th>Created By</th>
 					<th>Date Created</th>
 					<th>Modified By</th>
@@ -32,22 +34,23 @@
 				</tr>
 			</tfoot>
 			<tbody>
-				{% for exam_cat in exam_cats %}
+				{% for subject in subjects %}
 				<tr>
-					<td>{{exam_cat.name}}</td>
-					<td>{{exam_cat.description}}</td>
-					<td>{{exam_cat.main_exam}}</td>
-					<td>{{exam_cat.created_by.username}}</td>
-					<td>{{exam_cat.date_created}}</td>
-					<td>{{exam_cat.modified_by.username}}</td>
-					<td>{{exam_cat.date_modified}}</td>
+					<td>{{subject.name}}</td>
+					<td>{{subject.description}}</td>
+					<td>{{subject.examiners}}</td>
+					<td>{{subject.staff}}</td>
+					<td>{{subject.created_by.username}}</td>
+					<td>{{subject.date_created}}</td>
+					<td>{{subject.modified_by.username}}</td>
+					<td>{{subject.date_modified}}</td>
 					<td class="text-center">
-						<a class="edit-exam-cat" hx-get="{% url 'edit_exam_cat' exam_cat.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-exam-cat-form" style="cursor: pointer;">
+						<a class="edit-exam" hx-get="{% url 'edit_subject' subject.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-subject-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>
 						</a>
 					</td>
 					<td class="text-center">
-						<a class="dlt-exam-cat" href="{% url 'delete_exam_cat' exam_cat.id %}">
+						<a class="dlt-exam" href="{% url 'delete_subject' subject.id %}">
 							<i class="fa-solid fa-trash-can"></i>
 						</a>
 					</td>
@@ -73,11 +76,11 @@
     </div>
   </div>
 </div>
-<!-- Edit exam category modal -->
-<div class="modal fade" id="edit-exam-cat-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<!-- Edit exam modal -->
+<div class="modal fade" id="edit-subject-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-    	<form id='edit-exam-cat-form'></form>
+    	<form id='edit-subject-form'></form>
     </div>
   </div>
 </div>

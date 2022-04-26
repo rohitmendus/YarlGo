@@ -12,6 +12,7 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name="logout"),
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
+    path('unauthorized/', views.unauthorized, name="unauthorized"),
     path('users/', views.UsersView.as_view(), name="users"),
     path('users/create_user/', views.CreateUserView.as_view(), name="create_user"),
     path('users/delete_user/<int:id>/', views.DeleteUserView.as_view(), name="delete_user"),

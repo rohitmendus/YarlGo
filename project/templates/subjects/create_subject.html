@@ -1,0 +1,31 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-subject-form" action="{% url 'create_subject' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputSubjectName" %}
+		<label for="inputSubjectName">Subject Name</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.description class="form-control" placeholder=form.description.label id="inputSubjectDescription" style="height:100px;" %}
+		<label for="inputSubjectDescription">Description</label>
+	</div>
+	<div class="mb-3">
+		<label for="inputExaminers" class="form-label">Examiners</label>
+		<select class="form-select" multiple aria-label="Default select example" name="examiners" id="inputExaminers" style="height: 100px;">
+			{% for faculty in faculties %}
+			<option value="{{faculty}}">{{faculty}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="mb-3">
+		<label for="inputStaff" class="form-label">Staff</label>
+		<select class="form-select" multiple aria-label="Default select example" name="staff" id="inputStaff" style="height: 100px;">
+			{% for faculty in faculties %}
+			<option value="{{faculty}}">{{faculty}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Subject"></input></div>
+	</div>
+</form>

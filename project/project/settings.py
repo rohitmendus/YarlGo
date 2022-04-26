@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'accounts',
     'exams',
+    'subjects',
 ]
 
 MIDDLEWARE = [
@@ -118,6 +119,7 @@ STATICFILES_DIRS = [
 
 LOGIN_REDIRECT_URL = "/dashboard"
 LOGOUT_REDIRECT_URL = "/accounts/login"
+UNAUTHORIZED_URL = "/unauthorized"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

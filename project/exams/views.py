@@ -7,18 +7,23 @@ from .forms import MainExamForm, ExamCategoryForm
 import json
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+# Mixins and decorators
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from accounts.mixins import AdminRedirectMixin
 
-
+@login_required
 def get_exam_form(request):
 	form = MainExamForm()
 	return render(request, 'exams/create_exam.html', {'form': form})
 
+@login_required
 def get_exam_cat_form(request):
 	form = ExamCategoryForm()
 	return render(request, 'exams/create_exam_category.html', {'form': form})
 
 # Create your views here.
-class MainExamsView(ListView):
+class MainExamsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "exams/exams.html"
 	model = MainExam
 	context_object_name = "exams"
@@ -28,7 +33,7 @@ class MainExamsView(ListView):
 		context.update({'form': MainExamForm()})
 		return context
 
-class CreateMainExamView(FormView):
+class CreateMainExamView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 	form_class = MainExamForm
 	submit_response = "exams/create_exam_response.html"
 	table = "exams/exam_list.html"
@@ -64,7 +69,7 @@ class CreateMainExamView(FormView):
 		}
 		return JsonResponse(response)
 
-class DeleteMainExamView(View):
+class DeleteMainExamView(LoginRequiredMixin, AdminRedirectMixin, View):
 	table = 'exams/exam_list.html'
 	def post(self, request, exam_id):
 		# Deleting exam
@@ -75,7 +80,7 @@ class DeleteMainExamView(View):
 		table_response = render_to_string(self.table, {'exams': MainExam.objects.all()})
 		return JsonResponse(table_response, safe=False)
 
-class EditMainExamView(UpdateView):
+class EditMainExamView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 	template_name = 'exams/edit_exam.html'
 	model = MainExam
 	form_class = MainExamForm
@@ -104,7 +109,7 @@ class EditMainExamView(UpdateView):
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
 
-class ExamCategoriesView(ListView):
+class ExamCategoriesView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "exams/exam_categories.html"
 	model = ExamCategory
 	context_object_name = "exam_cats"
@@ -114,7 +119,7 @@ class ExamCategoriesView(ListView):
 		context.update({'form': ExamCategoryForm()})
 		return context
 
-class CreateExamCategory(FormView):
+class CreateExamCategory(LoginRequiredMixin, AdminRedirectMixin, FormView):
 	form_class = ExamCategoryForm
 	submit_response = "exams/create_exam_category_response.html"
 	table = "exams/exam_category_list.html"
@@ -150,7 +155,7 @@ class CreateExamCategory(FormView):
 		}
 		return JsonResponse(response)
 
-class DeleteExamCategoryView(View):
+class DeleteExamCategoryView(LoginRequiredMixin, AdminRedirectMixin, View):
 	table = 'exams/exam_category_list.html'
 	def post(self, request, exam_cat_id):
 		# Deleting exam
@@ -161,7 +166,7 @@ class DeleteExamCategoryView(View):
 		table_response = render_to_string(self.table, {'exam_cats': ExamCategory.objects.all()})
 		return JsonResponse(table_response, safe=False)
 
-class EditExamCategoryView(UpdateView):
+class EditExamCategoryView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 	template_name = 'exams/edit_exam_category.html'
 	model = ExamCategory
 	form_class = ExamCategoryForm

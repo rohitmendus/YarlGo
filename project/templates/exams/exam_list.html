@@ -9,6 +9,10 @@
 				<tr>
 					<th>Name</th>
 					<th>Description</th>
+					<th>Created By</th>
+					<th>Date Created</th>
+					<th>Modified By<</th>
+					<th>Date Modified</th>
 					<th>Edit</th>
 					<th>Delete</th>
 				</tr>
@@ -17,6 +21,10 @@
 				<tr>
 					<th>Name</th>
 					<th>Description</th>
+					<th>Created By</th>
+					<th>Date Created</th>
+					<th>Modified By</th>
+					<th>Date Modified</th>
 					<th>Edit</th>
 					<th>Delete</th>
 				</tr>
@@ -26,6 +34,10 @@
 				<tr>
 					<td>{{exam.name}}</td>
 					<td>{{exam.description}}</td>
+					<td>{{exam.created_by.username}}</td>
+					<td>{{exam.date_created}}</td>
+					<td>{{exam.modified_by.username}}</td>
+					<td>{{exam.date_modified}}</td>
 					<td class="text-center">
 						<a class="edit-exam" hx-get="{% url 'edit_exam' exam.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-exam-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>

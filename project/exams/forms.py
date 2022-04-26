@@ -12,7 +12,7 @@ class MainExamForm(forms.ModelForm):
 class ExamCategoryForm(forms.ModelForm):
 	class Meta:
 		model = ExamCategory
-		fields = ('name', 'description', 'main_exam')
+		fields = ('name', 'description', 'main_exam', 'subjects')
 		widgets = {
 			'description': forms.Textarea(),
 		}

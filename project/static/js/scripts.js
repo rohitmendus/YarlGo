@@ -40,6 +40,16 @@ function refresh_exam_table(response, table){
     htmx.process(document)
 }
 
+function refresh_subject_table(response, table){
+    table.empty();
+    table.append(response);
+    const datatablesSimple = document.getElementById('subject-list-table');
+    if (datatablesSimple) {
+        table = new simpleDatatables.DataTable(datatablesSimple);
+    }
+    htmx.process(document)
+}
+
 
 $(document).ready(function(){
     $(document).on('DOMSubtreeModified', '#username-error', function(){
@@ -256,6 +266,24 @@ $(document).ready(function(){
                     $('#edit-exam-cat-fail').removeClass('d-none');
                 }
                 // htmx.process(document)
+            }
+        });
+    });
+
+    $(document).on('submit', '#create-subject-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-subject')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_subject_table(response.response2, $('#subject-table'))
+                // htmx.process($('#create-user'))
             }
         });
     });

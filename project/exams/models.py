@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from subjects.models import Subject
 
 # Create your models here.
 class MainExam(models.Model):
@@ -21,3 +22,13 @@ class ExamCategory(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_modified = models.DateTimeField(auto_now=True)
 	main_exam = models.ForeignKey(MainExam, on_delete=models.CASCADE, related_name="exams_categories")
+	subjects = models.ManyToManyField(Subject, related_name="exam_categories", blank=True)
+
+	@property
+	def subject_list(self):
+		subject_s = list(self.subjects.values_list('name', flat=True))
+		return ', '.join(subject_s)
+	
+
+	def __str__(self):
+		return self.name

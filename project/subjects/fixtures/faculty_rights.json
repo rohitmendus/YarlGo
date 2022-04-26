@@ -1,0 +1,16 @@
+[
+  {
+    "model": "subjects.Right",
+    "pk": 1,
+    "fields": {
+      "name": "examiner"
+    }
+  },
+  {
+    "model": "subjects.Right",
+    "pk": 2,
+    "fields": {
+      "name": "staff"
+    }
+  }
+]
