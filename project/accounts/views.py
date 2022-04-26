@@ -132,8 +132,6 @@ class EditUserView(UpdateView):
 				error_messages.append(y['message'])
 		
 		# Reponse
-		table_response = render_to_string(self.table, {'users': Profile.objects.all(),
-			'roles': Role.objects.values_list('name', flat=True)})
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
 

@@ -1,0 +1,28 @@
+{% load widget_tweaks %}
+<form id="edit-exam-form" method="post" action="{% url 'edit_exam' form.instance.id %}">
+	{% csrf_token %}
+	<div class="modal-header">
+		<h5 class="modal-title" id="editModalLabel">Edit Exam</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body">
+		{% csrf_token %}
+		<div class="mb-3 form-floating">
+			{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="editExamName" %}
+			<label for="editExamName">Exam Name</label>
+		</div>
+		<div class="mb-3 form-floating">
+			{% render_field form.description class="form-control" placeholder=form.description.label id="editExamDescription" style="height:200px;" %}
+			<label for="editExamDescription">Description</label>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		<button type="submit" class="btn btn-primary" id="edit-exam-btn">Save Changes</button>
+	</div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#edit-exam-modal').modal('show');
+	});
+</script>

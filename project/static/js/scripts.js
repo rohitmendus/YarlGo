@@ -30,6 +30,18 @@ function refresh_user_table(response){
     htmx.process(document)
 }
 
+function refresh_exam_table(response){
+    let table = $('#exam-table');
+    table.empty();
+    table.append(response);
+    const datatablesSimple = document.getElementById('exam-list-table');
+    if (datatablesSimple) {
+        table = new simpleDatatables.DataTable(datatablesSimple);
+    }
+    htmx.process(document)
+}
+
+
 $(document).ready(function(){
     $(document).on('DOMSubtreeModified', '#username-error', function(){
         let elem = $(this).children('span')[0];
@@ -118,4 +130,70 @@ $(document).ready(function(){
             }
         });
     });
+
+    $(document).on('submit', '#create-exam-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-exam')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_exam_table(response.response2)
+                // htmx.process($('#create-user'))
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-exam', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal')
+        b_modal.modal('show');
+        $('#confirm-dlt').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_exam_table(response);
+                    $('#dlt-exam-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-exam-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-exam-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_exam_table(response.table_response)
+                    $('#edit-exam-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-exam-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-exam-fail').removeClass('d-none');
+                }
+                // htmx.process(document)
+            }
+        });
+    });
+
 });

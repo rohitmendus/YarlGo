@@ -48,7 +48,7 @@ class Profile(models.Model):
 			return ""
 
 class Role(models.Model):
-	name = models.CharField(max_length=100, blank=False, null=False)
+	name = models.CharField(max_length=100, blank=False, null=False, unique=True)
 	description = models.CharField(max_length=500, blank=True, null=False)
 	users = models.ManyToManyField(User, related_name="roles", blank=True)
 

@@ -1,0 +1,15 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-exam-form" action="{% url 'create_exam' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputExamName" %}
+		<label for="inputExamName">Exam Name</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.description class="form-control" placeholder=form.description.label id="inputExamDescription" style="height:100px;" %}
+		<label for="inputExamDescription">Description</label>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Exam" id="create-exam-btn"></input></div>
+	</div>
+</form>
