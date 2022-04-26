@@ -10,6 +10,9 @@ class MainExam(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_modified = models.DateTimeField(auto_now=True)
 
+	def __str__(self):
+		return self.name
+
 class ExamCategory(models.Model):
 	name = models.CharField(max_length=200, unique=True)
 	description = models.CharField(max_length=500, blank=True)

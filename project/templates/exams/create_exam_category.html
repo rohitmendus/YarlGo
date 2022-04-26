@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-exam-cat-form" action="{% url 'create_exam_cat' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputExamCatName" %}
+		<label for="inputExamCatName">Exam Category Name</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.description class="form-control" placeholder=form.description.label id="inputExamCatDescription" style="height:100px;" %}
+		<label for="inputExamCatDescription">Description</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.main_exam class="form-select" id="inputExamCatMainExam"%}
+		<label for="inputExamCatMainExam">Exam</label>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Exam Category"></input></div>
+	</div>
+</form>

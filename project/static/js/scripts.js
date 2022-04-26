@@ -30,8 +30,7 @@ function refresh_user_table(response){
     htmx.process(document)
 }
 
-function refresh_exam_table(response){
-    let table = $('#exam-table');
+function refresh_exam_table(response, table){
     table.empty();
     table.append(response);
     const datatablesSimple = document.getElementById('exam-list-table');
@@ -143,7 +142,7 @@ $(document).ready(function(){
                 let submit_response = $('#create-exam')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_exam_table(response.response2)
+                refresh_exam_table(response.response2, $('#exam-table'))
                 // htmx.process($('#create-user'))
             }
         });
@@ -162,7 +161,7 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    refresh_exam_table(response);
+                    refresh_exam_table(response, $('#exam-table'));
                     $('#dlt-exam-success').removeClass('d-none');
                 }
             });
@@ -181,7 +180,7 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
-                    refresh_exam_table(response.table_response)
+                    refresh_exam_table(response.table_response, $('#exam-table'))
                     $('#edit-exam-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-exam-fail span')
@@ -196,4 +195,68 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('submit', '#create-exam-cat-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-exam-cat')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_exam_table(response.response2, $('#exam-cat-table'))
+                // htmx.process($('#create-user'))
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-exam-cat', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal')
+        b_modal.modal('show');
+        $('#confirm-dlt').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_exam_table(response, $('#exam-cat-table'));
+                    $('#dlt-exam-cat-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-exam-cat-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-exam-cat-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_exam_table(response.table_response, $('#exam-cat-table'))
+                    $('#edit-exam-cat-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-exam-cat-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-exam-cat-fail').removeClass('d-none');
+                }
+                // htmx.process(document)
+            }
+        });
+    });
 });

@@ -1,0 +1,29 @@
+{% if success %}
+<div class="col-12" id="exam-cat-create-success">
+    <div class="card bg-success text-white mb-4">
+        <div class="card-body">The exam category has been created successfully!</div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+            <button class="btn btn-light" hx-get="{% url 'get_exam_cat_form' %}" 
+          hx-target="#exam-cat-create-success" hx-swap="outerHTML">Create Another Exam</button>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12" id="exam-cat-create-fail">
+    <div class="card bg-danger text-white mb-4">
+    <div class="card-body">
+        <h5 class="card-title">An error Occured!</h5>
+        <p class="card-text">
+            <ul>
+                {% for error in errors %}
+                <li>{{error}}</li>
+                {% endfor %}
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer d-flex align-items-center justify-content-between">
+        <button class="btn btn-light" hx-get="{% url 'get_exam_cat_form' %}" hx-target="#exam-cat-create-fail" hx-swap="outerHTML">Try Again</button>
+    </div>
+</div>
+</div>
+{% endif %}
