@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import django.conf.global_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'tempus_dominus',
     'accounts',
     'exams',
     'subjects',
+    'batches',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'accounts.context_processors.role_processor'
+                'accounts.context_processors.role_processor',
             ],
         },
     },
@@ -120,6 +123,16 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = "/dashboard"
 LOGOUT_REDIRECT_URL = "/accounts/login"
 UNAUTHORIZED_URL = "/unauthorized"
+
+
+
+DATE_INPUT_FORMATS = [
+    *django.conf.global_settings.DATE_INPUT_FORMATS,
+    "%d-%m-%Y",
+]
+
+TEMPUS_DOMINUS_DATE_FORMAT = "DD-MM-YYYY"
+TEMPUS_DOMINUS_DATETIME_FORMAT = "DD-MM-YYYY HH:mm:ss"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

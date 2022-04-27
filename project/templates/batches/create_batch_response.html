@@ -1,15 +1,15 @@
 {% if success %}
-<div class="col-12" id="subject-create-success">
+<div class="col-12" id="batch-create-success">
     <div class="card bg-success text-white mb-4">
-        <div class="card-body">The subject has been created successfully!</div>
+        <div class="card-body">The batch has been created successfully!</div>
         <div class="card-footer d-flex align-items-center justify-content-between">
-            <button class="btn btn-light" hx-get="{% url 'get_subject_form' %}" 
-          hx-target="#subject-create-success" hx-swap="outerHTML">Create Another Subject</button>
+            <button class="btn btn-light" hx-get="{% url 'get_batch_form' %}" 
+          hx-target="#batch-create-success" hx-swap="outerHTML">Create Another Subject</button>
         </div>
     </div>
 </div>
 {% else %}
-<div class="col-12" id="subject-create-fail">
+<div class="col-12" id="batch-create-fail">
     <div class="card bg-danger text-white mb-4">
     <div class="card-body">
         <h5 class="card-title">An error Occured!</h5>
@@ -22,7 +22,7 @@
         </p>
     </div>
     <div class="card-footer d-flex align-items-center justify-content-between">
-        <button class="btn btn-light" hx-get="{% url 'get_subject_form' %}" hx-target="#subject-create-fail" hx-swap="outerHTML">Try Again</button>
+        <button class="btn btn-light" hx-get="{% url 'get_batch_form' %}" hx-target="#batch-create-fail" hx-swap="outerHTML">Try Again</button>
     </div>
 </div>
 </div>

@@ -1,0 +1,33 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-batch-form" action="{% url 'create_batch' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputSubjectName" %}
+		<label for="inputSubjectName">Batch Name</label>
+	</div>
+	<div class="row mb-3">
+		<div class="mb-3 col-6">
+			<label for="inputOpeningDate">Opening Date</label>
+			{% render_field form.opening_date id="inputOpeningDate"%}
+		</div>
+		<div class="mb-3 col-6">
+			<label for="inputClosingDate">Closing Date</label>
+			{% render_field form.closing_date id="inputClosingDate"%}
+		</div>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.exam_category required="required" class="form-select" id="inputExamCategory" %}
+		<label for="inputExamCategory" class="form-label">Exam Category</label>
+	</div>
+	<div class="mb-3">
+		<label for="inputExaminers" class="form-label">Add Students</label>
+		<select name="students" id="inputExamCategory" class="form-select" required multiple>
+			{% for student in students %}
+			<option value="{{student.1}}">{{student.0}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Batch"></input></div>
+	</div>
+</form>
