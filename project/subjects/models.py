@@ -20,6 +20,9 @@ class Subject(models.Model):
 		staff_users = list(self.faculty_rights.filter(right__name="staff").values_list('user__username', flat=True))
 		return ', '.join(staff_users)
 
+	def __str__(self):
+		return self.name
+
 class Topic(models.Model):
 	name = models.CharField(max_length=200, unique=True)
 	description = models.CharField(max_length=500, blank=True)

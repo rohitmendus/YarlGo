@@ -1,5 +1,6 @@
 from django import forms
 from .models import MainExam, ExamCategory
+from subjects.forms import Subject
 
 class MainExamForm(forms.ModelForm):
 	class Meta:

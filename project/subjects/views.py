@@ -19,7 +19,8 @@ from django.http import JsonResponse
 @login_required
 def get_subject_form(request):
 	form = SubjectForm()
-	return render(request, 'subjects/create_subject.html', {'form': SubjectForm()})
+	faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+	return render(request, 'subjects/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
 
 # Create your views here.
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
@@ -89,11 +90,11 @@ class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 		return JsonResponse(response)
 
 class DeleteSubjectView(LoginRequiredMixin, AdminRedirectMixin, View):
-	table = 'exams/exam_list.html'
+	table = 'subjects/subject_list.html'
 	def post(self, request, subject_id):
-		# Deleting exam
-		exam = Subject.objects.get(id=exam_id)
-		exam.delete()
+		# Deleting subject
+		subject = Subject.objects.get(id=subject_id)
+		subject.delete()
 
 		# Reponse
 		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
@@ -102,16 +103,46 @@ class DeleteSubjectView(LoginRequiredMixin, AdminRedirectMixin, View):
 		return JsonResponse(table_response, safe=False)
 
 class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
-	template_name = 'exams/edit_exam.html'
+	template_name = 'subjects/edit_subject.html'
 	model = Subject
 	form_class = SubjectForm
-	table = 'subjects/exam_list.html'
+	table = 'subjects/subject_list.html'
 	pk_url_kwarg = "subject_id"
 
 	def form_valid(self, form):
-		exam = form.save(commit=False)
-		exam.modified_by = self.request.user
-		exam.save()
+		examiners = self.request.POST.getlist('edit-examiners')
+		staff = self.request.POST.getlist('edit-staff')
+		# Saving subject
+		subject = form.save(commit=False)
+		subject.modified_by = self.request.user
+		subject.save()
+
+		# Removing examiners
+		examiner_right = Right.objects.get(name="examiner")
+		examiner_rights = list(FacultyRight.objects.filter(subject=subject, right=examiner_right).values_list('user__username', flat=True))
+
+		for username in examiner_rights:
+			if username not in examiners:
+				FacultyRight.objects.get(right=examiner_right, user__username=username, subject=subject).delete()
+
+		# Adding examiners
+		for i in examiners:
+			user = 	User.objects.get(username=i)
+			faculty_right, created = FacultyRight.objects.get_or_create(user=user, subject=subject, right=examiner_right)
+
+
+		# Removing examiners
+		staff_right = Right.objects.get(name="staff")
+		staff_rights = list(FacultyRight.objects.filter(subject=subject, right=staff_right).values_list('user__username', flat=True))
+
+		for username in staff_rights:
+			if username not in staff:
+				FacultyRight.objects.get(right=staff_right, user__username=username, subject=subject).delete()
+		
+		# Adding staff
+		for i in staff:
+			user = 	User.objects.get(username=i)
+			faculty_right, created = FacultyRight.objects.get_or_create(user=user, subject=subject, right=staff_right)
 
 		# Reponse
 		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
@@ -130,3 +161,11 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		# Reponse
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+		examiners = FacultyRight.objects.filter(right__name="examiner", subject=self.object).values_list('user__username', flat=True)
+		staff = FacultyRight.objects.filter(right__name="staff", subject=self.object).values_list('user__username', flat=True)
+		context.update({'faculties': faculties, 'examiners': examiners, 'staff': staff})
+		return context

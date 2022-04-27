@@ -129,6 +129,7 @@ class CreateExamCategory(LoginRequiredMixin, AdminRedirectMixin, FormView):
 		exam_cat.created_by = self.request.user
 		exam_cat.modified_by = self.request.user
 		exam_cat.save()
+		form.save_m2m()
 
 		# Sending response
 		response1 = render_to_string(self.submit_response, {'success': True})
@@ -177,6 +178,7 @@ class EditExamCategoryView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		exam_cat = form.save(commit=False)
 		exam_cat.modified_by = self.request.user
 		exam_cat.save()
+		form.save_m2m()
 
 		# Reponse
 		table_response = render_to_string(self.table, {'exam_cats': ExamCategory.objects.all()})

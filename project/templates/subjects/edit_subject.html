@@ -1,0 +1,51 @@
+{% load widget_tweaks %}
+<form id="edit-subject-form" method="post" action="{% url 'edit_subject' form.instance.id %}">
+	{% csrf_token %}
+	<div class="modal-header">
+		<h5 class="modal-title" id="editModalLabel">Edit Exam</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body">
+		<div class="mb-3 form-floating">
+			{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="editSubjectName" %}
+			<label for="editSubjectName">Subject Name</label>
+		</div>
+		<div class="mb-3 form-floating">
+			{% render_field form.description class="form-control" placeholder=form.description.label id="editSubjectDescription" style="height:200px;" %}
+			<label for="editSubjectDescription">Description</label>
+		</div>
+		<div class="mb-3">
+			<label for="editExaminers" class="form-label">Examiners</label>
+			<select class="form-select" multiple aria-label="Default select example" name="edit-examiners" id="editExaminers" style="height: 100px;">
+				{% for faculty in faculties %}
+				{% if faculty in examiners %}
+				<option value="{{faculty}}" selected>{{faculty}}</option>
+				{% else %}
+				<option value="{{faculty}}">{{faculty}}</option>
+				{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+		<div class="mb-3">
+			<label for="editStaff" class="form-label">Staff</label>
+			<select class="form-select" multiple aria-label="Default select example" name="edit-staff" id="editStaff" style="height: 100px;">
+				{% for faculty in faculties %}
+				{% if faculty in staff %}
+				<option value="{{faculty}}" selected>{{faculty}}</option>
+				{% else %}
+				<option value="{{faculty}}">{{faculty}}</option>
+				{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		<button type="submit" class="btn btn-primary">Save Changes</button>
+	</div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#edit-subject-modal').modal('show');
+	});
+</script>

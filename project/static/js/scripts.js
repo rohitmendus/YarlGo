@@ -287,4 +287,50 @@ $(document).ready(function(){
             }
         });
     });
+
+    $(document).on('click', '.dlt-subject', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal')
+        b_modal.modal('show');
+        $('#confirm-dlt').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_subject_table(response, $('#subject-table'));
+                    $('#dlt-subject-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-subject-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-subject-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_subject_table(response.table_response, $('#subject-table'))
+                    $('#edit-subject-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-subject-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-subject-fail').removeClass('d-none');
+                }
+            }
+        });
+    });
 });
