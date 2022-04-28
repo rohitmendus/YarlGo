@@ -130,7 +130,10 @@ DATE_INPUT_FORMATS = [
     *django.conf.global_settings.DATE_INPUT_FORMATS,
     "%d-%m-%Y",
 ]
-
+TIME_INPUT_FORMATS = [
+    *django.conf.global_settings.TIME_INPUT_FORMATS,
+    '%I:%M %p',
+]
 TEMPUS_DOMINUS_DATE_FORMAT = "DD-MM-YYYY"
 TEMPUS_DOMINUS_DATETIME_FORMAT = "DD-MM-YYYY HH:mm:ss"
 

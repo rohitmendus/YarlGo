@@ -1,0 +1,25 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-batch-timing-form" action="{% url 'create_batch_timing' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.batch required="required" class="form-select" id="inputBatch" %}
+		<label for="inputBatch">Batch</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.subject required="required" class="form-select" id="inputSubject" %}
+		<label for="inputSubject">Subject</label>
+	</div>
+	<div class="row mb-3">
+		<div class="mb-3 col-6">
+			<label for="inputOpeningTime">Opening Date</label>
+			{% render_field form.opening_time id="inputOpeningTime"%}
+		</div>
+		<div class="mb-3 col-6">
+			<label for="inputClosingTime">Closing Date</label>
+			{% render_field form.closing_time id="inputClosingTime"%}
+		</div>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Batch"></input></div>
+	</div>
+</form>

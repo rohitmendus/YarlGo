@@ -24,7 +24,7 @@ def get_subject_form(request):
 
 # Create your views here.
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
-	template_name = "subjects/admin_subjects.html"
+	template_name = "subjects/admin/subjects.html"
 	model = Subject
 	context_object_name = "subjects"
 
@@ -36,8 +36,8 @@ class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 
 class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 	form_class = SubjectForm
-	submit_response = "subjects/create_subject_response.html"
-	table = "subjects/subject_list.html"
+	submit_response = "subjects/admin/create_subject_response.html"
+	table = "subjects/admin/subject_list.html"
 
 	def form_valid(self, form):
 		examiners = self.request.POST.getlist('examiners')
@@ -90,7 +90,7 @@ class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 		return JsonResponse(response)
 
 class DeleteSubjectView(LoginRequiredMixin, AdminRedirectMixin, View):
-	table = 'subjects/subject_list.html'
+	table = 'subjects/admin/subject_list.html'
 	def post(self, request, subject_id):
 		# Deleting subject
 		subject = Subject.objects.get(id=subject_id)
@@ -103,10 +103,10 @@ class DeleteSubjectView(LoginRequiredMixin, AdminRedirectMixin, View):
 		return JsonResponse(table_response, safe=False)
 
 class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
-	template_name = 'subjects/edit_subject.html'
+	template_name = 'subjects/admin/edit_subject.html'
 	model = Subject
 	form_class = SubjectForm
-	table = 'subjects/subject_list.html'
+	table = 'subjects/admin/subject_list.html'
 	pk_url_kwarg = "subject_id"
 
 	def form_valid(self, form):

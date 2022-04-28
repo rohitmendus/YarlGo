@@ -57,6 +57,16 @@ function refresh_admin_batch_table(response, table) {
     }
     htmx.process(document)
 }
+function refresh_batch_timing_table(response, table) {
+    table.empty();
+    table.append(response);
+    const datatablesSimple = document.getElementById('batch-timing-list-table');
+    if (datatablesSimple) {
+        table = new simpleDatatables.DataTable(datatablesSimple);
+    }
+    htmx.process(document)
+}
+
 
 $(document).ready(function(){
     $('.pwd-eye').click(function(){
@@ -414,4 +424,66 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('submit', '#create-batch-timing-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-batch-timing')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_batch_timing_table(response.response2, $('#batch-timing-table'));
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-batch-timing', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal')
+        b_modal.modal('show');
+        $('#confirm-dlt').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_batch_timing_table(response, $('#batch-timing-table'));
+                    $('#dlt-batch-timing-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-batch-timing-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-batch-timing-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_batch_timing_table(response.table_response, $('#batch-timing-table'))
+                    $('#edit-batch-timing-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-batch-timing-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-batch-timing-fail').removeClass('d-none');
+                }
+            }
+        });
+    });
 });

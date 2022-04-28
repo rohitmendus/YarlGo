@@ -6,6 +6,10 @@ urlpatterns = [
     path('create_batch/', views.CreateBatchView.as_view(), name="create_batch"),
     path('delete_batch/<int:batch_id>/', views.DeleteBatchView.as_view(), name="delete_batch"),
     path('edit_batch/<int:batch_id>/', views.EditBatchView.as_view(), name='edit_batch'),
+    path('timings/', views.BatchTimingsView.as_view(), name="batch_timings"),
+    path('timings/create/', views.CreateBatchTimingView.as_view(), name="create_batch_timing"),
+    path('timings/delete/<int:batch_timing_id>/', views.DeleteBatchTimingView.as_view(), name="delete_batch_timing"),
+    path('timings/edit/<int:batch_timing_id>/', views.EditBatchTimingView.as_view(), name="edit_batch_timing"),
 ]
 
 htmx_urlpatterns = [

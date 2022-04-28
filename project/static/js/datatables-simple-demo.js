@@ -8,6 +8,9 @@ htmx.onLoad(function(elt){
         $("#role-filter").on('change', function() {
             table.search(this.value);
         });
+        $("#batch-filter").on('change', function() {
+            table.search(this.value);
+        });
     }
 });
 // $(document).ready(function(){
