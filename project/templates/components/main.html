@@ -48,6 +48,8 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">  
                     {% if user_role.name == 'admin' %}
                     {% include '../components/side_nav_admin.html' %}
+                    {% elif user_role.name == 'faculty' %}
+                    {% include '../components/side_nav_faculty.html' %}
                     {% endif %}
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as: {{user.first_name}}</div>

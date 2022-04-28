@@ -66,6 +66,15 @@ function refresh_batch_timing_table(response, table) {
     }
     htmx.process(document)
 }
+function refresh_topic_table(response, table) {
+    table.empty();
+    table.append(response);
+    const datatablesSimple = document.getElementById('topic-list-table');
+    if (datatablesSimple) {
+        table = new simpleDatatables.DataTable(datatablesSimple);
+    }
+    htmx.process(document)
+}
 
 
 $(document).ready(function(){
@@ -486,4 +495,38 @@ $(document).ready(function(){
             }
         });
     });
-});
+
+    $('#faculty-nav a').on('click', function (e) {
+        $(this).tab('show')
+    })
+    var url = window.location.href;
+    var activeTab = url.substring(url.indexOf("#") + 1);
+    $('#faculty-nav a[href="#'+ activeTab +'"]').tab('show');
+    
+    $('.subject-operate-btn').click(function(e){
+        const subject_id = $(this).data('subject');
+        const url = $(this).attr('href');
+        $.ajax({
+            url: '/subjects/store_subject/',
+            data: {'subject_id': subject_id},
+            type: 'get',
+        });
+    });
+
+    $(document).on('submit', '#create-topic-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-topic')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_topic_table(response.response2, $('#topic-table'));
+            }
+        });
+    });
+}); 

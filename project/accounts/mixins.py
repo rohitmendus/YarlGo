@@ -42,12 +42,12 @@ class AdminRedirectMixin(RedirectMixin):
         if self.request.user.roles.values_list('name', flat=True)[0] == "admin":
             return True
 
-class FacultyRequiredMixin(RedirectMixin):
+class FacultyRedirectMixin(RedirectMixin):
     def test_func(self):
         if self.request.user.roles.values_list('name', flat=True)[0] == "faculty":
             return True
 
-class StudentRequiredMixin(RedirectMixin):
+class StudentRedirectMixin(RedirectMixin):
     def test_func(self):
         if self.request.user.roles.values_list('name', flat=True)[0] == "student":
             return True

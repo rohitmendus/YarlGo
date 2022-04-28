@@ -1,0 +1,15 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-topic-form" action="{% url 'create_topic' %}" method="post">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputTopicName" %}
+		<label for="inputTopicName">Topic</label>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field form.description class="form-control" placeholder=form.description.label id="inputTopicDescription" style="height:100px;" %}
+		<label for="inputTopicDescription">Description</label>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Topic"></input></div>
+	</div>
+</form>

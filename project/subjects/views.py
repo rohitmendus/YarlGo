@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from .models import Subject, FacultyRight, Right
+from .models import Subject, FacultyRight, Right, Topic
 from accounts.models import Role
 from django.contrib.auth.models import User
-from .forms import SubjectForm
+from .forms import SubjectForm, TopicForm
 # CBS Views
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView, UpdateView
@@ -10,19 +10,20 @@ from django.views import View
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from accounts.mixins import AdminRedirectMixin
+from accounts.mixins import AdminRedirectMixin, FacultyRedirectMixin
 # Response objects
 import json
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
+
+# Admin Views.
 @login_required
 def get_subject_form(request):
 	form = SubjectForm()
 	faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
-	return render(request, 'subjects/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
+	return render(request, 'subjects/admin/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
 
-# Create your views here.
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "subjects/admin/subjects.html"
 	model = Subject
@@ -169,3 +170,80 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		staff = FacultyRight.objects.filter(right__name="staff", subject=self.object).values_list('user__username', flat=True)
 		context.update({'faculties': faculties, 'examiners': examiners, 'staff': staff})
 		return context
+
+
+
+
+# Faculty Views
+@login_required
+def store_subject(request):
+	request.session['subject_id'] = request.GET.get('subject_id')
+	print(request.session['subject_id'])
+	return JsonResponse('Stored', safe=False)
+
+@login_required
+def get_topic_form(request):
+	form = TopicForm()
+	return render(request, 'subjects/faculty/create_topic.html', {'form': form})
+
+
+class FacultyAllotmentView(LoginRequiredMixin, FacultyRedirectMixin, ListView):
+	context_object_name = "allotments"
+	template_name = "subjects/faculty/allotments.html"
+
+	def get_queryset(self):
+		return FacultyRight.objects.filter(user=self.request.user)
+
+class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	template_name = "subjects/faculty/faculty.html"
+	form = TopicForm
+
+	def get(self, request):
+		subject = Subject.objects.get(id=request.session['subject_id'])
+		is_examiner = self.request.user.subject_rights.filter(subject=subject, right__name="examiner").exists()
+		context = {'is_examiner': is_examiner, 
+			'topics': Topic.objects.filter(subject=subject)
+		}
+		if is_examiner:
+			context['form'] = self.form
+		return render(request, self.template_name, context)
+
+class CreateTopicView(LoginRequiredMixin, FacultyRedirectMixin, FormView):
+	form_class = TopicForm
+	submit_response = "subjects/faculty/create_topic_response.html"
+	table = "subjects/faculty/topic_list.html"
+
+	def form_valid(self, form):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Saving topic
+		topic = form.save(commit=False)
+		topic.created_by = self.request.user
+		topic.modified_by = self.request.user
+		topic.subject = subject
+		topic.save()
+
+		# Sending response
+		response1 = render_to_string(self.submit_response, {'success': True})
+		response2 = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})
+		response = {
+			'response1': response1, 'response2': response2
+		}
+		return JsonResponse(response)
+
+	def form_invalid(self, form):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Collecting error messages
+		error_messages = []
+		errors = json.loads(form.errors.as_json())
+		for x in errors:
+			for y in errors[x]:
+				error_messages.append(y['message'])
+		
+		# Sending response
+		response1 = render_to_string(self.submit_response, {'success': False, 
+			'errors': error_messages})
+		response2 = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})
+		response = {
+			'response1': response1, 'response2': response2
+		}
+		return JsonResponse(response)

@@ -1,0 +1,14 @@
+{% extends 'components/main.html' %}
+{% block title %}Allotments{% endblock %}
+{% block content %}
+
+<div class="container">
+	<div class="row mt-5 mx-5">
+		<h2>Allotments</h2>
+	</div>
+</div>
+<div class="container" id="allotment-list">
+	{% include 'subjects/faculty/allotment_list.html' %}
+</div>
+
+{% endblock %}

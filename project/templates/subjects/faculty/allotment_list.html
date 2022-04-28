@@ -1,0 +1,34 @@
+<div class="card mb-4 mt-3 mx-5 shadow pt-2 px-2 bg-white rounded">
+	<div class="card-body">
+		<table class="table table-bordered table-hover tabel-responsive" id="subject-list-table">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col">Subject</th>
+					<th scope="col">Role</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for allotment in allotments %}
+				<tr>
+					<td>{{allotment.subject}}</td>
+					<td>{{allotment.right}}</td>
+					<td class="text-center">
+						<div class="dropdown">
+							<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton{{forloop.counter}}" data-bs-toggle="dropdown" aria-expanded="false">
+								Actions
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{forloop.counter}}">
+								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#batches" data-subject="{{allotment.subject.id}}">Batches</a></li>
+								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#tests" data-subject="{{allotment.subject.id}}">Tests</a></li>
+								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#topics" data-subject="{{allotment.subject.id}}">Topics</a></li>
+								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#questions" data-subject="{{allotment.subject.id}}">Questions</a></li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
