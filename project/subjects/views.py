@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Subject, FacultyRight, Right, Topic
 from accounts.models import Role
+from batches.models import Batch
 from django.contrib.auth.models import User
 from .forms import SubjectForm, TopicForm
 # CBS Views
@@ -178,7 +179,6 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 @login_required
 def store_subject(request):
 	request.session['subject_id'] = request.GET.get('subject_id')
-	print(request.session['subject_id'])
 	return JsonResponse('Stored', safe=False)
 
 @login_required
@@ -196,16 +196,19 @@ class FacultyAllotmentView(LoginRequiredMixin, FacultyRedirectMixin, ListView):
 
 class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 	template_name = "subjects/faculty/faculty.html"
-	form = TopicForm
-
 	def get(self, request):
 		subject = Subject.objects.get(id=request.session['subject_id'])
+
 		is_examiner = self.request.user.subject_rights.filter(subject=subject, right__name="examiner").exists()
 		context = {'is_examiner': is_examiner, 
 			'topics': Topic.objects.filter(subject=subject)
 		}
 		if is_examiner:
-			context['form'] = self.form
+			context['form_topic'] = TopicForm
+
+		batches = Batch.objects.filter(exam_category__subjects=subject)
+		context['batches'] = batches
+		
 		return render(request, self.template_name, context)
 
 class CreateTopicView(LoginRequiredMixin, FacultyRedirectMixin, FormView):
@@ -246,4 +249,47 @@ class CreateTopicView(LoginRequiredMixin, FacultyRedirectMixin, FormView):
 		response = {
 			'response1': response1, 'response2': response2
 		}
+		return JsonResponse(response)
+
+class DeleteTopicView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	table = 'subjects/faculty/topic_list.html'
+	def post(self, request, topic_id):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Deleting topic
+		topic = Topic.objects.get(id=topic_id)
+		topic.delete()
+
+		# Reponse
+		table_response = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})
+		return JsonResponse(table_response, safe=False)
+
+class EditTopicView(LoginRequiredMixin, FacultyRedirectMixin, UpdateView):
+	template_name = 'subjects/faculty/edit_topic.html'
+	model = Topic
+	form_class = TopicForm
+	table = 'subjects/faculty/topic_list.html'
+	pk_url_kwarg = "topic_id"
+
+	def form_valid(self, form):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Saving topic
+		topic = form.save(commit=False)
+		topic.modified_by = self.request.user
+		topic.subject = subject
+		topic.save()
+
+		# Reponse
+		table_response = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})
+		response = {'success': True, 'table_response': table_response}
+		return JsonResponse(response)
+
+	def form_invalid(self, form):
+		error_messages = []
+		errors = json.loads(form.errors.as_json())
+		for x in errors:
+			for y in errors[x]:
+				error_messages.append(y['message'])
+		
+		# Reponse
+		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)

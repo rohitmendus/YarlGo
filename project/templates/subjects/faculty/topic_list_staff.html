@@ -1,0 +1,38 @@
+<div class="card mb-4 mt-5">
+	<div class="card-body">
+		<table class="datatablesSimple" id="topic-list-table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Created By</th>
+					<th>Date Created</th>
+					<th>Modified By</th>
+					<th>Date Modified</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Created By</th>
+					<th>Date Created</th>
+					<th>Modified By</th>
+					<th>Date Modified</th>
+				</tr>
+			</tfoot>
+			<tbody>
+				{% for topic in topics %}
+				<tr>
+					<td>{{topic.name}}</td>
+					<td>{{topic.description}}</td>
+					<td>{{topic.created_by.username}}</td>
+					<td>{{topic.date_created}}</td>
+					<td>{{topic.modified_by.username}}</td>
+					<td>{{topic.date_modified}}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -20,6 +20,12 @@ class Subject(models.Model):
 		staff_users = list(self.faculty_rights.filter(right__name="staff").values_list('user__username', flat=True))
 		return ', '.join(staff_users)
 
+	@property
+	def faculty_assigned(self):
+		faculty = list(self.faculty_rights.values_list('user__username', flat=True))
+		return ', '.join(faculty)
+
+
 	def __str__(self):
 		return self.name
 

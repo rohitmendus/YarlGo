@@ -19,10 +19,7 @@
 								Actions
 							</button>
 							<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{forloop.counter}}">
-								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#batches" data-subject="{{allotment.subject.id}}">Batches</a></li>
-								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#tests" data-subject="{{allotment.subject.id}}">Tests</a></li>
-								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#topics" data-subject="{{allotment.subject.id}}">Topics</a></li>
-								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}#questions" data-subject="{{allotment.subject.id}}">Questions</a></li>
+								<li><a class="dropdown-item subject-operate-btn" href="{% url 'faculty_operations' %}" data-subject="{{allotment.subject.id}}">Interact</a></li>
 							</ul>
 						</div>
 					</td>

@@ -2,11 +2,11 @@
 <form class="col-12" id="create-topic-form" action="{% url 'create_topic' %}" method="post">
 	{% csrf_token %}
 	<div class="mb-3 form-floating">
-		{% render_field form.name required="required" class="form-control" placeholder=form.name.label id="inputTopicName" %}
+		{% render_field form_topic.name required="required" class="form-control" placeholder=form_topic.name.label id="inputTopicName" %}
 		<label for="inputTopicName">Topic</label>
 	</div>
 	<div class="mb-3 form-floating">
-		{% render_field form.description class="form-control" placeholder=form.description.label id="inputTopicDescription" style="height:100px;" %}
+		{% render_field form_topic.description class="form-control" placeholder=form_topic.description.label id="inputTopicDescription" style="height:100px;" %}
 		<label for="inputTopicDescription">Description</label>
 	</div>
 	<div class="mt-4 mb-3">

@@ -29,29 +29,12 @@ function refresh_user_table(response){
     });
     htmx.process(document)
 }
-function refresh_exam_table(response, table){
+function refresh_table(response, table, table_id){
     table.empty();
     table.append(response);
-    const datatablesSimple = document.getElementById('exam-list-table');
-    if (datatablesSimple) {
-        table = new simpleDatatables.DataTable(datatablesSimple);
-    }
-    htmx.process(document)
-}
-
-function refresh_subject_table(response, table){
-    table.empty();
-    table.append(response);
-    const datatablesSimple = document.getElementById('subject-list-table');
-    if (datatablesSimple) {
-        table = new simpleDatatables.DataTable(datatablesSimple);
-    }
-    htmx.process(document)
-}
-function refresh_admin_batch_table(response, table) {
-    table.empty();
-    table.append(response);
-    const datatablesSimple = document.getElementById('batch-list-table');
+    const datatablesSimple = document.getElementById( table_id );
+    console.log(table_id);
+    console.log(datatablesSimple)
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
@@ -64,15 +47,9 @@ function refresh_batch_timing_table(response, table) {
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
-    htmx.process(document)
-}
-function refresh_topic_table(response, table) {
-    table.empty();
-    table.append(response);
-    const datatablesSimple = document.getElementById('topic-list-table');
-    if (datatablesSimple) {
-        table = new simpleDatatables.DataTable(datatablesSimple);
-    }
+    $("#batch-filter").on('change', function() {
+        table.search(this.value);
+    });
     htmx.process(document)
 }
 
@@ -188,7 +165,8 @@ $(document).ready(function(){
                 let submit_response = $('#create-exam')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_exam_table(response.response2, $('#exam-table'))
+                refresh_table(response.response2, $('#exam-table'), "exam-list-table")
+                // refresh_exam_table(response.response2, $('#exam-table'))
                 // htmx.process($('#create-user'))
             }
         });
@@ -207,7 +185,8 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    refresh_exam_table(response, $('#exam-table'));
+                    refresh_table(response, $('#exam-table'), "exam-list-table")
+                    // refresh_exam_table(response, $('#exam-table'));
                     $('#dlt-exam-success').removeClass('d-none');
                 }
             });
@@ -226,7 +205,8 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
-                    refresh_exam_table(response.table_response, $('#exam-table'))
+                    refresh_table(response.table_response, $('#exam-table'), "exam-list-table")
+                    // refresh_exam_table(response.table_response, $('#exam-table'))
                     $('#edit-exam-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-exam-fail span')
@@ -253,8 +233,7 @@ $(document).ready(function(){
                 let submit_response = $('#create-exam-cat')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_exam_table(response.response2, $('#exam-cat-table'))
-                // htmx.process($('#create-user'))
+                refresh_table(response.response2, $('#exam-cat-table'), "exam-list-table");
             }
         });
     });
@@ -272,7 +251,8 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    refresh_exam_table(response, $('#exam-cat-table'));
+                    refresh_table(response, $('#exam-cat-table'), "exam-list-table")
+                    // refresh_exam_table(response, $('#exam-cat-table'));
                     $('#dlt-exam-cat-success').removeClass('d-none');
                 }
             });
@@ -291,7 +271,7 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
-                    refresh_exam_table(response.table_response, $('#exam-cat-table'))
+                    refresh_table(response.table_response, $('#exam-cat-table'), "exam-list-table");
                     $('#edit-exam-cat-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-exam-cat-fail span')
@@ -318,7 +298,8 @@ $(document).ready(function(){
                 let submit_response = $('#create-subject')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_subject_table(response.response2, $('#subject-table'))
+                refresh_table(response.response2, $('#subject-table'), 'subject-list-table')
+                // refresh_subject_table(response.response2, $('#subject-table'))
                 // htmx.process($('#create-user'))
             }
         });
@@ -337,7 +318,8 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    refresh_subject_table(response, $('#subject-table'));
+                    refresh_table(response, $('#subject-table'), 'subject-list-table')
+                    // refresh_subject_table(response, $('#subject-table'));
                     $('#dlt-subject-success').removeClass('d-none');
                 }
             });
@@ -356,7 +338,8 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
-                    refresh_subject_table(response.table_response, $('#subject-table'))
+                    refresh_table(response.table_response, $('#subject-table'), 'subject-list-table')
+                    // refresh_subject_table(response.table_response, $('#subject-table'))
                     $('#edit-subject-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-subject-fail span')
@@ -382,7 +365,8 @@ $(document).ready(function(){
                 let submit_response = $('#create-batch')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_admin_batch_table(response.response2, $('#batch-table'));
+                refresh_table(response.response2, $('#batch-table'), 'batch-list-table')
+                // refresh_admin_batch_table(response.response2, $('#batch-table'));
             }
         });
     });
@@ -400,7 +384,8 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
-                    refresh_admin_batch_table(response, $('#batch-table'));
+                    refresh_table(response, $('#batch-table'), 'batch-list-table')
+                    // refresh_admin_batch_table(response, $('#batch-table'));
                     $('#dlt-batch-success').removeClass('d-none');
                 }
             });
@@ -419,7 +404,8 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
-                    refresh_admin_batch_table(response.table_response, $('#batch-table'))
+                    refresh_table(response.table_response, $('#batch-table'), 'batch-list-table')
+                    // refresh_admin_batch_table(response.table_response, $('#batch-table'))
                     $('#edit-batch-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-batch-fail span')
@@ -445,6 +431,7 @@ $(document).ready(function(){
                 let submit_response = $('#create-batch-timing')
                 submit_response.empty();
                 submit_response.append(response.response1);
+                // refresh_table(response.response2, $('#batch-timing-table'), 'batch-timing-list-table');
                 refresh_batch_timing_table(response.response2, $('#batch-timing-table'));
             }
         });
@@ -463,6 +450,7 @@ $(document).ready(function(){
                 type: 'post',
                 success: function(response){
                     b_modal.modal('hide');
+                    // refresh_table(response, $('#batch-timing-table'), 'batch-timing-list-table');
                     refresh_batch_timing_table(response, $('#batch-timing-table'));
                     $('#dlt-batch-timing-success').removeClass('d-none');
                 }
@@ -482,6 +470,7 @@ $(document).ready(function(){
             success: function(response){
                 edit_modal.modal('hide');
                 if (response.success) {
+                    // refresh_table(response.table_response, $('#batch-timing-table'), 'batch-timing-list-table');
                     refresh_batch_timing_table(response.table_response, $('#batch-timing-table'))
                     $('#edit-batch-timing-success').removeClass('d-none');
                 } else {
@@ -504,12 +493,16 @@ $(document).ready(function(){
     $('#faculty-nav a[href="#'+ activeTab +'"]').tab('show');
     
     $('.subject-operate-btn').click(function(e){
+        e.preventDefault();
         const subject_id = $(this).data('subject');
         const url = $(this).attr('href');
         $.ajax({
             url: '/subjects/store_subject/',
             data: {'subject_id': subject_id},
             type: 'get',
+            success: function(){
+                window.location.replace(url);
+            }
         });
     });
 
@@ -525,7 +518,55 @@ $(document).ready(function(){
                 let submit_response = $('#create-topic')
                 submit_response.empty();
                 submit_response.append(response.response1);
-                refresh_topic_table(response.response2, $('#topic-table'));
+                refresh_table(response.response2, $('#topic-table'), "topic-list-table")
+                // refresh_topic_table(response.response2, $('#topic-table'));
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-topic', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal')
+        b_modal.modal('show');
+        $('#confirm-dlt').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_table(response, $('#topic-table'), "topic-list-table")
+                    // refresh_topic_table(response, $('#topic-table'));
+                    $('#dlt-topic-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-topic-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-topic-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_table(response.table_response, $('#topic-table'), 'topic-list-table');
+                    $('#edit-topic-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-topic-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-topic-fail').removeClass('d-none');
+                }
             }
         });
     });

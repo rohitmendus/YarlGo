@@ -4,14 +4,14 @@
         <div class="card-body" style="text-align: left;">The topic has been created successfully!</div>
         <div class="card-footer d-flex align-items-center justify-content-between">
             <button class="btn btn-light" hx-get="{% url 'get_topic_form' %}" 
-          hx-target="#topic-create-success" hx-swap="outerHTML">Create Another Subject</button>
+          hx-target="#topic-create-success" hx-swap="outerHTML">Create Another Topic</button>
         </div>
     </div>
 </div>
 {% else %}
 <div class="col-12" id="topic-create-fail">
     <div class="card bg-danger text-white mb-4">
-    <div class="card-body">
+    <div class="card-body" style="text-align: left;">
         <h5 class="card-title">An error Occured!</h5>
         <p class="card-text">
             <ul>

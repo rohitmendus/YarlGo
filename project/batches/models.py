@@ -20,10 +20,17 @@ class Batch(models.Model):
 		student_s = list(self.students.values_list('username', flat=True))
 		return ', '.join(student_s)
 
+	# @property
+	# def subjects(self):
+	# 	return self.exam_category.subjects
+
 	def __str__(self):
 		return self.name +" - "+ self.exam_category.name
 
 class BatchTiming(models.Model):
+	class Meta:
+		ordering = ['opening_time']
+
 	opening_time = models.TimeField()
 	closing_time = models.TimeField()
 	batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name="batch_timings")
