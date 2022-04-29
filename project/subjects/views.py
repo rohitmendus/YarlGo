@@ -184,7 +184,7 @@ def store_subject(request):
 @login_required
 def get_topic_form(request):
 	form = TopicForm()
-	return render(request, 'subjects/faculty/create_topic.html', {'form': form})
+	return render(request, 'subjects/faculty/create_topic.html', {'form_topic': form})
 
 
 class FacultyAllotmentView(LoginRequiredMixin, FacultyRedirectMixin, ListView):
@@ -208,7 +208,7 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 		batches = Batch.objects.filter(exam_category__subjects=subject)
 		context['batches'] = batches
-		
+
 		return render(request, self.template_name, context)
 
 class CreateTopicView(LoginRequiredMixin, FacultyRedirectMixin, FormView):

@@ -2,7 +2,7 @@
 <form class="col-12" id="create-topic-form" action="{% url 'create_topic' %}" method="post">
 	{% csrf_token %}
 	<div class="mb-3 form-floating">
-		{% render_field form_topic.name required="required" class="form-control" placeholder=form_topic.name.label id="inputTopicName" %}
+		{% render_field form_topic.name class="form-control" placeholder=form_topic.name.label id="inputTopicName" %}
 		<label for="inputTopicName">Topic</label>
 	</div>
 	<div class="mb-3 form-floating">
