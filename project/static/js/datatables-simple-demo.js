@@ -11,6 +11,9 @@ htmx.onLoad(function(elt){
         $("#batch-filter").on('change', function() {
             table.search(this.value);
         });
+        $("#topic-filter").on('change', function() {
+            table.search(this.value);
+        });
     }
 });
 // $(document).ready(function(){

@@ -38,6 +38,9 @@ function refresh_table(response, table, table_id){
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
+    $("#topic-filter").on('change', function() {
+        table.search(this.value);
+    });
     htmx.process(document)
 }
 function refresh_batch_timing_table(response, table) {
@@ -566,6 +569,72 @@ $(document).ready(function(){
                         elem.append(error)
                     }
                     $('#edit-topic-fail').removeClass('d-none');
+                }
+            }
+        });
+    });
+
+    $(document).on('submit', '#create-question-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-question')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_table(response.response2, $('#question-table'), "question-list-table")
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-question', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        console.log("log 1")
+        b_modal = $('#message-modal1');
+        b_modal.modal('show');
+        console.log(b_modal)
+        $('#confirm-dlt1').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    console.log("log 3")
+                    b_modal.modal('hide');
+                    refresh_table(response, $('#question-table'), "question-list-table")
+                    // refresh_topic_table(response, $('#topic-table'));
+                    $('#dlt-question-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+    $(document).on('submit', '#edit-question-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        const edit_modal = $('#edit-question-modal')
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                edit_modal.modal('hide');
+                if (response.success) {
+                    refresh_table(response.table_response, $('#question-table'), 'question-list-table');
+                    $('#edit-question-success').removeClass('d-none');
+                } else {
+                    let elem = $('#edit-question-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-question-fail').removeClass('d-none');
                 }
             }
         });

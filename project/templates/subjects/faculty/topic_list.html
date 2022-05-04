@@ -1,3 +1,4 @@
+{% load tz %}
 <div class="card mb-4 mt-5">
 	<div class="card-body">
 		<table class="datatablesSimple" id="topic-list-table">
@@ -31,9 +32,9 @@
 					<td>{{topic.name}}</td>
 					<td>{{topic.description}}</td>
 					<td>{{topic.created_by.username}}</td>
-					<td>{{topic.date_created}}</td>
+					<td>{{topic.date_created|localtime}}</td>
 					<td>{{topic.modified_by.username}}</td>
-					<td>{{topic.date_modified}}</td>
+					<td>{{topic.date_modified|localtime}}</td>
 					<td class="text-center">
 						<a class="edit-topic" hx-get="{% url 'edit_topic' topic.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-topic-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>
@@ -55,7 +56,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="messageLabel">Delete Subject</h5>
+        <h5 class="modal-title" id="messageLabel">Delete Topic</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">Are you sure you want to delete this topic?</div>

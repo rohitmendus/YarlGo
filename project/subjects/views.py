@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Subject, FacultyRight, Right, Topic
 from accounts.models import Role
 from batches.models import Batch
+from test_app.models import Question
 from django.contrib.auth.models import User
 from .forms import SubjectForm, TopicForm
 # CBS Views
@@ -208,6 +209,8 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 		batches = Batch.objects.filter(exam_category__subjects=subject)
 		context['batches'] = batches
+		questions = Question.objects.filter(topic__subject=subject)
+		context['questions'] = questions
 
 		return render(request, self.template_name, context)
 

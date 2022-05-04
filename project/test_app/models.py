@@ -12,8 +12,8 @@ class Option(models.Model):
 class Question(models.Model):
 	question = models.CharField(max_length=500, unique=True)
 	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="questions")
-	answer = models.ForeignKey(Option, related_name="question")
-	options = models.ManyToManyField(Option, related_name="question")
+	answer = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="answer_question")
+	options = models.ManyToManyField(Option, related_name="option_question")
 	created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="questions_created")
 	modified_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="questions_modified")
 	date_created = models.DateTimeField(auto_now_add=True)
@@ -30,17 +30,11 @@ class Test(models.Model):
 	date_scheduled = models.DateField()
 	opening_time = models.TimeField()
 	closing_time = models.TimeField()
-	topics =  models.ManyToManyField(Topic, related_name="tests")
+	dsitributions = models.JSONField()
 	created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="tests_created")
 	modified_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="tests_modified")
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_modified = models.DateTimeField(auto_now=True)
-
-class TopicDistribution(models.Model):
-	topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="topic_distribution")
-	no_of_questions = models.PositiveIntegerField()
-	max_mark = models.FloatField()
 
 class UserQuestion(models.Model):
 	STATE_CHOICES = [
@@ -50,17 +44,15 @@ class UserQuestion(models.Model):
     ]
 
 	question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="user_reports")
-	option_choosen = models.ForeignKey(Option, related_name="user_reports", null=True, blank=True)
+	option_choosen = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)
 	time_taken = models.DurationField()
 	state = models.IntegerField(default=2, choices=STATE_CHOICES)
-	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="questions")
+	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="user_questions")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_questions")
 
 class UserTest(models.Model):
 	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="reports")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_reports")
-	# state = models.IntegerField(default=0, choices=STATE_CHOICES)
-	# passed = models.BooleanField()
 	marks_gained = models.FloatField(null=True, blank=True)
 	time_taken = models.DurationField(null=True, blank=True)
 
@@ -80,7 +72,8 @@ class UserTest(models.Model):
 	# 	pass
 
 class TopicPerformance(models.Model):
-	test_topic = models.ForeignKey(TopicDistribution, on_delete=models.CASCADE, related_name="topic_performance")
+	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="topic_reports")
+	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="test_reports")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_topic_reports")
 	marks_gained = models.FloatField(null=True, blank=True)
 	time_taken = models.DurationField(null=True, blank=True)

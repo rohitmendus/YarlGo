@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'exams',
     'subjects',
     'batches',
+    'test_app',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,8 @@ LOGOUT_REDIRECT_URL = "/accounts/login"
 UNAUTHORIZED_URL = "/unauthorized"
 
 
+# Time zone
+TIME_ZONE = 'Asia/Kolkata'
 
 DATE_INPUT_FORMATS = [
     *django.conf.global_settings.DATE_INPUT_FORMATS,

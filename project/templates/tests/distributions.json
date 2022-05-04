@@ -1,11 +1,15 @@
 {
+	"cutoff_mark": 50,
 	"max_mark": 100,
 	"no_of_questions": 100,
+	"time": 12000000,
 	"topics": [{
 		"topic_id": 1,
 		"no_of_questions": 10,
+		"max_mark": 50,
 	},{
 		"topic_id": 2,
 		"no_of_questions": 10,
+		"max_mark": 50,
 	}]
 }

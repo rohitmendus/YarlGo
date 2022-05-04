@@ -1,3 +1,4 @@
+{% load tz %}
 <div class="card mb-4 mt-5">
 	<div class="card-body">
 		<table class="datatablesSimple" id="topic-list-table">
@@ -27,9 +28,9 @@
 					<td>{{topic.name}}</td>
 					<td>{{topic.description}}</td>
 					<td>{{topic.created_by.username}}</td>
-					<td>{{topic.date_created}}</td>
+					<td>{{topic.date_created|localtime}}</td>
 					<td>{{topic.modified_by.username}}</td>
-					<td>{{topic.date_modified}}</td>
+					<td>{{topic.date_modified|localtime}}</td>
 				</tr>
 				{% endfor %}
 			</tbody>

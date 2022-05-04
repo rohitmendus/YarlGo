@@ -11823,4 +11823,10 @@ body {
     color: #FFFFFF;
 }
 
+.option-container{
+  text-align: left;
+}
 
+.option-container label {
+  display: inline;
+}

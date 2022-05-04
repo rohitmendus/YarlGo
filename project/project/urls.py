@@ -7,4 +7,5 @@ urlpatterns = [
     path('', include('exams.urls')),
     path('', include('subjects.urls')),
     path('batches/', include('batches.urls')),
+    path('', include('test_app.urls')),
 ]

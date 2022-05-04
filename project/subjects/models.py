@@ -38,6 +38,9 @@ class Topic(models.Model):
 	date_modified = models.DateTimeField(auto_now=True)
 	subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="topics")
 
+	def __str__(self):
+		return self.name
+
 class Right(models.Model):
 	name = models.CharField(max_length=200, unique=True)
 	description = models.CharField(max_length=500, blank=True)

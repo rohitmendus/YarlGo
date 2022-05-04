@@ -1,3 +1,4 @@
+{% load tz %}
 <div class="card mb-4 mt-5 mx-5">
 	<div class="card-header">
 		<i class="fas fa-table me-1"></i>
@@ -41,9 +42,9 @@
 					<td>{{exam_cat.main_exam}}</td>
 					<td>{{exam_cat.subject_list}}</td>
 					<td>{{exam_cat.created_by.username}}</td>
-					<td>{{exam_cat.date_created}}</td>
+					<td>{{exam_cat.date_created|localtime}}</td>
 					<td>{{exam_cat.modified_by.username}}</td>
-					<td>{{exam_cat.date_modified}}</td>
+					<td>{{exam_cat.date_modified|localtime}}</td>
 					<td class="text-center">
 						<a class="edit-exam-cat" hx-get="{% url 'edit_exam_cat' exam_cat.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-exam-cat-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>
