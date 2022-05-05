@@ -11830,3 +11830,23 @@ body {
 .option-container label {
   display: inline;
 }
+
+.input-group-text {
+  height: 100%;
+}
+.topic-distribution {
+  position: relative;
+}
+.topic-close {
+  position: absolute;
+  transition: all 1s ease-in;
+  right: 1%;
+}
+#add-topic-distribution button {
+  background-color: transparent;
+  border: none;
+  color: #0d6efd;
+}
+#add-topic-distribution button:hover {
+  color: #2ea8f0;
+}

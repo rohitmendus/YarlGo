@@ -1,10 +1,11 @@
 # Models
 from django.contrib.auth.models import User
 from subjects.models import Topic, Subject
-from .models import Option, Question
+from batches.models import Batch
+from .models import Option, Question, Test
+from .forms import TopicDistributionForm, TestForm
+from django.forms import formset_factory
 # CBS Views
-# from django.views.generic.list import ListView
-# from django.views.generic.edit import FormView, UpdateView
 from django.views import View
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,6 +18,13 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
+import datetime
+
+def get_time_difference(a, b):
+	dateTimeA = datetime.datetime.combine(datetime.date.today(), a)
+	dateTimeB = datetime.datetime.combine(datetime.date.today(), b)
+	dateTimeDifference = dateTimeA - dateTimeB  
+	return dateTimeDifference.total_seconds() 
 
 class CreateQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 	submit_response = "tests/faculty/create_question_response.html"
@@ -175,3 +183,133 @@ class EditQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 				'topics': Topic.objects.filter(subject=subject)})
 			response = {'success': True, 'table_response': table_response}
 			return JsonResponse(response)
+
+
+class CreateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	template = "tests/faculty/create_test.html"
+	submit_response = "tests/faculty/create_test_response.html"
+	table = "tests/faculty/test_list.html"
+
+	def post(self, request):
+		subject = Subject.objects.get(id=request.session['subject_id'])
+		TestDistFormSet = formset_factory(TopicDistributionForm)
+		test_dist = TestDistFormSet(request.POST, form_kwargs={'request': request})
+		if test_dist.is_valid():
+			post_data = request.POST.copy()
+			total_no_of_questions = 0
+			topics = []
+			for form in test_dist:
+				if 'topic' and 'no_of_questions' in form.cleaned_data:
+					topic_obj = {}
+					topic_id = form.cleaned_data['topic'].id
+					no_of_questions = int(form.cleaned_data['no_of_questions'])
+					total_no_of_questions += no_of_questions
+					topic_obj["topic_id"] = topic_id
+					topic_obj["no_of_questions"] = no_of_questions
+					topic_obj["max_mark"] = no_of_questions
+					topics.append(topic_obj)
+			post_data.update({'no_of_questions': str(total_no_of_questions), 
+				'max_mark': str(total_no_of_questions)})
+			test_form = TestForm(post_data)
+			if test_form.is_valid():
+				print(test_form.cleaned_data)
+				opening_time = test_form.cleaned_data['opening_time']
+				closing_time = test_form.cleaned_data['closing_time']
+				time = get_time_difference(closing_time, opening_time)
+				distributions = {
+					"cutoff_mark": test_form.cleaned_data['cutoff_mark'],
+					"max_mark": test_form.cleaned_data['max_mark'],
+					"no_of_questions": test_form.cleaned_data['no_of_questions'],
+					"time": time,
+					"topics": topics,
+				}
+				test = test_form.save(commit=False)
+				test.created_by = request.user
+				test.modified_by = request.user
+				test.distributions = distributions
+				print(distributions)
+				test.save()
+
+				# Sending response
+				batches = Batch.objects.filter(exam_category__subjects=subject)
+				tests = []
+				test_objs = Test.objects.all()
+				topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+				for test_obj in test_objs:
+					for topic_dist in test_obj.distributions['topics']:
+						if topic_dist['topic_id'] in topic_ids:
+							tests.append(test_obj)
+							break
+
+				context = {'batches': batches, 'tests': tests}
+
+				response1 = render_to_string(self.submit_response, {'success': True})
+				response2 = render_to_string(self.table, context)
+				response = {
+					'response1': response1, 'response2': response2
+				}
+				return JsonResponse(response)
+			else:
+				# Collecting error messages
+				error_messages = []
+				errors = json.loads(test_form.errors.as_json())
+				for x in errors:
+					for y in errors[x]:
+						error_messages.append(y['message'])
+				
+				# Sending response
+				batches = Batch.objects.filter(exam_category__subjects=subject)
+				tests = []
+				test_objs = Test.objects.all()
+				topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+				for test_obj in test_objs:
+					for topic_dist in test_obj.distributions['topics']:
+						if topic_dist['topic_id'] in topic_ids:
+							tests.append(test_obj)
+							break
+
+				context = {'batches': batches, 'tests': tests}
+
+				response1 = render_to_string(self.submit_response, {'success': False, 
+					'errors': error_messages})
+				response2 = render_to_string(self.table, context)
+				response = {
+					'response1': response1, 'response2': response2
+				}
+				return JsonResponse(response)
+		else:
+			# Collecting error messages
+			error_messages = []
+			errors = json.loads(test_dist.errors.as_json())
+			for x in errors:
+				for y in errors[x]:
+					error_messages.append(y['message'])
+			
+			# Sending response
+			batches = Batch.objects.filter(exam_category__subjects=subject)
+			tests = []
+			test_objs = Test.objects.all()
+			topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+			for test_obj in test_objs:
+				for topic_dist in test_obj.distributions['topics']:
+					if topic_dist['topic_id'] in topic_ids:
+						tests.append(test_obj)
+						break
+
+			context = {'batches': batches, 'tests': tests}
+
+			response1 = render_to_string(self.submit_response, {'success': False, 
+				'errors': error_messages})
+			response2 = render_to_string(self.table, context)
+			response = {
+				'response1': response1, 'response2': response2
+			}
+			return JsonResponse(response)
+
+	def get(self, request):
+		context = {}
+		context['test_form'] = TestForm
+		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
+		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+
+		return render(request, self.template, context)

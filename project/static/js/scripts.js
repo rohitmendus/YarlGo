@@ -33,8 +33,7 @@ function refresh_table(response, table, table_id){
     table.empty();
     table.append(response);
     const datatablesSimple = document.getElementById( table_id );
-    console.log(table_id);
-    console.log(datatablesSimple)
+    console.log(response);
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
@@ -55,6 +54,14 @@ function refresh_batch_timing_table(response, table) {
     });
     htmx.process(document)
 }
+
+// function updateElementIndex(el, ndx) {
+//     var id_regex = RegExp(`form-(\\d){1}-`,'g')
+//     var replacement = 'form-' + ndx;
+//     if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+//     if (el.id) el.id = el.id.replace(id_regex, replacement);
+//     if (el.name) el.name = el.name.replace(id_regex, replacement);
+// }
 
 
 $(document).ready(function(){
@@ -636,6 +643,62 @@ $(document).ready(function(){
                     }
                     $('#edit-question-fail').removeClass('d-none');
                 }
+            }
+        });
+    });
+
+    let topicDistForm = document.querySelectorAll(".topic-distribution")
+    let container = document.querySelector("#topic-distribution-container")
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let formNum = 0
+
+    $(document).on('click', '#add-topic-distribution button', function(e){
+        e.preventDefault()
+        let newForm = topicDistForm[0].cloneNode(true) //Clone the bird form
+        let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
+
+        formNum++ //Increment the form number
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`) //Update the new form to have the correct form number
+        btn = $(newForm).find('.topic-close');
+        btn.removeClass('d-none');
+        container.append(newForm) //Insert the new form at the end of the list of forms
+
+        totalForms.setAttribute('value', `${formNum+1}`)
+    });
+
+    $(document).on('click', '.topic-close', function(e){
+        let form = $(this).parent()
+        let total = parseInt($('#id_form-TOTAL_FORMS').val());
+        let formRegex = RegExp(`form-(\\d){1}-`,'g')
+        if (total > 1){
+            form.remove();
+            var forms = $('.topic-distribution');
+            $('#id_form-TOTAL_FORMS').val(forms.length);
+            forms.each(function(index){
+                let topic = $(this).find('.inputTestTopic1').val()
+                let no_of_questions = $(this).find('.inputTestTopic2').val()
+                $(this).html(
+                    $(this).html().replace(formRegex, `form-${index}-`)
+                );
+                $(this).find('.inputTestTopic1').val(topic)
+                $(this).find('.inputTestTopic2').val(no_of_questions)
+            });
+        }
+    });
+
+    $(document).on('submit', '#create-test-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                let submit_response = $('#create-test')
+                submit_response.empty();
+                submit_response.append(response.response1);
+                refresh_table(response.response2, $('#test-table'), "test-list-table")
             }
         });
     });

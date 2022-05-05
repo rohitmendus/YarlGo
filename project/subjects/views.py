@@ -1,10 +1,13 @@
-from django.shortcuts import render
+# Models
 from .models import Subject, FacultyRight, Right, Topic
 from accounts.models import Role
 from batches.models import Batch
-from test_app.models import Question
+from test_app.models import Question, Test
 from django.contrib.auth.models import User
+# Forms
+from django.forms import formset_factory
 from .forms import SubjectForm, TopicForm
+from test_app.forms import TestForm, TopicDistributionForm
 # CBS Views
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView, UpdateView
@@ -14,6 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from accounts.mixins import AdminRedirectMixin, FacultyRedirectMixin
 # Response objects
+from django.shortcuts import render
 import json
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -211,6 +215,19 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context['batches'] = batches
 		questions = Question.objects.filter(topic__subject=subject)
 		context['questions'] = questions
+		context['test_form'] = TestForm
+
+		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
+		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+		tests = []
+		test_objs = Test.objects.all()
+		topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+		for test_obj in test_objs:
+			for topic_dist in test_obj.distributions['topics']:
+				if topic_dist['topic_id'] in topic_ids:
+					tests.append(test_obj)
+					break
+		context['tests'] = tests
 
 		return render(request, self.template_name, context)
 

@@ -1,6 +1,5 @@
 from django import forms
 from .models import Batch, BatchTiming
-# from .widgets import DatePickerInput
 from django.conf import settings
 from tempus_dominus.widgets import DatePicker, TimePicker
 import datetime

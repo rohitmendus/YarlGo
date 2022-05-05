@@ -1,0 +1,29 @@
+{% if success %}
+<div class="col-12" id="test-create-success">
+    <div class="card bg-success text-white mb-4">
+        <div class="card-body" style="text-align: left;">The test has been created successfully!</div>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+            <button class="btn btn-light" hx-get="{% url 'create_test' %}" 
+          hx-target="#test-create-success" hx-swap="outerHTML">Create Another Question</button>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12" id="test-create-fail">
+    <div class="card bg-danger text-white mb-4">
+    <div class="card-body" style="text-align: left;">
+        <h5 class="card-title">An error Occured!</h5>
+        <p class="card-text">
+            <ul>
+                {% for error in errors %}
+                <li>{{error}}</li>
+                {% endfor %}
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer d-flex align-items-center justify-content-between">
+        <button class="btn btn-light" hx-get="{% url 'create_test' %}" hx-target="#test-create-fail" hx-swap="outerHTML">Try Again</button>
+    </div>
+</div>
+</div>
+{% endif %}

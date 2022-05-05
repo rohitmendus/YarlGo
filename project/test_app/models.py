@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from subjects.models import Topic
+from batches.models import Batch
 
 # Create your models here.
 class Option(models.Model):
@@ -30,11 +31,23 @@ class Test(models.Model):
 	date_scheduled = models.DateField()
 	opening_time = models.TimeField()
 	closing_time = models.TimeField()
-	dsitributions = models.JSONField()
+	batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name="tests")
+	distributions = models.JSONField()
 	created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="tests_created")
 	modified_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="tests_modified")
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_modified = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return self.name
+
+	@property
+	def topic_list(self):
+		topics = []
+		for topic_obj in self.distributions["topics"]:
+			topics.append(Topic.objects.get(id=topic_obj['topic_id']).name)
+
+		return ', '.join(topics)
 
 class UserQuestion(models.Model):
 	STATE_CHOICES = [

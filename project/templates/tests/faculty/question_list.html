@@ -1,4 +1,3 @@
-{% load tz %}
 <div class="card mb-4 mt-5">
 	<div class="card-body">
 		<div class="mb-3 mt-3 col-4" style="text-align: left;">
@@ -15,10 +14,6 @@
 				<tr>
 					<th>Question</th>
 					<th>Topic</th>
-					<th>Created By</th>
-					<th>Date Created</th>
-					<th>Modified By</th>
-					<th>Date Modified</th>
 					<th>Edit</th>
 					<th>Delete</th>
 				</tr>
@@ -27,10 +22,6 @@
 				<tr>
 					<th>Question</th>
 					<th>Topic</th>
-					<th>Created By</th>
-					<th>Date Created</th>
-					<th>Modified By</th>
-					<th>Date Modified</th>
 					<th>Edit</th>
 					<th>Delete</th>
 				</tr>
@@ -40,10 +31,6 @@
 				<tr>
 					<td>{{question}}</td>
 					<td>{{question.topic}}</td>
-					<td>{{question.created_by.username}}</td>
-					<td>{{ question.date_created|localtime }}</td>
-					<td>{{question.modified_by.username}}</td>
-					<td>{{ question.date_modified|localtime }}</td>
 					<td class="text-center">
 						<a class="edit-question" hx-get="{% url 'edit_question' question.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-question-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>
