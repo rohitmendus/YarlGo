@@ -27,7 +27,7 @@ from django.http import JsonResponse
 @login_required
 def get_subject_form(request):
 	form = SubjectForm()
-	faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+	faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
 	return render(request, 'subjects/admin/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
 
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
@@ -37,7 +37,7 @@ class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
 		context.update({'form': SubjectForm(), 'faculties': faculties})
 		return context
 

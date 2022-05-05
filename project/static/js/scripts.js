@@ -65,6 +65,11 @@ function refresh_batch_timing_table(response, table) {
 
 
 $(document).ready(function(){
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    
     $('.pwd-eye').click(function(){
         $(this).hide();
         $(this).siblings().show();
