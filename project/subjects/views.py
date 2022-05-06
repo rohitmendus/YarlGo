@@ -21,6 +21,7 @@ from django.shortcuts import render
 import json
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+from .utils import send_faculty_allocation_mail
 
 
 # Admin Views.
@@ -55,17 +56,27 @@ class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 		subject.modified_by = self.request.user
 		subject.save()
 
+		mail_list = []
 		# Adding examiners
 		examiner_right = Right.objects.get(name="examiner")
 		for i in examiners:
 			user = 	User.objects.get(username=i)
 			FacultyRight.objects.create(user=user, subject=subject, right=examiner_right)
+			mail_obj = {'name': user.profile.full_name, 'email': user.email, 
+			'role': 'examiner', 'subject': subject.name}
+			mail_list.append(mail_obj)
 
 		# Adding staff
 		staff_right = Right.objects.get(name="staff")
 		for i in staff:
 			user = 	User.objects.get(username=i)
 			FacultyRight.objects.create(user=user, subject=subject, right=staff_right)
+			mail_obj = {'name': user.profile.full_name, 'email': user.email, 
+			'role': 'staff', 'subject': subject.name}
+			mail_list.append(mail_obj)
+
+		# Sending faculty allocation mail
+		send_faculty_allocation_mail(mail_list)
 
 		# Sending response
 		response1 = render_to_string(self.submit_response, {'success': True})
@@ -132,11 +143,15 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 			if username not in examiners:
 				FacultyRight.objects.get(right=examiner_right, user__username=username, subject=subject).delete()
 
+		mail_list = []
 		# Adding examiners
 		for i in examiners:
 			user = 	User.objects.get(username=i)
 			faculty_right, created = FacultyRight.objects.get_or_create(user=user, subject=subject, right=examiner_right)
-
+			if created:
+				mail_obj = {'name': user.profile.full_name, 'email': user.email, 
+				'role': 'examiner', 'subject': subject.name}
+				mail_list.append(mail_obj)
 
 		# Removing examiners
 		staff_right = Right.objects.get(name="staff")
@@ -150,6 +165,13 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		for i in staff:
 			user = 	User.objects.get(username=i)
 			faculty_right, created = FacultyRight.objects.get_or_create(user=user, subject=subject, right=staff_right)
+			if created:
+				mail_obj = {'name': user.profile.full_name, 'email': user.email, 
+				'role': 'staff', 'subject': subject.name}
+				mail_list.append(mail_obj)
+
+		# Sending faculty allocation mail
+		send_faculty_allocation_mail(mail_list)
 
 		# Reponse
 		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
@@ -171,7 +193,7 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
 		examiners = FacultyRight.objects.filter(right__name="examiner", subject=self.object).values_list('user__username', flat=True)
 		staff = FacultyRight.objects.filter(right__name="staff", subject=self.object).values_list('user__username', flat=True)
 		context.update({'faculties': faculties, 'examiners': examiners, 'staff': staff})

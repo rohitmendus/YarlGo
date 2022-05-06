@@ -19,9 +19,14 @@
 			{% render_field form.main_exam class="form-select" id="editExamCatMainExam"%}
 			<label for="editExamCatMainExam">Exam</label>
 		</div>
-		<div class="mb-3 form-floating">
-			{% render_field form.subjects class="form-select" id="editExamCatSubjectsExam" style="height: 100px" %}
-			<label for="editExamCatSubjectsExam">Subjects</label>
+		<div class="mb-3">
+			<h5 class="mb-2">Subjects</h5>
+			{% for chk_box in form.subjects %}
+			<div class="form-check">
+				{{chk_box}}
+				<label class="form-check-label">{{chk_box.label}}</label>
+			</div>
+			{% endfor %}
 		</div>
 	</div>
 	<div class="modal-footer">

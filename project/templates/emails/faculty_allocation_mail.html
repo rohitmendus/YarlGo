@@ -1,0 +1,13 @@
+Hey {{name}},
+
+Greetings from YarlGo!
+You have been assigned as {{role}} for the {{subject}}.
+
+You will be able to add, delete and edit questions and tests to that subject. You will also be assigned to the batches where this subject has been alloted and is required to guide the students in the batch. Please make sure to note the batch timings for your batch as well as the test reports.
+
+{% if role == "examiner" %}
+Please note that as an examiner you are also given the permission to add, edit and delete the topics under your alloted subject.
+{% endif %}
+
+Regards,
+YarlGo Team

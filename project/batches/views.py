@@ -22,6 +22,11 @@ def get_batch_form(request):
 	students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
 	return render(request, 'batches/create_batch.html', {'form': form, 'students': students})
 
+@login_required
+def get_batch_timing_form(request):
+	form = BatchTimingForm()
+	return render(request, 'batches/create_batch_timing.html', {'form': form})
+
 # Create your views here.
 class AdminBatchesView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "batches/admin_batches.html"

@@ -14,6 +14,7 @@ urlpatterns = [
 
 htmx_urlpatterns = [
     path('get_batch_form/', views.get_batch_form, name="get_batch_form"),
+    path('get_batch_timing_form/', views.get_batch_timing_form, name="get_batch_timing_form"),
 ]
 
 urlpatterns += htmx_urlpatterns

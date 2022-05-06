@@ -55,21 +55,13 @@ function refresh_batch_timing_table(response, table) {
     htmx.process(document)
 }
 
-// function updateElementIndex(el, ndx) {
-//     var id_regex = RegExp(`form-(\\d){1}-`,'g')
-//     var replacement = 'form-' + ndx;
-//     if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
-//     if (el.id) el.id = el.id.replace(id_regex, replacement);
-//     if (el.name) el.name = el.name.replace(id_regex, replacement);
-// }
-
 
 $(document).ready(function(){
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-    
+
     $('.pwd-eye').click(function(){
         $(this).hide();
         $(this).siblings().show();
