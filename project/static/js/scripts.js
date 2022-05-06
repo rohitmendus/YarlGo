@@ -771,4 +771,17 @@ $(document).ready(function(){
             btn.removeAttr('disabled');
         }
     });
+
+    $(document).on('input', '.search-students', function(){
+        let search_query = $(this).val().toLowerCase();
+        let val;
+        $('.add-students .list-group-item').each(function(index) {
+            val = $(this).find('label').text().toLowerCase();
+            if (val.indexOf(search_query) === -1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
 }); 

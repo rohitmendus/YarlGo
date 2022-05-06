@@ -1,5 +1,6 @@
 from django import forms
 from .models import Batch, BatchTiming
+from django.contrib.auth.models import User
 from django.conf import settings
 from tempus_dominus.widgets import DatePicker, TimePicker
 import datetime
@@ -7,8 +8,17 @@ from .utils import is_time_between
 
 today = str(datetime.datetime.today())
 
+class CustomMultipleWidget(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return f'{obj.first_name} {obj.last_name} - {obj.username}'
+
 class BatchForm(forms.ModelForm):
-	opening_date = forms.DateField(
+    students = CustomMultipleWidget(
+        queryset=User.objects.filter(roles__name="student"),
+        widget=forms.CheckboxSelectMultiple(
+            attrs={'class':'form-check-input'}),
+        required=True)
+    opening_date = forms.DateField(
         required=True, input_formats = settings.DATE_INPUT_FORMATS,
         widget=DatePicker(
             options={
@@ -30,7 +40,7 @@ class BatchForm(forms.ModelForm):
             }
         ),
     )
-	closing_date = forms.DateField(
+    closing_date = forms.DateField(
         required=True, input_formats = settings.DATE_INPUT_FORMATS,
         widget=DatePicker(
             options={
@@ -52,16 +62,16 @@ class BatchForm(forms.ModelForm):
             }
         ),
     )
-	class Meta:
-		model = Batch
-		fields = ('name', 'opening_date', 'closing_date', 'exam_category', 'students')
+    class Meta:
+        model = Batch
+        fields = ('name', 'opening_date', 'closing_date', 'exam_category', 'students')
 
-	def clean(self):
-		cleaned_data = super().clean()
-		start_date = cleaned_data.get("opening_date")
-		end_date = cleaned_data.get("closing_date")
-		if end_date < start_date:
-			raise forms.ValidationError("Closing date should be greater than opening date.")
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("opening_date")
+        end_date = cleaned_data.get("closing_date")
+        if end_date < start_date:
+            raise forms.ValidationError("Closing date should be greater than opening date.")
 
 class BatchTimingForm(forms.ModelForm):
     opening_time = forms.TimeField(

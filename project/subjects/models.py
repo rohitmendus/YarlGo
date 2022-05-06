@@ -25,7 +25,6 @@ class Subject(models.Model):
 		faculty = list(self.faculty_rights.values_list('user__username', flat=True))
 		return ', '.join(faculty)
 
-
 	def __str__(self):
 		return self.name
 
@@ -37,6 +36,10 @@ class Topic(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_modified = models.DateTimeField(auto_now=True)
 	subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="topics")
+
+	@property
+	def no_of_questions(self):
+		return self.questions.count()
 
 	def __str__(self):
 		return self.name

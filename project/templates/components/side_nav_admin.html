@@ -1,34 +1,34 @@
 <div class="sb-sidenav-menu">
     <div class="nav">
         <div class="sb-sidenav-menu-heading">Admin</div>
-        <a class="nav-link" href="{% url 'users' %}">
+        <a class="nav-link {% if request.resolver_match.url_name == 'users' %}active{% endif %}" href="{% url 'users' %}">
             <div class="sb-nav-link-icon"><i class="fa-solid fa-user-group"></i></div>
             Users
         </a>
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+        <a class="nav-link {% if request.resolver_match.url_name != 'exams' and request.resolver_match.url_name != 'exam_categories' %}collapsed{% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="{% if request.resolver_match.url_name == 'exams' or request.resolver_match.url_name == 'exam_categories' %}true{% else %}false{% endif %}" aria-controls="collapseLayouts">
             <div class="sb-nav-link-icon"><i class="fa-solid fa-book"></i></div>
             Exams
             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
         </a>
-        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+        <div class="collapse {% if request.resolver_match.url_name == 'exams' or request.resolver_match.url_name == 'exam_categories' %}show{% endif %}" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
-                <a class="nav-link" href="{% url 'exams' %}">Main Exams</a>
-                <a class="nav-link" href="{% url 'exam_categories' %}">Exam Categories</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'exams' %}active{% endif %}" href="{% url 'exams' %}">Main Exams</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'exam_categories' %}active{% endif %}" href="{% url 'exam_categories' %}">Exam Categories</a>
             </nav>
         </div>
-        <a class="nav-link" href="{% url 'admin_subjects' %}">
+        <a class="nav-link {% if request.resolver_match.url_name == 'admin_subjects' %}active{% endif %}" href="{% url 'admin_subjects' %}">
             <div class="sb-nav-link-icon"><i class="fa-solid fa-book-open-reader"></i></div>
             Subjects
         </a>
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts2">
+        <a class="nav-link {% if request.resolver_match.url_name != 'admin_batches' and request.resolver_match.url_name != 'batch_timings' %}collapsed{% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="{% if request.resolver_match.url_name == 'admin_batches' or request.resolver_match.url_name == 'batch_timings' %}true{% else %}false{% endif %}" aria-controls="collapseLayouts2">
             <div class="sb-nav-link-icon"><i class="fa-solid fa-table-columns"></i></div>
             Batches
             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
         </a>
-        <div class="collapse" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+        <div class="collapse {% if request.resolver_match.url_name == 'admin_batches' or request.resolver_match.url_name == 'batch_timings' %}show{% endif %}" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
-                <a class="nav-link" href="{% url 'admin_batches' %}">Batches</a>
-                <a class="nav-link" href="{% url 'batch_timings' %}">Batch Timings</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_batches' %}active{% endif %}" href="{% url 'admin_batches' %}">Batches</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'batch_timings' %}active{% endif %}" href="{% url 'batch_timings' %}">Batch Timings</a>
             </nav>
         </div>
     </div>

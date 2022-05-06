@@ -26,16 +26,20 @@
 			<label for="editExamCategory" class="form-label">Exam Category</label>
 		</div>
 		<div class="mb-3">
-			<label for="editExaminers" class="form-label">Add Students</label>
-			<select name="students" id="editExamCategory" class="form-select" required multiple>
-				{% for student in students %}
-				{% if student.0 in existing_students %}
-				<option value="{{student.1}}" selected>{{student.0}}</option>
-				{% else %}
-				<option value="{{student.1}}">{{student.0}}</option>
-				{% endif %}
-				{% endfor %}
-			</select>
+			<h5 class="mb-4">Students</h5>
+			<div class="input-group mb-3">
+				<input class="form-control search-students" type="text" placeholder="Search for..." aria-label="Search for..."/>
+				<button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+			</div>
+			{% for chk_box in form.students %}
+			<ul class="list-group add-students">
+				<li class="list-group-item">
+					<div class="form-check">
+						{{chk_box}}
+					</div>
+				</li>
+			</ul>
+			{% endfor %}
 		</div>
 	</div>
 	<div class="modal-footer">

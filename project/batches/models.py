@@ -17,7 +17,10 @@ class Batch(models.Model):
 
 	@property
 	def student_list(self):
-		student_s = list(self.students.values_list('username', flat=True))
+		student_s = []
+		for student in self.students.values_list('first_name', 'last_name'):
+			name = f'{student[0]} {student[1]}'
+			student_s.append(name)
 		return ', '.join(student_s)
 
 	# @property

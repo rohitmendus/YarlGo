@@ -19,8 +19,7 @@ from django.http import JsonResponse
 @login_required
 def get_batch_form(request):
 	form = BatchForm()
-	students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
-	return render(request, 'batches/create_batch.html', {'form': form, 'students': students})
+	return render(request, 'batches/create_batch.html', {'form': form})
 
 @login_required
 def get_batch_timing_form(request):
@@ -35,8 +34,7 @@ class AdminBatchesView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
-		context.update({'form': BatchForm(), 'students': students})
+		context.update({'form': BatchForm()})
 		return context
 
 class CreateBatchView(LoginRequiredMixin, AdminRedirectMixin, FormView):
@@ -106,8 +104,7 @@ class EditBatchView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		form.save_m2m()
 
 		# Reponse
-		students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
-		table_response = render_to_string(self.table, {'batches': Batch.objects.all(), 'students': students})
+		table_response = render_to_string(self.table, {'batches': Batch.objects.all()})
 		response = {'success': True, 'table_response': table_response}
 		return JsonResponse(response)
 
@@ -122,12 +119,12 @@ class EditBatchView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
-		existing_students = self.object.students.values_list('username', flat=True)
-		context.update({'students': students, 'existing_students': existing_students})
-		return context
+	# def get_context_data(self, **kwargs):
+	# 	context = super().get_context_data(**kwargs)
+	# 	students = Role.objects.filter(name="student").values_list('users__username', 'users__id')
+	# 	existing_students = self.object.students.values_list('username', flat=True)
+	# 	context.update({'students': students, 'existing_students': existing_students})
+	# 	return context
 
 # Create your views here.
 class BatchTimingsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
