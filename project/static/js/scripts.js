@@ -699,4 +699,76 @@ $(document).ready(function(){
             }
         });
     });
+
+    $(document).on('input', '.closing_date', function(){
+        let val1 = $(this).closest('.row').find('.opening_date').val();
+        let obj1 = moment(val1, "DD-MM-YYYY");
+        let opening_date = obj1.toDate();
+        let val2 = $(this).val();
+        let obj2 = moment(val2, "DD-MM-YYYY");
+        let closing_date = obj2.toDate();
+        let btn = $(this).closest('form').find('input[type="submit"], button[type="submit"]')
+        let help_text = $(this).closest('.row').find('.dateHelp')
+        if (closing_date.getTime() <= opening_date.getTime()){
+            help_text.show();
+            btn.attr('disabled','disabled');
+        } else {
+            help_text.hide()
+            btn.removeAttr('disabled');
+        }
+    });
+
+    $(document).on('input', '.opening_date', function(){
+        let val1 = $(this).closest('.row').find('.closing_date').val();
+        let obj1 = moment(val1, "DD-MM-YYYY");
+        let closing_date = obj1.toDate();
+        let val2 = $(this).val();
+        let obj2 = moment(val2, "DD-MM-YYYY");
+        let opening_date = obj2.toDate();
+        let btn = $(this).closest('form').find('input[type="submit"], button[type="submit"]')
+        let help_text = $(this).closest('.row').find('.dateHelp')
+        if (closing_date.getTime() <= opening_date.getTime()){
+            help_text.show();
+            btn.attr('disabled','disabled');
+        } else {
+            help_text.hide();
+            btn.removeAttr('disabled');
+        }
+    });
+
+    $(document).on('input', '.opening_time', function(){
+        let val1 = $(this).closest('.row').find('.closing_time').val();
+        let obj1 = moment(val1, "hh:mm a");
+        let closing_time = obj1.toDate();
+        let val2 = $(this).val();
+        let obj2 = moment(val2, "hh:mm a");
+        let opening_time = obj2.toDate();
+        console.log(opening_time, closing_time)
+        let btn = $(this).closest('form').find('input[type="submit"], button[type="submit"]')
+        let help_text = $(this).closest('.row').find('.timeHelp')
+        if (closing_time.getTime() <= opening_time.getTime()){
+            help_text.show();
+            btn.attr('disabled','disabled');
+        } else {
+            help_text.hide();
+            btn.removeAttr('disabled');
+        }
+    });
+    $(document).on('input', '.closing_time', function(){
+        let val1 = $(this).closest('.row').find('.opening_time').val();
+        let obj1 = moment(val1, "hh:mm a");
+        let opening_time = obj1.toDate();
+        let val2 = $(this).val();
+        let obj2 = moment(val2, "hh:mm a");
+        let closing_time = obj2.toDate();
+        let btn = $(this).closest('form').find('input[type="submit"], button[type="submit"]')
+        let help_text = $(this).closest('.row').find('.timeHelp')
+        if (closing_time.getTime() <= opening_time.getTime()){
+            help_text.show();
+            btn.attr('disabled','disabled');
+        } else {
+            help_text.hide();
+            btn.removeAttr('disabled');
+        }
+    });
 }); 

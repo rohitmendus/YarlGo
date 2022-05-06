@@ -24,6 +24,7 @@
 			<label class="form-label" for="inputClosingTime">Closing Time</label>
 			{% render_field test_form.closing_time id="inputClosingTime"%}
 		</div>
+		<div class="form-text text-danger timeHelp" style="display: none;">Closing time should be after opening time.</div>
 	</div>
 	<div class="mb-3 form-floating">
 		{% render_field test_form.batch required="required" class="form-select" id="inputTestBatch" %}

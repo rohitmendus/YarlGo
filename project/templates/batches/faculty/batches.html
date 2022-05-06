@@ -28,12 +28,14 @@
               </thead>
               <tbody>
                 {% for batch_timing in batch.batch_timings.all %}
+                {% if batch_timing.subject == subject %}
                 <tr>
                   <td>{{forloop.counter}}</td>
                   <td>{{batch_timing.opening_time}} - {{batch_timing.closing_time}}</td>
                   <td>{{batch_timing.subject}}</td>
                   <td>{{batch_timing.subject.faculty_assigned}}</td>
                 </tr>
+                {% endif %}
                 {% endfor %}
               </tbody>
             </table>

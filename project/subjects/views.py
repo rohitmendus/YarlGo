@@ -47,6 +47,19 @@ class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 	submit_response = "subjects/admin/create_subject_response.html"
 	table = "subjects/admin/subject_list.html"
 
+	def right_conflict(self):
+		errors = ['The same user cannot have both rights examiner and staff.']
+		# Sending response
+		response1 = render_to_string(self.submit_response, {'success': False, 
+			'errors': errors})
+		faculties = Role.objects.filter(name="faculty").values_list('users__username', flat=True)
+		response2 = render_to_string(self.table, {'subjects': Subject.objects.all(), 
+			'faculties': faculties})
+		response = {
+			'response1': response1, 'response2': response2
+		}
+		return JsonResponse(response)
+
 	def form_valid(self, form):
 		examiners = self.request.POST.getlist('examiners')
 		staff = self.request.POST.getlist('staff')
@@ -60,6 +73,8 @@ class CreateSubjectView(LoginRequiredMixin, AdminRedirectMixin, FormView):
 		# Adding examiners
 		examiner_right = Right.objects.get(name="examiner")
 		for i in examiners:
+			if i in staff:
+				return self.right_conflict()
 			user = 	User.objects.get(username=i)
 			FacultyRight.objects.create(user=user, subject=subject, right=examiner_right)
 			mail_obj = {'name': user.profile.full_name, 'email': user.email, 
@@ -127,6 +142,12 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 	table = 'subjects/admin/subject_list.html'
 	pk_url_kwarg = "subject_id"
 
+	def right_conflict(self):
+		errors = ['The same user cannot have both rights examiner and staff.']
+		response = {'success': False, 'errors': errors}
+		return JsonResponse(response)
+
+
 	def form_valid(self, form):
 		examiners = self.request.POST.getlist('edit-examiners')
 		staff = self.request.POST.getlist('edit-staff')
@@ -146,6 +167,8 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		mail_list = []
 		# Adding examiners
 		for i in examiners:
+			if i in staff:
+				return self.right_conflict()
 			user = 	User.objects.get(username=i)
 			faculty_right, created = FacultyRight.objects.get_or_create(user=user, subject=subject, right=examiner_right)
 			if created:
@@ -228,7 +251,7 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 		is_examiner = self.request.user.subject_rights.filter(subject=subject, right__name="examiner").exists()
 		context = {'is_examiner': is_examiner, 
-			'topics': Topic.objects.filter(subject=subject)
+			'topics': Topic.objects.filter(subject=subject), 'subject': subject
 		}
 		if is_examiner:
 			context['form_topic'] = TopicForm

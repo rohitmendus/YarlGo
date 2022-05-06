@@ -19,6 +19,7 @@
 				<label for="editClosingDate">Closing Date</label>
 				{% render_field form.closing_date id="editClosingDate"%}
 			</div>
+			<div class="form-text text-danger dateHelp" style="display: none;">Closing date should be after opening date.</div>
 		</div>
 		<div class="mb-3 form-floating">
 			{% render_field form.exam_category required="required" class="form-select" id="editExamCategory" %}

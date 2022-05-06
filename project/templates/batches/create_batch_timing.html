@@ -18,6 +18,7 @@
 			<label for="inputClosingTime">Closing Time</label>
 			{% render_field form.closing_time id="inputClosingTime"%}
 		</div>
+		<div class="form-text text-danger timeHelp" style="display: none;">Closing time should be after opening time.</div>
 	</div>
 	<div class="mt-4 mb-3">
 		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Batch Timing"></input></div>
