@@ -3,7 +3,7 @@
 		<div class="mb-3 mt-3 col-4" style="text-align: left;">
 			<label for="topic-fiter" class="form-label">Topic</label>
 			<select class="form-select" id="topic-filter">
-				<option value="">Select All</option>
+				<option value="" selected>Select All</option>
 				{% for topic in topics %}
 				<option value="{{topic}}">{{topic}}</option>
 				{% endfor %}

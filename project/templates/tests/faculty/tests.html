@@ -8,25 +8,27 @@
 </svg>
 <div id="dlt-test-success" class="alert d-none alert-success alert-dismissible fade show position-fixed mt-2 mx-4" role="alert" style="z-index:1050; top:0; left: 0; width: 96%;">
   <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>Test has been deleted successfully!
-  <button type="button" class="btn-close close-alert" aria-label="Close"></button>
+  <button type="button" class="btn-close close-alert" aria-label="Close" onclick="$(this).parent().hide()"></button>
 </div>
 <div id="edit-test-success" class="alert d-none alert-success alert-dismissible fade show position-fixed mt-2 mx-4" role="alert" style="z-index:1050; top:0; left: 0; width: 96%;">
   <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>Changes have been saved successfully!
-  <button type="button" class="btn-close close-alert" aria-label="Close"></button>
+  <button type="button" class="btn-close close-alert" aria-label="Close" onclick="$(this).parent().hide()"></button>
 </div>
 <div id="edit-test-fail" class="alert d-none alert-danger alert-dismissible fade show position-fixed mt-2 mx-4" role="alert" style="z-index:1050; top:0; left: 0; width: 96%;">
   <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
   <span></span>
-  <button type="button" class="btn-close close-alert" aria-label="Close"></button>
+  <button type="button" class="btn-close close-alert" aria-label="Close" onclick="$(this).parent().hide()"></button>
 </div>
-<div class="container">
-  <div class="row mt-4">
-    <h2>Add Test</h2>
+<div id="test-container">
+  <div class="container">
+    <div class="row mt-4">
+      <h2>Add Test</h2>
+    </div>
+    <div class="row mt-3" id="create-test">
+      {% include 'tests/faculty/create_test.html' %}
+    </div>
   </div>
-  <div class="row mt-3" id="create-test">
-    {% include 'tests/faculty/create_test.html' %}
+  <div class="container" id="test-table">
+    {% include 'tests/faculty/test_list.html' %}
   </div>
-</div>
-<div class="container" id="test-table">
-  {% include 'tests/faculty/test_list.html' %}
 </div>

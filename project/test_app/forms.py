@@ -79,7 +79,6 @@ class TestForm(forms.ModelForm):
 		batch = cleaned_data.get("batch")
 		start_time = datetime.datetime.combine(date_scheduled, start_time)
 		end_time = datetime.datetime.combine(date_scheduled, end_time)
-		print(start_time, end_time)
 		for test_obj in Test.objects.filter(batch=batch):
 			if test_obj.id != self.instance.pk:
 				opening_time = datetime.datetime.combine(test_obj.date_scheduled, test_obj.opening_time)

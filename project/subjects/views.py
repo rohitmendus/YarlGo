@@ -260,8 +260,8 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context['batches'] = batches
 		questions = Question.objects.filter(topic__subject=subject)
 		context['questions'] = questions
+		
 		context['test_form'] = TestForm
-
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 		tests = []

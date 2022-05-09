@@ -1,0 +1,73 @@
+{% load widget_tweaks %}
+<form class="col-12" id="create-test-form" action="{% url 'create_test' %}" method="post" style="text-align: left;">
+	{% csrf_token %}
+	<div class="mb-3 form-floating">
+		{% render_field test_form.name required="required" class="form-control" placeholder=test_form.name.label id="inputTestName" %}
+		<label class="form-label">Test Name</label>
+	</div>
+	<div class="row mb-3">
+		<div class="form-outline col-6">
+			<label class="form-label" for="inputCutoffMark">Pass Mark</label>
+			{% render_field test_form.cutoff_mark required="required" class="form-control" id="inputCutoffMark" min="0" %}
+		</div>
+		<div class="mb-3 col-6">
+			<label class="form-label" for="inputDateScheduled">Date Scheduled</label>
+			{% render_field test_form.date_scheduled id="inputDateScheduled"%}
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="mb-3 col-6">
+			<label class="form-label" for="inputOpeningTime">Opening Time</label>
+			{% render_field test_form.opening_time id="inputOpeningTime"%}
+		</div>
+		<div class="mb-3 col-6">
+			<label class="form-label" for="inputClosingTime">Closing Time</label>
+			{% render_field test_form.closing_time id="inputClosingTime"%}
+		</div>
+		<div class="form-text text-danger timeHelp" style="display: none;">Closing time should be after opening time.</div>
+	</div>
+	<div class="mb-3 form-floating">
+		{% render_field test_form.batch required="required" class="form-select" id="inputTestBatch" %}
+		<label for="inputTestBatch" class="form-label">Batch</label>
+	</div>
+	<h4 class="mt-5 mb-3">Add Topics</h4>
+	<div id="topic-distribution-container">
+		{{ test_topic_form.management_form }}
+		{% for form in test_topic_form %}
+		<div class="row mb-3 topic-distribution shadow-sm p-3 rounded">
+			<button type="button" class="btn-close topic-close {% if forloop.counter == 1 %}d-none{% endif %}" aria-label="Close"></button>
+			<div class="col-6 mb-3">
+				<label for="form-0-TestTopic" class="form-label">Topic</label>
+				{% render_field form.topic class="form-select inputTestTopic1" id="form-0-TestTopic" required="required"%}
+			</div>
+			<div class="form-outline col-6">
+				<label class="form-label" for="form-0-NoOfQuestions">No. Of Questions</label>
+				{% render_field form.no_of_questions class="form-control inputTestTopic2" id="form-0-NoOfQuestions" min="0" required="required"%}
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	<div id="add-topic-distribution">
+		<button>
+			<i class="fa-solid fa-plus"></i>
+			<span>Add topic</span>
+		</button>
+	</div>
+	<div class="mt-4 mb-3">
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Test"></input></div>
+	</div>
+</form>
+<div class="d-none" id="topic-dist-container" data-topic_dist="{{topic_dist}}"></div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		let topic_dist = $('#topic-dist-container').data('topic_dist');
+		let c = 0
+		for (let i of topic_dist){
+			let elem1 = document.getElementsByName(`form-${c}-topic`)[0];
+			let elem2 = document.getElementsByName(`form-${c}-no_of_questions`)[0];
+			$(elem1).val(i['topic_id']);
+			$(elem2).val(i['no_of_questions']);
+			c++;
+		}
+	});
+</script>

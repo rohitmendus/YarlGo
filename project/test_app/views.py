@@ -24,7 +24,29 @@ def get_time_difference(a, b):
 	dateTimeA = datetime.datetime.combine(datetime.date.today(), a)
 	dateTimeB = datetime.datetime.combine(datetime.date.today(), b)
 	dateTimeDifference = dateTimeA - dateTimeB  
-	return dateTimeDifference.total_seconds() 
+	return dateTimeDifference.total_seconds()
+
+@login_required
+def get_back_test(request):
+	subject = Subject.objects.get(id=request.session['subject_id'])
+
+	context = {}
+	batches = Batch.objects.filter(exam_category__subjects=subject)
+	context['batches'] = batches
+	context['test_form'] = TestForm
+	TopicDistributionFormSet = formset_factory(TopicDistributionForm)
+	context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+	tests = []
+	test_objs = Test.objects.all()
+	topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+	for test_obj in test_objs:
+		for topic_dist in test_obj.distributions['topics']:
+			if topic_dist['topic_id'] in topic_ids:
+				tests.append(test_obj)
+				break
+	context['tests'] = tests
+
+	return render(request, 'tests/faculty/tests.html', context)
 
 class CreateQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 	submit_response = "tests/faculty/create_question_response.html"
@@ -313,3 +335,138 @@ class CreateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 
 		return render(request, self.template, context)
+
+
+class DeleteTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	table = 'tests/faculty/test_list.html'
+	def post(self, request, test_id):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Deleting test
+		test = Test.objects.get(id=test_id)
+		test.delete()
+
+		# Reponse
+		batches = Batch.objects.filter(exam_category__subjects=subject)
+		tests = []
+		test_objs = Test.objects.all()
+		topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+		for test_obj in test_objs:
+			for topic_dist in test_obj.distributions['topics']:
+				if topic_dist['topic_id'] in topic_ids:
+					tests.append(test_obj)
+					break
+
+			context = {'batches': batches, 'tests': tests}
+		table_response = render_to_string(self.table, context)
+		return JsonResponse(table_response, safe=False)
+
+
+class DuplicateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	template_name = "tests/faculty/duplicate_test.html"
+	def get(self, request, test_id):
+		test = Test.objects.get(id=test_id)
+		topic_dist = test.distributions['topics']
+		context = {}
+		context['test_form'] = TestForm(instance=test)
+		TopicDistributionFormSet = formset_factory(TopicDistributionForm, extra=len(topic_dist))
+		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+		context['topic_dist'] = json.dumps(topic_dist)
+		return render(request, self.template_name, context)
+
+class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	template_name = "tests/faculty/edit_test.html"
+	def get(self, request, test_id):
+		test = Test.objects.get(id=test_id)
+		topic_dist = test.distributions['topics']
+		context = {}
+		context['test_form'] = TestForm(instance=test)
+		TopicDistributionFormSet = formset_factory(TopicDistributionForm, extra=len(topic_dist))
+		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+		context['topic_dist'] = json.dumps(topic_dist)
+		return render(request, self.template_name, context)
+
+	def post(self, request, test_id):
+		response = {}
+		subject = Subject.objects.get(id=request.session['subject_id'])
+		instance = Test.objects.get(id=test_id)
+		TestDistFormSet = formset_factory(TopicDistributionForm)
+		test_dist = TestDistFormSet(request.POST, form_kwargs={'request': request})
+		if test_dist.is_valid():
+			post_data = request.POST.copy()
+			total_no_of_questions = 0
+			topics = []
+			for form in test_dist:
+				if 'topic' and 'no_of_questions' in form.cleaned_data:
+					topic_obj = {}
+					topic_id = form.cleaned_data['topic'].id
+					no_of_questions = int(form.cleaned_data['no_of_questions'])
+					total_no_of_questions += no_of_questions
+					topic_obj["topic_id"] = topic_id
+					topic_obj["no_of_questions"] = no_of_questions
+					topic_obj["max_mark"] = no_of_questions
+					topics.append(topic_obj)
+			post_data.update({'no_of_questions': str(total_no_of_questions), 
+				'max_mark': str(total_no_of_questions)})
+			test_form = TestForm(post_data, instance=instance)
+			if test_form.is_valid():
+				opening_time = test_form.cleaned_data['opening_time']
+				closing_time = test_form.cleaned_data['closing_time']
+				time = get_time_difference(closing_time, opening_time)
+				distributions = {
+					"cutoff_mark": test_form.cleaned_data['cutoff_mark'],
+					"max_mark": test_form.cleaned_data['max_mark'],
+					"no_of_questions": test_form.cleaned_data['no_of_questions'],
+					"time": time,
+					"topics": topics,
+				}
+				test = test_form.save(commit=False)
+				test.created_by = request.user
+				test.modified_by = request.user
+				test.distributions = distributions
+				test.save()
+
+				response["success"] = True
+			else:
+				# Collecting error messages
+				error_messages = []
+				errors = json.loads(test_form.errors.as_json())
+				for x in errors:
+					for y in errors[x]:
+						error_messages.append(y['message'])
+				
+				# Sending response
+				response["success"] = False
+				response["errors"] = error_messages
+				return JsonResponse(response)
+		else:
+			# Collecting error messages
+			error_messages = []
+			errors = json.loads(test_dist.errors.as_json())
+			for x in errors:
+				for y in errors[x]:
+					error_messages.append(y['message'])
+			
+			# Sending response
+			response["success"] = False
+			response["errors"] = error_messages
+			return JsonResponse(response)
+
+		# Sending response
+		context = {}
+		batches = Batch.objects.filter(exam_category__subjects=subject)
+		context['batches'] = batches
+		context['test_form'] = TestForm
+		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
+		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
+		tests = []
+		test_objs = Test.objects.all()
+		topic_ids = list(Topic.objects.filter(subject=subject).values_list('id', flat=True))
+		for test_obj in test_objs:
+			for topic_dist in test_obj.distributions['topics']:
+				if topic_dist['topic_id'] in topic_ids:
+					tests.append(test_obj)
+					break
+		context['tests'] = tests
+
+		response['template'] = render_to_string('tests/faculty/tests.html', context, request=request)
+		return JsonResponse(response)

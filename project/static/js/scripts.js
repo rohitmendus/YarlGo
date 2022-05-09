@@ -33,7 +33,6 @@ function refresh_table(response, table, table_id){
     table.empty();
     table.append(response);
     const datatablesSimple = document.getElementById( table_id );
-    console.log(response);
     if (datatablesSimple) {
         table = new simpleDatatables.DataTable(datatablesSimple);
     }
@@ -83,7 +82,6 @@ $(document).ready(function(){
 
     $(document).on('DOMSubtreeModified', '#username-edit-error', function(){
         let elem = $(this).children('span')[0];
-        console.log(elem)
         if (elem.style.color==="red"){
             $('#edit-user-btn').attr('disabled', true);
         } else {
@@ -599,17 +597,14 @@ $(document).ready(function(){
         const url = $(this).attr('href');
         const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
         e.preventDefault()
-        console.log("log 1")
         b_modal = $('#message-modal1');
         b_modal.modal('show');
-        console.log(b_modal)
         $('#confirm-dlt1').click(function(){
             $.ajax({
                 url: url,
                 data: {'csrfmiddlewaretoken': csrf_token},
                 type: 'post',
                 success: function(response){
-                    console.log("log 3")
                     b_modal.modal('hide');
                     refresh_table(response, $('#question-table'), "question-list-table")
                     // refresh_topic_table(response, $('#topic-table'));
@@ -644,13 +639,16 @@ $(document).ready(function(){
         });
     });
 
-    let topicDistForm = document.querySelectorAll(".topic-distribution")
-    let container = document.querySelector("#topic-distribution-container")
-    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-    let formNum = 0
 
     $(document).on('click', '#add-topic-distribution button', function(e){
         e.preventDefault()
+        let topicDistForm = document.querySelectorAll(".topic-distribution")
+        let container = document.querySelector("#topic-distribution-container")
+        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+        console.log($('#id_form-TOTAL_FORMS').val())
+        let formNum = Number($('#id_form-TOTAL_FORMS').val());
+
+
         let newForm = topicDistForm[0].cloneNode(true) //Clone the bird form
         let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
 
@@ -660,7 +658,7 @@ $(document).ready(function(){
         btn.removeClass('d-none');
         container.append(newForm) //Insert the new form at the end of the list of forms
 
-        totalForms.setAttribute('value', `${formNum+1}`)
+        totalForms.setAttribute('value', `${formNum}`)
     });
 
     $(document).on('click', '.topic-close', function(e){
@@ -743,7 +741,6 @@ $(document).ready(function(){
         let val2 = $(this).val();
         let obj2 = moment(val2, "hh:mm a");
         let opening_time = obj2.toDate();
-        console.log(opening_time, closing_time)
         let btn = $(this).closest('form').find('input[type="submit"], button[type="submit"]')
         let help_text = $(this).closest('.row').find('.timeHelp')
         if (closing_time.getTime() <= opening_time.getTime()){
@@ -781,6 +778,58 @@ $(document).ready(function(){
                 $(this).hide();
             } else {
                 $(this).show();
+            }
+        });
+    });
+
+    $(document).on('click', '.dlt-test', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal2');
+        b_modal.modal('show');
+        $('#confirm-dlt2').click(function(){
+            $.ajax({
+                url: url,
+                data: {'csrfmiddlewaretoken': csrf_token},
+                type: 'post',
+                success: function(response){
+                    b_modal.modal('hide');
+                    refresh_table(response, $('#test-table'), "test-list-table");
+                    $('#dlt-test-success').removeClass('d-none');
+                }
+            });
+        })
+    });
+
+    $(document).on('submit', '#edit-test-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                if (response.success) {
+                    $('#test-container').html(response.template);
+                    let table = $('#test-table')
+                    const datatablesSimple = document.getElementById('test-list-table');
+                    if (datatablesSimple) {
+                        table = new simpleDatatables.DataTable(datatablesSimple);
+                    }
+                    htmx.process(document)
+                    $('#edit-test-success').removeClass('d-none');
+                    $('#edit-test-success').show();
+                } else {
+                    let elem = $('#edit-test-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#edit-test-fail').removeClass('d-none');
+                    $('#edit-test-fail').show();
+                }
             }
         });
     });
