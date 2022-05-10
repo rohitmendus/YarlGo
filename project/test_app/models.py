@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from subjects.models import Topic
 from batches.models import Batch
+import datetime
 
 # Create your models here.
 class Option(models.Model):
@@ -48,6 +49,12 @@ class Test(models.Model):
 			topics.append(Topic.objects.get(id=topic_obj['topic_id']).name)
 
 		return ', '.join(topics)
+
+	@property
+	def is_open(self):
+		start_time = datetime.datetime.combine(self.date_scheduled, self.opening_time)
+		end_time = datetime.datetime.combine(self.date_scheduled, self.closing_time)
+		return start_time <= datetime.datetime.now() < self.end_time
 
 class UserQuestion(models.Model):
 	STATE_CHOICES = [

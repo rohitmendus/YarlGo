@@ -10,7 +10,7 @@ today = str(datetime.datetime.today())
 
 class CustomMultipleWidget(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return f'{obj.first_name} {obj.last_name} - {obj.username}'
+        return f'{obj.first_name} {obj.last_name} - {obj.email}'
 
 class BatchForm(forms.ModelForm):
     students = CustomMultipleWidget(

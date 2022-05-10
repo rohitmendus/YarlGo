@@ -1,0 +1,34 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Test Name</th>
+			<th>Topics</th>
+			<th>Date Scheduled</th>
+			<th>Opening Time</th>
+			<th>Closing Time</th>
+			<th>No. of questions</th>
+			<th>Total Mark</th>
+			<th>Pass Mark</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for test in tests %}
+		<tr {% if test.is_open %}class="table-primary"{% endif %}>
+			<td>{{test}}</td>
+			<td>{{test.topic_list}}</td>
+			<td>{{test.date_scheduled}}</td>
+			<td>{{test.opening_time}}</td>
+			<td>{{test.closing_time}}</td>
+			<td>{{test.no_of_questions}}</td>
+			<td>{{test.max_mark}}</td>
+			<td>{{test.cutoff_mark}}</td>
+			<td>
+				{% if test.is_open %}
+					<a type="button" class="btn btn-primary">Start Test</a>
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

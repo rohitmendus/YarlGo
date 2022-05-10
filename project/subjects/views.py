@@ -28,7 +28,7 @@ from .utils import send_faculty_allocation_mail
 @login_required
 def get_subject_form(request):
 	form = SubjectForm()
-	faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
+	faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username', 'users__email')
 	return render(request, 'subjects/admin/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
 
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
@@ -38,7 +38,7 @@ class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
+		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username', 'users__email')
 		context.update({'form': SubjectForm(), 'faculties': faculties})
 		return context
 
@@ -216,7 +216,7 @@ class EditSubjectView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username')
+		faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username', 'users__email')
 		examiners = FacultyRight.objects.filter(right__name="examiner", subject=self.object).values_list('user__username', flat=True)
 		staff = FacultyRight.objects.filter(right__name="staff", subject=self.object).values_list('user__username', flat=True)
 		context.update({'faculties': faculties, 'examiners': examiners, 'staff': staff})
@@ -323,6 +323,20 @@ class DeleteTopicView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		# Deleting topic
 		topic = Topic.objects.get(id=topic_id)
 		topic.delete()
+
+		# Reponse
+		table_response = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})
+		return JsonResponse(table_response, safe=False)
+
+class DeleteTopicQuestionsView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	table = 'subjects/faculty/topic_list.html'
+	def post(self, request, topic_id):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		# Deleting all the questions in a topic
+		topic = Topic.objects.get(id=topic_id)
+		questions = Question.objects.filter(topic=topic)
+		for question in questions:
+			question.delete()
 
 		# Reponse
 		table_response = render_to_string(self.table, {'topics': Topic.objects.filter(subject=subject)})

@@ -19,7 +19,7 @@
 			{% for faculty in faculties %}
 			<div class="form-check">
 				<input class="form-check-input" type="checkbox" value="{{faculty.2}}" id="editExaminer{{forloop.counter}}" name="edit-examiners" {% if faculty.2 in examiners %}checked{% endif %}>
-				<label class="form-check-label" for="editExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.2}}">
+				<label class="form-check-label" for="editExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.3}}">
 				{{faculty.0}} {{faculty.1}}
 				</label>
 			</div>
@@ -30,7 +30,7 @@
 			{% for faculty in faculties %}
 			<div class="form-check">
 				<input class="form-check-input" type="checkbox" value="{{faculty.2}}" id="editExaminer{{forloop.counter}}" name="edit-staff" {% if faculty.2 in staff %}checked{% endif %}>
-				<label class="form-check-label" for="editExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.2}}">
+				<label class="form-check-label" for="editExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.3}}">
 				{{faculty.0}} {{faculty.1}}
 				</label>
 			</div>
@@ -45,5 +45,9 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#edit-subject-modal').modal('show');
+		 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+	    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+	      return new bootstrap.Tooltip(tooltipTriggerEl)
+	    })
 	});
 </script>

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from exams.models import ExamCategory
 from subjects.models import Subject
+import datetime
 
 # Create your models here.
 class Batch(models.Model):
@@ -30,6 +31,7 @@ class Batch(models.Model):
 	def __str__(self):
 		return self.name +" - "+ self.exam_category.name
 
+
 class BatchTiming(models.Model):
 	class Meta:
 		ordering = ['opening_time']
@@ -38,3 +40,7 @@ class BatchTiming(models.Model):
 	closing_time = models.TimeField()
 	batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name="batch_timings")
 	subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="subject_timings")
+
+	@property
+	def is_open(self):
+		return self.opening_time <= datetime.datetime.now().time() < self.closing_time

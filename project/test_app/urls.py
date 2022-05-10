@@ -9,6 +9,7 @@ urlpatterns = [
     path('tests/delete/<int:test_id>/', views.DeleteTestView.as_view(), name="delete_test"),
     path('tests/duplicate/<int:test_id>/', views.DuplicateTestView.as_view(), name="duplicate_test"),
     path('tests/edit/<int:test_id>/', views.EditTestView.as_view(), name="edit_test"),
+    path('question_bank/', views.QuestionBankView.as_view(), name="qb"),
 ]
 
 htmx_urlpatterns = [

@@ -1,0 +1,9 @@
+{% extends 'components/main.html' %}
+{% block title %}Batches{% endblock %}
+{% block content %}
+
+{% for question in questions %}
+<p>{{question}}</p>
+{% endfor %}
+
+{% endblock %}

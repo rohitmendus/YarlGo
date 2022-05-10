@@ -14,7 +14,7 @@
 		{% for faculty in faculties %}
 		<div class="form-check">
 			<input class="form-check-input" type="checkbox" value="{{faculty.2}}" id="inputExaminer{{forloop.counter}}" name="examiners">
-			<label class="form-check-label" for="inputExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.2}}">
+			<label class="form-check-label" for="inputExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.3}}">
 			{{faculty.0}} {{faculty.1}}
 			</label>
 		</div>
@@ -25,7 +25,7 @@
 		{% for faculty in faculties %}
 		<div class="form-check">
 			<input class="form-check-input" type="checkbox" value="{{faculty.2}}" id="inputExaminer{{forloop.counter}}" name="staff">
-			<label class="form-check-label" for="inputExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.2}}">
+			<label class="form-check-label" for="inputExaminer{{forloop.counter}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{faculty.3}}">
 			{{faculty.0}} {{faculty.1}}
 			</label>
 		</div>

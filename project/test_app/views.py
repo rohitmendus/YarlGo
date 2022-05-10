@@ -7,10 +7,11 @@ from .forms import TopicDistributionForm, TestForm
 from django.forms import formset_factory
 # CBS Views
 from django.views import View
+from django.views.generic import ListView
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from accounts.mixins import FacultyRedirectMixin
+from accounts.mixins import FacultyRedirectMixin, StudentRedirectMixin
 # Response objects
 import json
 from django.template.loader import render_to_string
@@ -470,3 +471,13 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 		response['template'] = render_to_string('tests/faculty/tests.html', context, request=request)
 		return JsonResponse(response)
+
+
+# Student views
+class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, ListView):
+	model = Question
+	context_object_name = 'questions'
+	template_name = "tests/student/question_bank.html"
+	# queryset = Question.objects.filter(topic__subject__subject_timings_is_open=True)
+	paginate_by = 3
+

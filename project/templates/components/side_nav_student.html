@@ -1,0 +1,17 @@
+<div class="sb-sidenav-menu">
+    <div class="nav">
+        <div class="sb-sidenav-menu-heading">Student</div>
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="true" aria-controls="collapseLayouts2">
+            <div class="sb-nav-link-icon"><i class="fa-solid fa-table-columns"></i></div>
+            Batches
+            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse show" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+            <nav class="sb-sidenav-menu-nested nav">
+                {% for batch in batches %}
+                <a class="nav-link {% if request.resolver_match.kwargs.batch_id == batch.id %}active{% endif %}" href="{% url 'student_batch' batch.id %}">{{batch}}</a>
+                {% endfor %}
+            </nav>
+        </div>
+    </div>
+</div>

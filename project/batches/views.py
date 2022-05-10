@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from accounts.models import Role
 from .models import Batch, BatchTiming
+from test_app.models import Test
 from .forms import BatchForm, BatchTimingForm
 # CBS Views
 from django.views.generic.list import ListView
@@ -10,7 +11,7 @@ from django.views import View
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from accounts.mixins import AdminRedirectMixin
+from accounts.mixins import AdminRedirectMixin, StudentRedirectMixin
 # Response objects
 import json
 from django.template.loader import render_to_string
@@ -213,3 +214,13 @@ class EditBatchTimingView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 		# Reponse
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
+
+class StudentBatchView(LoginRequiredMixin, StudentRedirectMixin, UpdateView):
+	template_name = "batches/student/batch.html"
+
+	def get(self, request, batch_id):
+		request.session['batch_id'] = batch_id
+		tests = Test.objects.filter(batch_id=batch_id)
+		batch_timings = BatchTiming.objects.filter(batch_id=batch_id)
+		context = {'tests': tests, 'batch_timings': batch_timings}
+		return render(request, self.template_name, context)

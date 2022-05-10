@@ -12,6 +12,7 @@ from .forms import CustomUserCreationForm
 # Models
 from .models import Profile, Role
 from django.contrib.auth.models import User
+from batches.models import Batch
 # CBS Views
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
@@ -147,7 +148,6 @@ class EditUserView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 # Create your views here.
 class DashboardView(LoginRequiredMixin, TemplateView):
 	template_name = "accounts/dashboard.html"
-
 
 class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "accounts/users.html"

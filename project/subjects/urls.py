@@ -11,6 +11,7 @@ urlpatterns = [
     path('subjects/store_subject/', views.store_subject, name="store_subject"),
     path('topics/create/', views.CreateTopicView.as_view(), name="create_topic"),
     path('topics/delete/<int:topic_id>/', views.DeleteTopicView.as_view(), name="delete_topic"),
+    path('topics/delete_questions/<int:topic_id>/', views.DeleteTopicQuestionsView.as_view(), name="delete_questions_topic"),
     path('topics/edit/<int:topic_id>/', views.EditTopicView.as_view(), name="edit_topic"),
 ]
 

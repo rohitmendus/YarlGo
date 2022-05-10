@@ -1,5 +1,12 @@
-def role_processor(request):
+from batches.models import Batch
+def custom_processor(request):
+	context = {}
 	try:
-		return {"user_role": list(request.user.roles.all())[0]}
+		user_role = list(request.user.roles.all())[0]
+		if str(user_role) == "student":
+			batches = Batch.objects.filter(students=request.user)
+			context['batches'] = batches
 	except:
-		return {"user_role": False}
+		user_role = False
+	context['user_role'] = user_role
+	return context

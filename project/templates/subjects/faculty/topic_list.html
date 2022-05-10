@@ -11,8 +11,7 @@
 					<th>Date Created</th>
 					<th>Modified By</th>
 					<th>Date Modified</th>
-					<th>Edit</th>
-					<th>Delete</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tfoot>
@@ -24,8 +23,7 @@
 					<th>Date Created</th>
 					<th>Modified By</th>
 					<th>Date Modified</th>
-					<th>Edit</th>
-					<th>Delete</th>
+					<th></th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -33,12 +31,12 @@
 				<tr>
 					<td>{{topic.name}}</td>
 					<td>{{topic.description}}</td>
-					<td>{{topic.no_of_questions}}</td>
+					<td class="topic-questions">{{topic.no_of_questions}}</td>
 					<td>{{topic.created_by.username}}</td>
 					<td>{{topic.date_created|localtime}}</td>
 					<td>{{topic.modified_by.username}}</td>
 					<td>{{topic.date_modified|localtime}}</td>
-					<td class="text-center">
+					<!-- <td class="text-center">
 						<a class="edit-topic" hx-get="{% url 'edit_topic' topic.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-topic-form" style="cursor: pointer;">
 							<i class="fa-solid fa-pen"></i>
 						</a>
@@ -47,6 +45,18 @@
 						<a class="dlt-topic" href="{% url 'delete_topic' topic.id %}">
 							<i class="fa-solid fa-trash-can"></i>
 						</a>
+					</td> -->
+					<td>
+						<div class="dropdown">
+						  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownTopics" data-bs-toggle="dropdown" aria-expanded="false">
+						    Actions
+						  </button>
+						  <ul class="dropdown-menu" aria-labelledby="dropdownTopics">
+						    <li><a class="dropdown-item dlt-topic" href="{% url 'delete_topic' topic.id %}">Delete</a></li>
+						    <li><a class="dropdown-item dlt-questions-topic" href="{% url 'delete_questions_topic' topic.id %}">Delete All Questions</a></li>
+						    <li><a class="dropdown-item edit-topic" hx-get="{% url 'edit_topic' topic.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-topic-form" style="cursor: pointer;">Edit</a></li>
+						  </ul>
+						</div>
 					</td>
 				</tr>
 				{% endfor %}
@@ -75,6 +85,22 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
     	<form id='edit-topic-form'></form>
+    </div>
+  </div>
+</div>
+<!-- Delete Questions Message Modal -->
+<div class="modal fade" id="message-modal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="messageLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageLabel1">Delete All Questions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to delete all the questions in this topic? <b>Please note that this can't be undone!</b></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-dlt1">Confirm</button>
+      </div>
     </div>
   </div>
 </div>

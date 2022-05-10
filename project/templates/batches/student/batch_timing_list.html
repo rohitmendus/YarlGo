@@ -1,0 +1,33 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Subject</th>
+			<th>Opening Time</th>
+			<th>Closing Time</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for batch_timing in batch_timings %}
+		<tr {% if batch_timing.is_open %}class="table-primary"{% endif %}>
+			<td>{{batch_timing.subject}}</td>
+			<td>{{batch_timing.opening_time}}</td>
+			<td>{{batch_timing.closing_time}}</td>
+			<td>
+				{% if batch_timing.is_open %}
+				<div class="dropdown">
+				  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownQB" data-bs-toggle="dropdown" aria-expanded="false">
+				    Open Question Bank
+				  </button>
+				  <ul class="dropdown-menu" aria-labelledby="dropdownQB">
+				  	{% for i in batch_timing.subject.topics.all %}
+				    <li><a class="dropdown-item" href="{% url 'qb' %}">{{i}}</a></li>
+				    {% endfor %}
+				  </ul>
+				</div>
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

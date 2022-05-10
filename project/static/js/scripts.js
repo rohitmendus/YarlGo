@@ -533,9 +533,38 @@ $(document).ready(function(){
         const url = $(this).attr('href');
         const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
         e.preventDefault()
-        b_modal = $('#message-modal')
+        let topic_questions = parseInt($(this).closest('tr').children('.topic-questions').html())
+        if (topic_questions !== 0) {
+            let elem = $('#edit-topic-fail span')
+            elem.empty();
+            elem.html("You can't delete this topic without deleting all the questions in this topic. Click 'Delete All Questions' to delete all the questions.");
+            $('#edit-topic-fail').removeClass('d-none');
+        } else {
+            b_modal = $('#message-modal')
+            b_modal.modal('show');
+            $('#confirm-dlt').click(function(){
+                $.ajax({
+                    url: url,
+                    data: {'csrfmiddlewaretoken': csrf_token},
+                    type: 'post',
+                    success: function(response){
+                        b_modal.modal('hide');
+                        refresh_table(response, $('#topic-table'), "topic-list-table")
+                        // refresh_topic_table(response, $('#topic-table'));
+                        $('#dlt-topic-success').removeClass('d-none');
+                    }
+                });
+            })
+        }
+    });
+
+    $(document).on('click', '.dlt-questions-topic', function(e){
+        const url = $(this).attr('href');
+        const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+        e.preventDefault()
+        b_modal = $('#message-modal1')
         b_modal.modal('show');
-        $('#confirm-dlt').click(function(){
+        $('#confirm-dlt1').click(function(){
             $.ajax({
                 url: url,
                 data: {'csrfmiddlewaretoken': csrf_token},
@@ -544,7 +573,7 @@ $(document).ready(function(){
                     b_modal.modal('hide');
                     refresh_table(response, $('#topic-table'), "topic-list-table")
                     // refresh_topic_table(response, $('#topic-table'));
-                    $('#dlt-topic-success').removeClass('d-none');
+                    $('#dlt-questions-topic-success').removeClass('d-none');
                 }
             });
         })
