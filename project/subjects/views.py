@@ -17,10 +17,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from accounts.mixins import AdminRedirectMixin, FacultyRedirectMixin
 # Response objects
-from django.shortcuts import render
-import json
+from django.shortcuts import render, redirect
+import mimetypes, os, openpyxl, json
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .utils import send_faculty_allocation_mail
 
 
@@ -372,3 +372,37 @@ class EditTopicView(LoginRequiredMixin, FacultyRedirectMixin, UpdateView):
 		# Reponse
 		response = {'success': False, 'errors': error_messages}
 		return JsonResponse(response)
+
+class DownloadTopicTempView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	def get(self, request):
+		# Getting file path
+		filename= "topic_template.xlsx"
+		BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		filepath = BASE_DIR + '/templates/subjects/faculty/' + filename
+
+		#Sending the file as response
+		path = open(filepath, 'rb')
+		mime_type, _ = mimetypes.guess_type(filepath)
+		response = HttpResponse(path, content_type=mime_type)
+		response['Content-Disposition'] = "attachment; filename=%s" % filename
+		return response
+
+class UploadTopicsView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	def post(self, request):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		file = request.FILES.get('topic_file')
+
+		errors= []
+		wb = openpyxl.load_workbook(file)
+		ws = wb['topic']
+		for x in range(2, 101):
+			name = ws['A'+str(x)].value
+			description = ws['B'+str(x)].value
+			topic = Topic(name=name, description=description, subject=subject, created_by=request.user, modified_by=request.user)
+			try:
+				topic.full_clean()
+				topic.save()
+			except:
+				pass
+			
+		return redirect("/faculty")

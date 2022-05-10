@@ -1,0 +1,15 @@
+<div class="container my-5">
+	<h2 class="mb-3">Upload Questions</h2>
+	<p>Upload questions by filling this template.</p>
+	<a class="btn btn-primary" href="{% url 'download_question_temp' %}"><i class="fa-solid fa-arrow-down me-2"></i>Download Template</a>
+	<form method="post" action="{% url 'upload_questions' %}" enctype='multipart/form-data'>
+		{% csrf_token %}
+		<div class="mb-3 mt-3">
+		  <label for="formFile" class="form-label">Upload</label>
+		  <input class="form-control" type="file" id="formFile" name="question_file" accept=".xls,.xlsx">
+		</div>
+		<div class="mb-3 col-12 d-flex justify-content-center">
+		  	<button type="submit" class="btn btn-primary px-5">Submit</button>
+		</div>
+	</form>
+</div>

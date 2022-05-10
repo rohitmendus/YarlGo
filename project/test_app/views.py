@@ -13,13 +13,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from accounts.mixins import FacultyRedirectMixin, StudentRedirectMixin
 # Response objects
-import json
+import mimetypes, os, openpyxl, json, datetime
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
-import datetime
 
 def get_time_difference(a, b):
 	dateTimeA = datetime.datetime.combine(datetime.date.today(), a)
@@ -119,6 +118,106 @@ class CreateQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		subject = Subject.objects.get(id=request.session['subject_id'])
 		context = {'topics': Topic.objects.filter(subject=subject)}
 		return render(request, 'tests/faculty/create_question.html', context)
+
+class DownloadQuestionTempView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	def get(self, request):
+		subject = Subject.objects.get(id=request.session['subject_id'])
+		# Getting file path
+		filename= "question_template.xlsx"
+		BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		filepath = BASE_DIR + '/templates/tests/faculty/' + filename
+
+		# Loading the excel file
+		wb = openpyxl.load_workbook(filepath)
+		ws = wb['question']
+		ws_topics = wb['topics']
+
+		#Removing existing data downs if any
+		toRemove = []
+		for validation in ws.data_validations.dataValidation:
+			if validation.__contains__('B2'):
+				toRemove.append(validation)
+		for rmValidation in toRemove:
+			ws.data_validations.dataValidation.remove(rmValidation)
+
+		#Adding new drop downs
+		topic_names = Topic.objects.filter(subject=subject).values_list('name', flat=True)
+		if len(topic_names) == 0:
+			return redirect('/faculty')
+
+		c = 1
+		for topic in topic_names:
+			c += 1
+			ws_topics['A'+str(c)] = topic
+		topics_len = len(topic_names)+1
+		dv_topic = openpyxl.worksheet.datavalidation.DataValidation(type="list", formula1="{0}!$A$2:$A${1}".format(openpyxl.utils.quote_sheetname('topics'), topics_len))
+		dv_answer = openpyxl.worksheet.datavalidation.DataValidation(type="list", formula1='"option 1,option 2,option 3,option 4"')
+		ws.add_data_validation(dv_topic)
+		dv_topic.add('B2:B100')
+		ws.add_data_validation(dv_answer)
+		dv_answer.add('G2:G100')
+
+		ws_topics.sheet_state = "hidden"
+		wb.save(filepath)
+
+		#Sending the file as response
+		path = open(filepath, 'rb')
+		mime_type, _ = mimetypes.guess_type(filepath)
+		response = HttpResponse(path, content_type=mime_type)
+		response['Content-Disposition'] = "attachment; filename=%s" % filename
+		return response
+
+class UploadQuestionsView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	def post(self, request):
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+		file = request.FILES.get('question_file')
+
+		wb = openpyxl.load_workbook(file)
+		ws = wb['question']
+		for x in range(2, 101):
+			question = ws['A'+str(x)].value
+			topic_name = ws['B'+str(x)].value
+			answer_opt = ws['G'+str(x)].value
+			option1_text = ws['C'+str(x)].value
+			option2_text = ws['D'+str(x)].value
+			option3_text = ws['E'+str(x)].value
+			option4_text = ws['F'+str(x)].value
+
+			if None and '' not in [question, topic_name, answer_opt, option1_text, option2_text, option3_text, option4_text]:
+				topic = Topic.objects.get(name=topic_name)
+				question_obj = Question(question=question, topic=topic, 
+				created_by=request.user, modified_by=request.user)
+				option1 = Option(text=option1_text)
+				option2 = Option(text=option2_text)
+				option3 = Option(text=option3_text)
+				option4 = Option(text=option4_text)
+
+				try:
+					question_obj.full_clean(exclude=["answer"])
+					option1.full_clean()
+					option2.full_clean()
+					option3.full_clean()
+					option4.full_clean()
+				except ValidationError as e:
+					pass
+				else:
+					option1.save()
+					option2.save()
+					option3.save()
+					option4.save()
+
+					if answer_opt == "option 1":
+						question_obj.answer = option1
+					elif answer_opt == "option 2":
+						question_obj.answer = option2
+					elif answer_opt == "option 3":
+						question_obj.answer = option3
+					elif answer_opt == "option 4":
+						question_obj.answer = option4
+
+					question_obj.save()
+					question_obj.options.add(option1, option2, option3, option4)
+		return redirect("/faculty")
 
 class DeleteQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 	table = 'tests/faculty/question_list.html'
