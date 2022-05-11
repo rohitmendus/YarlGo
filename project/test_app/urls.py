@@ -12,6 +12,8 @@ urlpatterns = [
     path('question_bank/<int:topic_id>/', views.QuestionBankView.as_view(), name="qb"),
     path('download_question_temp/', views.DownloadQuestionTempView.as_view(), name="download_question_temp"),
     path('upload_questions/', views.UploadQuestionsView.as_view(), name="upload_questions"),
+    path('test/<int:test_id>/', views.TestPromptView.as_view(), name="test_prompt"),
+    path('take_test/', views.TakeTestView.as_view(), name="take_test"),
 ]
 
 htmx_urlpatterns = [

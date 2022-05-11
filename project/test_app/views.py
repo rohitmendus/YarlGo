@@ -578,7 +578,7 @@ class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = "tests/student/question_bank.html"
 
 	def get(self, request, topic_id):
-		batch_id = self.request.session['batch_id']
+		batch_id = request.session['batch_id']
 		batch = Batch.objects.get(id=batch_id)
 		topic = Topic.objects.get(id=topic_id)
 		current_time = datetime.datetime.now().time()
@@ -596,3 +596,44 @@ class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, View):
 					context = {'questions': page}
 					return render(request, self.template_name, context)
 		return redirect('/unauthorized')
+
+
+class TestPromptView(LoginRequiredMixin, StudentRedirectMixin, View):
+	template_name = 'tests/student/test_prompt.html'
+
+	def get(self, request, test_id):
+		request.session['test_id'] = test_id
+		test = Test.objects.get(id=test_id)
+
+		# if test.is_open != True:
+		# 	return redirect('/unauthorized')
+
+		topics_dist = test.distributions['topics']
+		topics = []
+		for topic_dist in topics_dist:
+			topic = Topic.objects.get(id=topic_dist['topic_id'])
+			percentage = (topic_dist['max_mark']/test.max_mark) * 100
+			obj = {'topic': topic, 'percentage': percentage}
+			topics.append(obj)
+
+		batch_id = request.session['batch_id']
+		return render(request, self.template_name, {'test': test, 'topics': topics, 'batch_id': batch_id})
+
+
+class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
+	template_name = 'tests/student/take_test.html'
+
+	def get(self, request):
+		test_id = request.session['test_id']
+		test = Test.objects.get(id=test_id)
+
+		topics_dist = test.distributions['topics']
+		# questions = []
+		for topic_dist in topics_dist:
+			print(topic_dist['topic_id'])
+			print(Topic.objects.all().values_list('id'))
+			topic = Topic.objects.get(id=int(topic_dist['topic_id']))
+			num = Topic.objects.get(id=topic_dist['no_of_questions'])
+			questions = Question.objects.filter(topic=topic).order_by('?')[:num]
+			print(questions)
+		return render(request, self.template_name)

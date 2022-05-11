@@ -75,6 +75,8 @@ class UserTest(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_reports")
 	marks_gained = models.FloatField(null=True, blank=True)
 	time_taken = models.DurationField(null=True, blank=True)
+	started_on = models.DateTimeField()
+	completed_on = models.DateTimeField()
 
 	@property
 	def percentage(self):

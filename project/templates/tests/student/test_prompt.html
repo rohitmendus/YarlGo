@@ -3,6 +3,52 @@
 {% block title %}Test Instructions{% endblock %}
 {% block content %}
 
-<div class="container"></div>
+<div class="container p-5">
+	<div class="row">
+		<div class="col-12 text-center">
+			<h2>Test Instructions</h2>
+		</div>
+	</div>
+	<div class="row my-3">
+		<div class="col-12">
+			<h4>Topic Distribution:</h4>
+			<ul class="mb-3">
+				{% for topic_dist in topics %}
+				<li>{{ topic_dist.topic }} - {{ topic_dist.percentage|floatformat }}%</li>
+				{% endfor %}
+			</ul>
+			<h4>General Instructions: </h4>
+			<ul class="mb-3">
+				<li>
+					The test has <b>{{ test.no_of_questions }}</b> questions and the total mark is <b>{{ test.max_mark|floatformat }}</b>. Therfore each question is worth the <b>same mark</b>. 
+				</li>
+				<li>The student will be considered as passed when he scores above the cutoff mark, i.e <b>{{ test.cutoff_mark|floatformat }}</b>.</li>
+				<li>Each question will have four options <b>A, B, C and D</b>.</li>
+				<li>You can mark a question to be reviwed for later.</li>
+				<li>In the test navigation, the answered questions will appear as <b>green</b>, the marked questions will appear as <b>yellow</b> and the unanswered questions will remain <b>uncoloured</b>.</li>
+				<li>There will be no negative marking in this test.</li>
+				<li>You can navigate to the next and previous question by clicking their respective buttons.</li>
+				<li>To save and sumbit the test, click the <b>End Test</b> button.</li>
+				<li>You are required to finish this test within <b>{{ test.closing_time }}</b>. The test will automatically close at the following time if not yet submitted.</li>
+				<li>No malpractices are supported. Using of any other digital devices or calculators will result in the disqualification of the student. You are not permitted to obtain assistance by improper means or ask for help from or give help to any other person. You must only attempt this exam once. Any additional attempts should only be used in the event where a serious technical issue has occurred and supporting evidence supporting this will be required. </li>
+				<li>If you have technical difficulties with your exam, contact your assigned faculty for technical support.</li>
+			</ul>
+			<h4>Student Declaration: </h4>
+			<p>
+			By attempting this test, I acknowledge that
+			<ul>
+				<li>I have read and understand the examination conduct requirements for this exam</li>
+				<li>I am not in possession of, nor do I have access to, any unauthorised material during this examination </li>
+			</ul>
+			</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 d-flex justify-content-center">
+			<a class="btn btn-success me-3" href="{% url 'take_test' %}">Start Test</a>
+			<a class="btn btn-danger" href="{% url 'student_batch' batch_id %}">Cancel</a>
+		</div>
+	</div>
+</div>
 
 {% endblock %}
