@@ -7,7 +7,6 @@ from .forms import TopicDistributionForm, TestForm
 from django.forms import formset_factory
 # CBS Views
 from django.views import View
-from django.views.generic import ListView
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -19,6 +18,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage
 
 def get_time_difference(a, b):
 	dateTimeA = datetime.datetime.combine(datetime.date.today(), a)
@@ -183,7 +183,8 @@ class UploadQuestionsView(LoginRequiredMixin, FacultyRedirectMixin, View):
 			option3_text = ws['E'+str(x)].value
 			option4_text = ws['F'+str(x)].value
 
-			if None and '' not in [question, topic_name, answer_opt, option1_text, option2_text, option3_text, option4_text]:
+			if None not in [question, topic_name, answer_opt, option1_text, option2_text, option3_text, option4_text]:
+				print([question, topic_name, answer_opt, option1_text, option2_text, option3_text, option4_text])
 				topic = Topic.objects.get(name=topic_name)
 				question_obj = Question(question=question, topic=topic, 
 				created_by=request.user, modified_by=request.user)
@@ -199,7 +200,7 @@ class UploadQuestionsView(LoginRequiredMixin, FacultyRedirectMixin, View):
 					option3.full_clean()
 					option4.full_clean()
 				except ValidationError as e:
-					pass
+					print(e)
 				else:
 					option1.save()
 					option2.save()
@@ -573,10 +574,25 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 
 # Student views
-class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, ListView):
-	model = Question
-	context_object_name = 'questions'
+class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = "tests/student/question_bank.html"
-	# queryset = Question.objects.filter(topic__subject__subject_timings_is_open=True)
-	paginate_by = 3
 
+	def get(self, request, topic_id):
+		batch_id = self.request.session['batch_id']
+		batch = Batch.objects.get(id=batch_id)
+		topic = Topic.objects.get(id=topic_id)
+		current_time = datetime.datetime.now().time()
+		subjects = Subject.objects.filter(subject_timings__opening_time__lte=current_time, 
+			subject_timings__closing_time__gte=current_time)
+		if subjects.exists():
+			for subject in subjects:
+				if subject.exam_categories.filter(batches=batch) and topic.subject == subject:
+					questions = Question.objects.filter(topic_id=topic_id)
+					if len(questions) < 1:
+						return redirect(f'/batches/batch/{batch_id}/')
+					p = Paginator(questions, 2)
+					page_num = request.GET.get('page')
+					page = p.get_page(page_num)
+					context = {'questions': page}
+					return render(request, self.template_name, context)
+		return redirect('/unauthorized')

@@ -1,9 +1,52 @@
 {% extends 'components/main.html' %}
-{% block title %}Batches{% endblock %}
+{% load custom_filters %}
+{% block title %}Question Bank{% endblock %}
 {% block content %}
 
-{% for question in questions %}
-<p>{{question}}</p>
-{% endfor %}
+<div class="container p-5">
+	<div class="row text-center">
+		<h2>Questions</h2>
+	</div>
+	<div class="row my-3">
+		<div class="container">
+			{% for question in questions %}
+			<div class="row mb-4 shadow p-4">
+				<span class="fs-5">{{forloop.counter}}.  &nbsp;&nbsp;{{question}}</span>
+				<ul class="list-group list-group-flush mt-3">
+					{% for option in question.options.all %}
+					<li class="list-group-item {% if option == question.answer %}active{% endif %}">{{ forloop.counter|chr }}. &nbsp;&nbsp;{{option}}</li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% endfor %}
+			<div class="row">
+				<span class="current d-flex justify-content-center mb-3">
+		            Page {{ questions.number }} of {{ questions.paginator.num_pages }}
+		        </span>
+		        {% if questions.paginator.num_pages != 1 %}
+				<nav>
+				  <ul class="pagination justify-content-center">
+				  	{% if questions.has_previous %}
+					  	<li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+					    <li class="page-item"><a class="page-link" href="?page={{questions.previous_page_number}}">Previous</a></li>
+				    {% endif %}
+				    {% for num in questions.paginator.page_range %}
+					    {% if questions.number == num %}
+					    <li class="page-item active"><a class="page-link" href="?page={{num}}">{{ num }}</a></li>
+					    {% elif num > questions.number|add:'-3' and num < questions.number|add:'3' %}
+					    <li class="page-item"><a class="page-link" href="?page={{num}}">{{ num }}</a></li>
+					    {% endif %}
+				    {% endfor %}
+				    {% if questions.has_next %}
+					    <li class="page-item"><a class="page-link" href="?page={{questions.next_page_number}}">Next</a></li>
+					    <li class="page-item"><a class="page-link" href="?page={{ questions.paginator.num_pages }}">Last</a></li>
+				    {% endif %}
+				  </ul>
+				</nav>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock %}

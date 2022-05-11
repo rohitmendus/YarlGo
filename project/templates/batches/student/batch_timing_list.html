@@ -20,8 +20,8 @@
 				    Open Question Bank
 				  </button>
 				  <ul class="dropdown-menu" aria-labelledby="dropdownQB">
-				  	{% for i in batch_timing.subject.topics.all %}
-				    <li><a class="dropdown-item" href="{% url 'qb' %}">{{i}}</a></li>
+				  	{% for topic in batch_timing.subject.topics.all %}
+				    <li><a class="dropdown-item" href="{% url 'qb' topic.id %}?page=1">{{topic}}</a></li>
 				    {% endfor %}
 				  </ul>
 				</div>

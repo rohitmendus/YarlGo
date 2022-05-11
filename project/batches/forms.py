@@ -114,6 +114,7 @@ class BatchTimingForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        # Timing conflicts
         start_time = cleaned_data.get("opening_time")
         end_time = cleaned_data.get("closing_time")
         if end_time < start_time:
@@ -129,3 +130,8 @@ class BatchTimingForm(forms.ModelForm):
                     raise forms.ValidationError("These batch timings are in conflict with other timings.")
                 if is_time_between(batch_obj.opening_time, batch_obj.closing_time, end_time):
                     raise forms.ValidationError("These batch timings are in conflict with other timings.")
+
+        batch = cleaned_data.get('batch')
+        subject = cleaned_data.get('subject')
+        if not subject.exam_categories.filter(id=batch.exam_category.id).exists():
+            raise forms.ValidationError("The subject is not alloted for the batch.")

@@ -9,7 +9,7 @@ urlpatterns = [
     path('tests/delete/<int:test_id>/', views.DeleteTestView.as_view(), name="delete_test"),
     path('tests/duplicate/<int:test_id>/', views.DuplicateTestView.as_view(), name="duplicate_test"),
     path('tests/edit/<int:test_id>/', views.EditTestView.as_view(), name="edit_test"),
-    path('question_bank/', views.QuestionBankView.as_view(), name="qb"),
+    path('question_bank/<int:topic_id>/', views.QuestionBankView.as_view(), name="qb"),
     path('download_question_temp/', views.DownloadQuestionTempView.as_view(), name="download_question_temp"),
     path('upload_questions/', views.UploadQuestionsView.as_view(), name="upload_questions"),
 ]
