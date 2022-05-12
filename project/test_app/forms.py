@@ -1,6 +1,7 @@
 from django import forms
 from .models import Test
-from subjects.models import Topic
+from subjects.models import Topic, Subject
+from batches.models import Batch
 from django.conf import settings
 from tempus_dominus.widgets import DatePicker, TimePicker
 import datetime
@@ -64,6 +65,12 @@ class TestForm(forms.ModelForm):
 			},
 		),
 	)
+	def __init__(self, request=None, *args, **kwargs):
+		super ().__init__(*args,**kwargs)
+		if request != None:
+			subject = Subject.objects.get(id=request.session['subject_id'])
+			self.fields['batch'].queryset = Batch.objects.filter(exam_category__subjects=subject)
+
 	class Meta:
 		model = Test
 		fields = ('name', 'cutoff_mark','date_scheduled', 'no_of_questions',
@@ -84,16 +91,12 @@ class TestForm(forms.ModelForm):
 				opening_time = datetime.datetime.combine(test_obj.date_scheduled, test_obj.opening_time)
 				closing_time = datetime.datetime.combine(test_obj.date_scheduled, test_obj.closing_time)
 				if is_time_between(start_time, end_time, opening_time):
-					print(1)
 					raise forms.ValidationError("These batch timings are in conflict with other timings.")
 				if is_time_between(start_time, end_time, closing_time):
-					print(2)
 					raise forms.ValidationError("These batch timings are in conflict with other timings.")
 				if is_time_between(opening_time, closing_time, start_time):
-					print(3)
 					raise forms.ValidationError("These batch timings are in conflict with other timings.")
 				if is_time_between(opening_time, closing_time, end_time):
-					print(4)
 					raise forms.ValidationError("These batch timings are in conflict with other timings.")
 
 class TopicDistributionForm(forms.Form):

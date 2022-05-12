@@ -33,7 +33,7 @@ def get_back_test(request):
 	context = {}
 	batches = Batch.objects.filter(exam_category__subjects=subject)
 	context['batches'] = batches
-	context['test_form'] = TestForm
+	context['test_form'] = TestForm(request=request)
 	TopicDistributionFormSet = formset_factory(TopicDistributionForm)
 	context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 	tests = []
@@ -333,9 +333,8 @@ class CreateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 					topics.append(topic_obj)
 			post_data.update({'no_of_questions': str(total_no_of_questions), 
 				'max_mark': str(total_no_of_questions)})
-			test_form = TestForm(post_data)
+			test_form = TestForm(data=post_data, request=request)
 			if test_form.is_valid():
-				print(test_form.cleaned_data)
 				opening_time = test_form.cleaned_data['opening_time']
 				closing_time = test_form.cleaned_data['closing_time']
 				time = get_time_difference(closing_time, opening_time)
@@ -350,7 +349,6 @@ class CreateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 				test.created_by = request.user
 				test.modified_by = request.user
 				test.distributions = distributions
-				print(distributions)
 				test.save()
 
 				# Sending response
@@ -431,7 +429,7 @@ class CreateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 	def get(self, request):
 		context = {}
-		context['test_form'] = TestForm
+		context['test_form'] = TestForm(request=request)
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 
@@ -468,7 +466,7 @@ class DuplicateTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		test = Test.objects.get(id=test_id)
 		topic_dist = test.distributions['topics']
 		context = {}
-		context['test_form'] = TestForm(instance=test)
+		context['test_form'] = TestForm(instance=test, request=request)
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm, extra=len(topic_dist))
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 		context['topic_dist'] = json.dumps(topic_dist)
@@ -480,7 +478,7 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		test = Test.objects.get(id=test_id)
 		topic_dist = test.distributions['topics']
 		context = {}
-		context['test_form'] = TestForm(instance=test)
+		context['test_form'] = TestForm(instance=test, request=request)
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm, extra=len(topic_dist))
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 		context['topic_dist'] = json.dumps(topic_dist)
@@ -508,7 +506,7 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 					topics.append(topic_obj)
 			post_data.update({'no_of_questions': str(total_no_of_questions), 
 				'max_mark': str(total_no_of_questions)})
-			test_form = TestForm(post_data, instance=instance)
+			test_form = TestForm(data=post_data, instance=instance, request=request)
 			if test_form.is_valid():
 				opening_time = test_form.cleaned_data['opening_time']
 				closing_time = test_form.cleaned_data['closing_time']
@@ -556,7 +554,7 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context = {}
 		batches = Batch.objects.filter(exam_category__subjects=subject)
 		context['batches'] = batches
-		context['test_form'] = TestForm
+		context['test_form'] = TestForm(request=request)
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm)
 		context['test_topic_form'] = TopicDistributionFormSet(form_kwargs={'request': request})
 		tests = []
@@ -624,16 +622,67 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = 'tests/student/take_test.html'
 
 	def get(self, request):
-		test_id = request.session['test_id']
-		test = Test.objects.get(id=test_id)
+		if 'test_status' not in request.session:
+			request.session['test_status'] = 0
+			test_id = request.session['test_id']
+			test = Test.objects.get(id=test_id)
 
-		topics_dist = test.distributions['topics']
-		# questions = []
-		for topic_dist in topics_dist:
-			print(topic_dist['topic_id'])
-			print(Topic.objects.all().values_list('id'))
-			topic = Topic.objects.get(id=int(topic_dist['topic_id']))
-			num = Topic.objects.get(id=topic_dist['no_of_questions'])
-			questions = Question.objects.filter(topic=topic).order_by('?')[:num]
-			print(questions)
-		return render(request, self.template_name)
+			topics_dist = test.distributions['topics']
+			questions = []
+			user_questions = []
+			for topic_dist in topics_dist:
+				topic = Topic.objects.get(id=topic_dist['topic_id'])
+				num = topic_dist['no_of_questions']
+				question_set = Question.objects.filter(topic=topic).order_by('?')[:num]
+				for question in question_set:
+					obj1 = {'question_id': question.id, 'answered': False, 'marked': False,
+						'option_choosen': None, 'started_on': None, 'finished_on': None}
+					obj2 = {'id': question.id, 'question': question.question}
+					c = 1
+					for opt in question.options.all():
+						key1 = f'option{c}'
+						key2 = f'option{c}_id'
+						obj2[key1] = opt.text
+						obj2[key2] = opt.id
+						c+=1
+
+					questions.append(obj2)
+					user_questions.append(obj1)
+
+			request.session['questions'] = questions
+			request.session['user_questions'] = user_questions
+		elif request.session['test_status'] != 0:
+			request.session['test_status'] = 0
+			test_id = request.session['test_id']
+			test = Test.objects.get(id=test_id)
+
+			topics_dist = test.distributions['topics']
+			questions = []
+			user_questions = []
+			for topic_dist in topics_dist:
+				topic = Topic.objects.get(id=topic_dist['topic_id'])
+				num = topic_dist['no_of_questions']
+				question_set = Question.objects.filter(topic=topic).order_by('?')[:num]
+				for question in question_set:
+					obj1 = {'question_id': question.id, 'answered': False, 'marked': False,
+						'option_choosen': None, 'started_on': None, 'finished_on': None}
+					obj2 = {'id': question.id, 'question': question.question}
+					c = 1
+					for opt in question.options.all():
+						key1 = f'option{c}'
+						key2 = f'option{c}_id'
+						obj2[key1] = opt.text
+						obj2[key2] = opt.id
+						c+=1
+
+					questions.append(obj2)
+					user_questions.append(obj1)
+
+			request.session['questions'] = questions
+			request.session['user_questions'] = user_questions
+
+		p = Paginator(request.session['questions'], 1)
+		page_num = request.GET.get('question')
+		page = p.get_page(page_num)
+		context = {'questions': page}
+		return render(request, self.template_name, context)

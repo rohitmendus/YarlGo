@@ -3,6 +3,61 @@
 {% block title %}Test{% endblock %}
 {% block content %}
 
-
+<div class="container p-5">
+	<div class="row">
+		<div class="col-8">
+			{% for question in questions %}
+			<div class="question-container shadow p-4">
+				<div class="question-marker" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark for later">
+					<i class="fa-regular fa-bookmark mark"></i>
+					<i class="fa-solid fa-bookmark unmark"></i>
+				</div>
+				<span class="fs-5">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question }}</span>
+				<ul class="list-group list-group-flush mt-3">
+				  <li class="list-group-item">
+				    <input class="form-check-input me-1" type="radio" value="{{ question.option1_id }}" name="answer">
+				      &nbsp;&nbsp;{{ question.option1 }}
+				  </li>
+				  <li class="list-group-item">
+				    <input class="form-check-input me-1" type="radio" value="{{ question.option2_id }}" name="answer">
+				      &nbsp;&nbsp;{{ question.option2 }}
+				  </li>
+				  <li class="list-group-item">
+				    <input class="form-check-input me-1" type="radio" value="{{ question.option3_id }}" name="answer">
+				      &nbsp;&nbsp;{{ question.option3 }}
+				  </li>
+				  <li class="list-group-item">
+				    <input class="form-check-input me-1" type="radio" value="{{ question.option4_id }}" name="answer">
+				      &nbsp;&nbsp;{{ question.option4 }}
+				  </li>
+				</ul>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="col-4">
+			<div class="test-naviagtion-container shadow p-4">
+				<h5 class="text-center mb-4">Test Navigation</h5>
+				<ul class="pagination d-flex flex-wrap">
+					{% for num in questions.paginator.page_range %}
+					    {% if questions.number == num %}
+					    <li class="page-item active"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
+					    {% else %}
+					    <li class="page-item"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
+					    {% endif %}
+				    {% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="question-controls shadow-sm m-5 p-4 d-flex justify-content-center">
+	{% if questions.has_previous %}
+	<a class="btn btn-info mx-3" href="?question={{questions.previous_page_number}}">Previous</a>
+	{% endif %}
+	{% if questions.has_next %}
+	<a class="btn btn-success mx-3" href="?question={{questions.next_page_number}}">Next</a>
+	{% endif %}
+	<a class="btn btn-danger mx-3">End Test</a>
+</div>
 
 {% endblock %}

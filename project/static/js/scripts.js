@@ -670,19 +670,17 @@ $(document).ready(function(){
 
 
     $(document).on('click', '#add-topic-distribution button', function(e){
-        e.preventDefault()
         let topicDistForm = document.querySelectorAll(".topic-distribution")
         let container = document.querySelector("#topic-distribution-container")
         let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-        console.log($('#id_form-TOTAL_FORMS').val())
-        let formNum = Number($('#id_form-TOTAL_FORMS').val());
+        let formNum = parseInt($('#id_form-TOTAL_FORMS').val());
 
 
         let newForm = topicDistForm[0].cloneNode(true) //Clone the bird form
         let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
 
         formNum++ //Increment the form number
-        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`) //Update the new form to have the correct form number
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum-1}-`) //Update the new form to have the correct form number
         btn = $(newForm).find('.topic-close');
         btn.removeClass('d-none');
         container.append(newForm) //Insert the new form at the end of the list of forms

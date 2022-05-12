@@ -11850,3 +11850,23 @@ body {
 #add-topic-distribution button:hover {
   color: #2ea8f0;
 }
+.question-marker {
+  position: absolute;
+  right: 13px;
+  top: 15px;
+  cursor: pointer;
+}
+.question-marker:hover .mark,
+.question-marker .unmark {
+    display: none;
+}
+.question-marker:hover .unmark {
+    display: inline;
+}
+.question-container {
+  position: relative;
+}
+.test-naviagtion-container .page-item{
+  width: 40px;
+  text-align: center;
+}
