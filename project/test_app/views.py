@@ -622,6 +622,7 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = 'tests/student/take_test.html'
 
 	def get(self, request):
+		request.session['test_status'] = 1
 		if 'test_status' not in request.session:
 			request.session['test_status'] = 0
 			test_id = request.session['test_id']
@@ -648,9 +649,10 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 
 					questions.append(obj2)
 					user_questions.append(obj1)
-
+			
+			user_questions[0]['started_on'] = datetime.datetime.now()	
 			request.session['questions'] = questions
-			request.session['user_questions'] = user_questions
+			request.session['user_questions'] = json.dumps(user_questions, default=str)
 		elif request.session['test_status'] != 0:
 			request.session['test_status'] = 0
 			test_id = request.session['test_id']
@@ -678,9 +680,9 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 					questions.append(obj2)
 					user_questions.append(obj1)
 
+			user_questions[0]['started_on'] = datetime.datetime.now()				
 			request.session['questions'] = questions
-			request.session['user_questions'] = user_questions
-
+			request.session['user_questions'] = json.dumps(user_questions, default=str)
 		p = Paginator(request.session['questions'], 1)
 		page_num = request.GET.get('question')
 		page = p.get_page(page_num)

@@ -7,7 +7,7 @@
 	<div class="row">
 		<div class="col-8">
 			{% for question in questions %}
-			<div class="question-container shadow p-4">
+			<div class="question-container shadow p-4 pt-5">
 				<div class="question-marker" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark for later">
 					<i class="fa-regular fa-bookmark mark"></i>
 					<i class="fa-solid fa-bookmark unmark"></i>
@@ -37,7 +37,7 @@
 		<div class="col-4">
 			<div class="test-naviagtion-container shadow p-4">
 				<h5 class="text-center mb-4">Test Navigation</h5>
-				<ul class="pagination d-flex flex-wrap">
+				<ul class="pagination d-flex flex-wrap justify-content-center">
 					{% for num in questions.paginator.page_range %}
 					    {% if questions.number == num %}
 					    <li class="page-item active"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
