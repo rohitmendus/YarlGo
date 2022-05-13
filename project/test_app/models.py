@@ -65,7 +65,7 @@ class UserQuestion(models.Model):
 
 	question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="user_reports")
 	option_choosen = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)
-	time_taken = models.DurationField()
+	time_taken = models.DurationField(null=True, blank=True)
 	state = models.IntegerField(default=2, choices=STATE_CHOICES)
 	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="user_questions")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_questions")
@@ -73,8 +73,7 @@ class UserQuestion(models.Model):
 class UserTest(models.Model):
 	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="reports")
 	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_reports")
-	marks_gained = models.FloatField(null=True, blank=True)
-	time_taken = models.DurationField(null=True, blank=True)
+	marks_gained = models.FloatField()
 	started_on = models.DateTimeField()
 	completed_on = models.DateTimeField()
 
@@ -89,17 +88,10 @@ class UserTest(models.Model):
 		else:
 			return False
 
+	@property
+	def time_taken(self):
+		return self.completed_on - self.started_on
+
 	# @property
 	# def time_per_question(self):
 	# 	pass
-
-class TopicPerformance(models.Model):
-	test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="topic_reports")
-	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="test_reports")
-	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="test_topic_reports")
-	marks_gained = models.FloatField(null=True, blank=True)
-	time_taken = models.DurationField(null=True, blank=True)
-
-	@property
-	def percentage(self):
-		return (float(self.marks_gained) / float(self.test_topic.max_mark)) * 100

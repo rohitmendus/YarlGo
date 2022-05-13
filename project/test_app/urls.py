@@ -17,6 +17,8 @@ urlpatterns = [
     path('take_test/select_answer/', views.select_answer, name="select_answer_test"),
     path('take_test/clear_answer/', views.clear_answer, name="clear_answer_test"),
     path('take_test/mark_question/', views.mark_question, name="mark_question_test"),
+    path('take_test/get_info/', views.get_test_info, name="get_info_test"),
+    path('take_test/submit/', views.submit_test, name="submit_test"),
 ]
 
 htmx_urlpatterns = [

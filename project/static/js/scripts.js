@@ -938,5 +938,11 @@ $(document).ready(function(){
                 });
             }
         });
+        $(document).on('click', '#end-test-btn', function(){
+            $.get('/take_test/get_info/', {}, function(response){
+                $('#test-submit-info').html(response);
+                $('#test-submit-modal').modal('show');
+            });
+        })
     }
 }); 

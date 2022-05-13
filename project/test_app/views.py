@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from subjects.models import Topic, Subject
 from batches.models import Batch
-from .models import Option, Question, Test
+from .models import Option, Question, Test, UserTest, UserQuestion
 from .forms import TopicDistributionForm, TestForm
 from django.forms import formset_factory
 # CBS Views
@@ -601,12 +601,12 @@ class TestPromptView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = 'tests/student/test_prompt.html'
 
 	def get(self, request, test_id):
-		request.session['test_id'] = test_id
 		test = Test.objects.get(id=test_id)
 
-		# if test.is_open != True:
-		# 	return redirect('/unauthorized')
+		if test.is_open != True:
+			return redirect('/unauthorized')
 
+		request.session['test_id'] = test_id
 		topics_dist = test.distributions['topics']
 		topics = []
 		for topic_dist in topics_dist:
@@ -623,8 +623,12 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = 'tests/student/take_test.html'
 
 	def get(self, request):
-		# request.session['test_status'] = 1
-		if 'test_status' not in request.session:
+		test = Test.objects.get(id=request.session['test_id'])
+		if test.is_open != True:
+			return redirect('/unauthorized')
+
+		if 'test_status' not in request.session or request.session['test_status'] != 0:
+			request.session['test_started_on'] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 			request.session['test_status'] = 0
 			test_id = request.session['test_id']
 			test = Test.objects.get(id=test_id)
@@ -651,36 +655,6 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 					questions.append(obj2)
 					user_questions.append(obj1)
 
-			request.session['questions'] = questions
-			request.session['user_questions'] = user_questions
-		elif request.session['test_status'] != 0:
-			request.session['test_status'] = 0
-			test_id = request.session['test_id']
-			test = Test.objects.get(id=test_id)
-
-			topics_dist = test.distributions['topics']
-			questions = []
-			user_questions = []
-			for topic_dist in topics_dist:
-				topic = Topic.objects.get(id=topic_dist['topic_id'])
-				num = topic_dist['no_of_questions']
-				question_set = Question.objects.filter(topic=topic).order_by('?')[:num]
-				for question in question_set:
-					obj1 = {'question_id': question.id, 'answered': False, 'marked': False,
-						'option_choosen': None, 'started_on': None, 'finished_on': None}
-					obj2 = {'id': question.id, 'question': question.question}
-					c = 1
-					for opt in question.options.all():
-						key1 = f'option{c}'
-						key2 = f'option{c}_id'
-						obj2[key1] = opt.text
-						obj2[key2] = opt.id
-						c+=1
-
-					questions.append(obj2)
-					user_questions.append(obj1)
-
-			
 			request.session['questions'] = questions
 			request.session['user_questions'] = user_questions
 		page_num = request.GET.get('question')
@@ -705,7 +679,6 @@ def select_answer(request):
 			request.session['user_questions'][question_no]['finished_on'] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 			request.session['user_questions'][question_no]['answered'] = True
 			request.session['user_questions'][question_no]['option_choosen'] = option_choosen
-			print(request.session['user_questions'][question_no])
 			request.session.modified = True
 		return JsonResponse('Success', safe=False)
 
@@ -718,7 +691,6 @@ def clear_answer(request):
 			request.session['user_questions'][question_no]['finished_on'] = None
 			request.session['user_questions'][question_no]['answered'] = False
 			request.session['user_questions'][question_no]['option_choosen'] = None
-			print(request.session['user_questions'][question_no])
 			request.session.modified = True
 		return JsonResponse('Success', safe=False)
 
@@ -733,7 +705,60 @@ def mark_question(request):
 				request.session['user_questions'][question_no]['marked'] = True
 			else:
 				request.session['user_questions'][question_no]['marked'] = False
-			print(request.session['user_questions'][question_no])
 			request.session.modified = True
 		return JsonResponse('Success', safe=False)
+
+
+def get_test_info(request):
+	if request.method == "GET":
+		c = 0
+		for i in request.session['user_questions']:
+			if i['answered'] == False:
+				c+=1
+		if c == 0:
+			return JsonResponse('All the questions have been answered!', safe=False)
+		else:
+			message = f'You have {c} unanswered questions!'
+			return JsonResponse(message, safe=False)
+
+def submit_test(request):
+	if request.method == "POST":
+		test = Test.objects.get(id=request.session['test_id'])
+		marks_gained = 0
+		for i in request.session['user_questions']:
+			question = Question.objects.get(id=i['question_id'])
+			if i['option_choosen'] != None:
+				option_choosen = Option.objects.get(id=i['option_choosen'])
+			else:
+				option_choosen = None
+			if i['started_on'] == None or i['finished_on'] == None:
+				time_taken = None
+			else:
+				started_on = datetime.datetime.strptime(i['started_on'], "%m/%d/%Y, %H:%M:%S")
+				finished_on = datetime.datetime.strptime(i['finished_on'], "%m/%d/%Y, %H:%M:%S")
+				time_taken = finished_on - started_on
+			if i['answered']:
+				if question.answer == option_choosen:
+					state = 1
+					marks_gained += 1
+				else:
+					state = 0
+			else:
+				state = 2
+			UserQuestion.objects.create(question=question, option_choosen=option_choosen,
+				time_taken=time_taken, state=state, test=test, user=request.user)
+
+		test_started_on = datetime.datetime.strptime(request.session['test_started_on'], "%m/%d/%Y, %H:%M:%S")
+		test_completed_on = datetime.datetime.now()
+		UserTest.objects.create(test=test, user=request.user, marks_gained=marks_gained, started_on=test_started_on,
+			completed_on=test_completed_on)
+		del request.session['questions']
+		del request.session['user_questions']
+		del request.session['test_id']
+		del request.session['test_status']
+		del request.session['test_started_on']
+		batch_id = request.session['batch_id']
+		return redirect(f'/batches/batch/{batch_id}/')
+
+
 

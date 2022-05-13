@@ -82,7 +82,26 @@
 	{% if questions.has_next %}
 	<a class="btn btn-success mx-3" href="?question={{questions.next_page_number}}">Next</a>
 	{% endif %}
-	<a class="btn btn-danger mx-3">End Test</a>
+	<button class="btn btn-danger mx-3" id="end-test-btn">End Test</button>
+</div>
+<!-- End Test Confirmation -->
+<div class="modal fade" id="test-submit-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="test-submit-modalLabel2">Submit Test</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to submit the test?<span id="test-submit-info" class="d-block"></span></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post", action="{% url 'submit_test' %}">
+        	{% csrf_token %}
+        	<button type="submit" class="btn btn-primary" id="test-submit-btn">Confirm</a>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

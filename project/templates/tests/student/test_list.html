@@ -14,7 +14,7 @@
 	</thead>
 	<tbody>
 		{% for test in tests %}
-		<tr {% if not test.is_open %}class="table-primary"{% endif %}>
+		<tr {% if test.is_open %}class="table-primary"{% endif %}>
 			<td>{{test}}</td>
 			<td>{{test.topic_list}}</td>
 			<td>{{test.date_scheduled}}</td>
@@ -24,7 +24,7 @@
 			<td>{{test.max_mark}}</td>
 			<td>{{test.cutoff_mark}}</td>
 			<td>
-				{% if not test.is_open %}
+				{% if test.is_open %}
 					<a type="button" class="btn btn-primary" href="{% url 'test_prompt' test.id %}">Take Test</a>
 				{% endif %}
 			</td>
