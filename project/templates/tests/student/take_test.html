@@ -5,32 +5,51 @@
 
 <div class="container p-5">
 	<div class="row">
+		<div class="col-12">
+			<div class="d-flex justify-content-end mb-3">
+				<span id="test-timer" class="fs-4">00:00:00</span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
 		<div class="col-8">
 			{% for question in questions %}
+			{% get_qn_val request.session questions.number "marked" as is_marked %}
+			{% get_qn_val request.session questions.number "option_choosen" as opt %}
 			<div class="question-container shadow p-4 pt-5">
-				<div class="question-marker" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark for later">
-					<i class="fa-regular fa-bookmark mark"></i>
-					<i class="fa-solid fa-bookmark unmark"></i>
+				{% if is_marked %}
+				<div class="question-marker" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unmark" data-marked="true" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}">
+					<i class="fa-regular fa-bookmark unmark" style="display: none;"></i>
+					<i class="fa-solid fa-bookmark mark"></i>
 				</div>
+				{% else %}
+				<div class="question-marker" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark for later" data-marked="false" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}">
+					<i class="fa-regular fa-bookmark unmark"></i>
+					<i class="fa-solid fa-bookmark mark" style="display: none;"></i>
+				</div>
+				{% endif %}
 				<span class="fs-5">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question }}</span>
 				<ul class="list-group list-group-flush mt-3">
 				  <li class="list-group-item">
-				    <input class="form-check-input me-1" type="radio" value="{{ question.option1_id }}" name="answer">
+				    <input class="form-check-input test-option" type="radio" value="{{ question.option1_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option1_id %}checked{% endif %}>
 				      &nbsp;&nbsp;{{ question.option1 }}
 				  </li>
 				  <li class="list-group-item">
-				    <input class="form-check-input me-1" type="radio" value="{{ question.option2_id }}" name="answer">
+				    <input class="form-check-input test-option" type="radio" value="{{ question.option2_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option2_id %}checked{% endif %}>
 				      &nbsp;&nbsp;{{ question.option2 }}
 				  </li>
 				  <li class="list-group-item">
-				    <input class="form-check-input me-1" type="radio" value="{{ question.option3_id }}" name="answer">
+				    <input class="form-check-input test-option" type="radio" value="{{ question.option3_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option3_id %}checked{% endif %}>
 				      &nbsp;&nbsp;{{ question.option3 }}
 				  </li>
 				  <li class="list-group-item">
-				    <input class="form-check-input me-1" type="radio" value="{{ question.option4_id }}" name="answer">
+				    <input class="form-check-input test-option" type="radio" value="{{ question.option4_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option4_id %}checked{% endif %}>
 				      &nbsp;&nbsp;{{ question.option4 }}
 				  </li>
 				</ul>
+				<div class="mx-5 mt-3 clear-answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}">
+					Clear
+				</div>
 			</div>
 			{% endfor %}
 		</div>
@@ -39,8 +58,14 @@
 				<h5 class="text-center mb-4">Test Navigation</h5>
 				<ul class="pagination d-flex flex-wrap justify-content-center">
 					{% for num in questions.paginator.page_range %}
+						{% get_qn_val request.session num "marked" as marked %}
+						{% get_qn_val request.session num "answered" as answered %}
 					    {% if questions.number == num %}
 					    <li class="page-item active"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
+					    {% elif marked %}
+					    <li class="page-item marked"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
+					    {% elif answered %}
+					    <li class="page-item answered"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
 					    {% else %}
 					    <li class="page-item"><a class="page-link" href="?question={{num}}">{{ num }}</a></li>
 					    {% endif %}

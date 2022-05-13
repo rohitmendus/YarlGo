@@ -10,6 +10,7 @@ from django.views import View
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from accounts.mixins import FacultyRedirectMixin, StudentRedirectMixin
 # Response objects
 import mimetypes, os, openpyxl, json, datetime
@@ -622,7 +623,7 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = 'tests/student/take_test.html'
 
 	def get(self, request):
-		request.session['test_status'] = 1
+		# request.session['test_status'] = 1
 		if 'test_status' not in request.session:
 			request.session['test_status'] = 0
 			test_id = request.session['test_id']
@@ -649,10 +650,9 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 
 					questions.append(obj2)
 					user_questions.append(obj1)
-			
-			user_questions[0]['started_on'] = datetime.datetime.now()	
+
 			request.session['questions'] = questions
-			request.session['user_questions'] = json.dumps(user_questions, default=str)
+			request.session['user_questions'] = user_questions
 		elif request.session['test_status'] != 0:
 			request.session['test_status'] = 0
 			test_id = request.session['test_id']
@@ -680,11 +680,60 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 					questions.append(obj2)
 					user_questions.append(obj1)
 
-			user_questions[0]['started_on'] = datetime.datetime.now()				
+			
 			request.session['questions'] = questions
-			request.session['user_questions'] = json.dumps(user_questions, default=str)
-		p = Paginator(request.session['questions'], 1)
+			request.session['user_questions'] = user_questions
 		page_num = request.GET.get('question')
+		if page_num != None:
+			if request.session['user_questions'][int(page_num)-1]['started_on'] == None:
+				request.session['user_questions'][int(page_num)-1]['started_on'] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+		else:
+			request.session['user_questions'][0]['started_on'] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+		request.session.modified = True
+		p = Paginator(request.session['questions'], 1)
 		page = p.get_page(page_num)
 		context = {'questions': page}
 		return render(request, self.template_name, context)
+
+@csrf_exempt
+def select_answer(request):
+	if request.method == "POST":
+		question_no = int(request.POST.get('question_no'))-1
+		question_id = int(request.POST.get('question_id'))
+		option_choosen = int(request.POST.get('option_choosen'))
+		if request.session['user_questions'][question_no]['question_id'] == question_id:
+			request.session['user_questions'][question_no]['finished_on'] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+			request.session['user_questions'][question_no]['answered'] = True
+			request.session['user_questions'][question_no]['option_choosen'] = option_choosen
+			print(request.session['user_questions'][question_no])
+			request.session.modified = True
+		return JsonResponse('Success', safe=False)
+
+@csrf_exempt
+def clear_answer(request):
+	if request.method == "POST":
+		question_no = int(request.POST.get('question_no'))-1
+		question_id = int(request.POST.get('question_id'))
+		if request.session['user_questions'][question_no]['question_id'] == question_id:
+			request.session['user_questions'][question_no]['finished_on'] = None
+			request.session['user_questions'][question_no]['answered'] = False
+			request.session['user_questions'][question_no]['option_choosen'] = None
+			print(request.session['user_questions'][question_no])
+			request.session.modified = True
+		return JsonResponse('Success', safe=False)
+
+@csrf_exempt
+def mark_question(request):
+	if request.method == "POST":
+		question_no = int(request.POST.get('question_no'))-1
+		question_id = int(request.POST.get('question_id'))
+		mark = request.POST.get('mark')
+		if request.session['user_questions'][question_no]['question_id'] == question_id:
+			if mark == "true":
+				request.session['user_questions'][question_no]['marked'] = True
+			else:
+				request.session['user_questions'][question_no]['marked'] = False
+			print(request.session['user_questions'][question_no])
+			request.session.modified = True
+		return JsonResponse('Success', safe=False)
+

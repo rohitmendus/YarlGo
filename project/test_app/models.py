@@ -54,7 +54,7 @@ class Test(models.Model):
 	def is_open(self):
 		start_time = datetime.datetime.combine(self.date_scheduled, self.opening_time)
 		end_time = datetime.datetime.combine(self.date_scheduled, self.closing_time)
-		return start_time <= datetime.datetime.now() < self.end_time
+		return start_time <= datetime.datetime.now() < end_time
 
 class UserQuestion(models.Model):
 	STATE_CHOICES = [

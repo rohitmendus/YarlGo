@@ -860,4 +860,83 @@ $(document).ready(function(){
             }
         });
     });
+
+    let current_url = window.location.href
+    if (current_url.includes('take_test')) {
+        var sec;
+        var timer;
+        var ele = document.getElementById('test-timer');
+
+        (function (){
+            let result;
+            seconds = window.localStorage.getItem('timer');
+            if (seconds) {
+                sec = seconds
+            } else {
+                sec = 0;
+            }
+            timer = setInterval(()=>{
+                result = new Date(sec * 1000).toISOString().slice(11, 19);
+                ele.innerHTML = result;
+                sec ++;
+            }, 1000)
+        })()
+
+        window.onbeforeunload = function(event) {
+            let next_url = document.activeElement.href;
+            window.localStorage.setItem('timer', sec);
+            if (next_url.includes('take_test')) {
+                return
+            }
+            else {
+                window.localStorage.clear();
+                var s = "You have unsaved changes. Really leave?";
+
+                event = event || window.event;
+
+                // This is for all other browsers
+                return s;
+            }
+        }
+
+        $(document).on('input', '.test-option', function(){
+            let option = $(this).val();
+            let question_id = $(this).data('question-id');
+            let question_no = $(this).data('question-no');
+            const data = {'option_choosen': option, 'question_id': question_id, 'question_no': question_no}
+            $.post('/take_test/select_answer/', data);
+        });
+        $(document).on('click', '.clear-answer', function(){
+            let question_id = $(this).data('question-id');
+            let question_no = $(this).data('question-no');
+            const data = {'question_id': question_id, 'question_no': question_no}
+            $.post('/take_test/clear_answer/', data, function(response){
+                $('.test-option').each(function(){
+                    this.checked = false;  
+                });
+            });
+        });
+
+        $(document).on('click', '.question-marker', function(){
+            let question_id = $(this).data('question-id');
+            let question_no = $(this).data('question-no');
+            if ($(this).data('marked') === false) {
+                let data = {'question_id': question_id, 'question_no': question_no, 'mark': true}
+                $.post('/take_test/mark_question/', data, function(response){
+                    $('.question-marker').attr('data-bs-original-title', "Unmark").tooltip('show');
+                    $('.question-marker').data('marked', true)
+                    $('.unmark').hide();
+                    $('.mark').show();
+                });
+            } else {
+                let data = {'question_id': question_id, 'question_no': question_no, 'mark': false}
+                $.post('/take_test/mark_question/', data, function(response){
+                    $('.question-marker').attr('data-bs-original-title', "Mark for later").tooltip('show');
+                    $('.question-marker').data('marked', false);
+                    $('.mark').hide();
+                    $('.unmark').show();
+                });
+            }
+        });
+    }
 }); 

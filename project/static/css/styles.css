@@ -11856,22 +11856,37 @@ body {
   top: 15px;
   cursor: pointer;
 }
-.question-marker:hover .mark,
-.question-marker .unmark {
-    display: none;
-}
-.question-marker:hover .unmark {
-    display: inline;
-}
 .question-container {
   position: relative;
-  height: 350px;
+  height: 400px;
 }
 .test-naviagtion-container .page-item{
   width: 40px;
   text-align: center;
 }
 .test-naviagtion-container {
-  height: 350px;
+  height: 400px;
   overflow-y: auto;
+}
+.pagination > .answered > a,
+.pagination > .answered > a,
+.pagination > .answered > span,
+.pagination > .answered > span {
+    z-index: 3;
+    color: white;
+    background-color: #18b542;
+}
+.pagination > .marked > a,
+.pagination > .marked > a,
+.pagination > .marked > span,
+.pagination > .marked > span {
+    z-index: 3;
+    color: white;
+    background-color: #212529;
+}
+.clear-answer {
+  cursor: pointer;
+}
+.clear-answer:hover {
+  color: #9e9e9d;
 }
