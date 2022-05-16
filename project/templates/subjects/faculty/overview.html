@@ -1,0 +1,83 @@
+<div class="container py-5">
+	<div class="row mb-3">
+		<dic class="col-12">
+			<h2>Overview</h2>
+		</dic>
+	</div>
+	<div class="row">
+		<div class="col-6">
+			<div class="card text-white bg-primary mb-3">
+			  <div class="card-header">No. of Topics</div>
+			  <div class="card-body">
+			    <h3 class="card-title">{{ topics|length }}</h3>
+			  </div>
+			</div>
+		</div>
+		<div class="col-6">
+			<div class="card text-white bg-primary mb-3">
+			  <div class="card-header">No. of Questions</div>
+			  <div class="card-body">
+			    <h3 class="card-title">{{ questions|length }}</h3>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<div class="row my-5">
+		<div class="col-12">
+			<div class="card mb-4">
+                <div class="card-header">
+                    Faculty - Question Table
+                </div>
+                <div class="card-body">
+                	<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>No. Of Questions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in faculty_question_set %}
+							<tr>
+								<td data-bs-toggle="tooltip" data-bs-placement="top" title="{{i.email}}">{{i.faculty}}</td>
+								<td>{{i.no_of_questions}}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+                </div>
+            </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Topic - Question Bar Chart
+                </div>
+                <div class="card-body"><canvas id="BarChart1" width="100%" height="50"></canvas></div>
+            </div>
+		</div>
+		<div class="mb-3 mt-3 col-4" style="text-align: left;">
+				<label for="day-fiter" class="form-label">7 days before:</label>
+				<div class="form-group">
+	                <div class="input-group date" id="datetimepickerfilter" data-target-input="nearest">
+	                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepickerfilter" id="day-fiter"/>
+	                    <div class="input-group-append" data-target="#datetimepickerfilter" data-toggle="datetimepicker">
+	                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+	                    </div>
+	                </div>
+	            </div>
+			</div>
+		<div class="col-12">
+			<div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Question - Day Bar Chart
+                </div>
+                <div class="card-body"><canvas id="BarChart2" width="100%" height="50"></canvas></div>
+            </div>
+		</div>
+	</div>
+</div>

@@ -952,4 +952,23 @@ $(document).ready(function(){
             });
         })
     }
+
+
+    var today = new Date();
+    var date = (today.getMonth()+1)+'/'+today.getDate()+'/'+today.getFullYear();
+    $(function () {
+        $('#datetimepickerfilter').datetimepicker({
+            format: 'L',
+            maxDate: date
+        });
+    });
+
+    $(document).on('change.datetimepicker', '#datetimepickerfilter', function(){
+        let date = $('#day-fiter').val();
+        $.get('/faculty/get_question_date_graph/', {'to_date': date}, function(response){
+            barGraph2.data.labels = response.labels
+            barGraph2.data.datasets[0].data = response.data
+            barGraph2.update();
+        });
+    });
 }); 

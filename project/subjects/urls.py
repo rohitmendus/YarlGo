@@ -22,6 +22,7 @@ urlpatterns = [
 htmx_urlpatterns = [
     path('get_subject_form/', views.get_subject_form, name="get_subject_form"),
     path('get_topic_form/', views.get_topic_form, name="get_topic_form"),
+    path('faculty/get_question_date_graph/', views.get_question_date_graph, name="get_qn_date_graph"),
 ]
 
 urlpatterns += htmx_urlpatterns

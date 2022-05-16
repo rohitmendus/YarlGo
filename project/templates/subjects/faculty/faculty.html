@@ -5,5 +5,80 @@
 <div class="container" id="faculty-operations">
 	{% include 'subjects/faculty/faculty_operations.html' %}
 </div>
-
 {% endblock %}
+{% block scripts %}
+
+<script type="text/javascript">
+	var ctx1 = document.getElementById("BarChart1");
+	if (ctx1) {
+	  var barGraph1 = new Chart(ctx1, {
+	    type: 'bar',
+	    data: {
+	      labels: [{%for topic in topics%}'{{topic.name}}',{%endfor%}],
+	      datasets: [{
+	        label: "Questions",
+	        backgroundColor: "rgba(2,117,216,1)",
+	        borderColor: "rgba(2,117,216,1)",
+	        data: [{%for topic in topics%}'{{topic.no_of_questions}}',{%endfor%}],
+	      }],
+	    },
+	    options: {
+	      scales: {
+	        xAxes: [{
+	          gridLines: {
+	            display: false
+	          }
+	        }],
+	        yAxes: [{
+	          ticks: {
+	            maxTicksLimit: 5
+	          },
+	          gridLines: {
+	            display: true
+	          }
+	        }],
+	      },
+	      legend: {
+	        display: false
+	      }
+	    }
+	  });
+	}
+
+	var ctx2 = document.getElementById("BarChart2");
+	if (ctx2) {
+	  var barGraph2 = new Chart(ctx2, {
+	    type: 'bar',
+	    data: {
+	      labels: [{%for i in question_date%}'{{i}}',{%endfor%}],
+	      datasets: [{
+	        label: "Questions",
+	        backgroundColor: "rgba(2,117,216,1)",
+	        borderColor: "rgba(2,117,216,1)",
+	        data: [{%for key, value in question_date.items %}'{{value}}',{%endfor%}],
+	      }],
+	    },
+	    options: {
+	      scales: {
+	        xAxes: [{
+	          gridLines: {
+	            display: false
+	          }
+	        }],
+	        yAxes: [{
+	          ticks: {
+	            maxTicksLimit: 5
+	          },
+	          gridLines: {
+	            display: true
+	          }
+	        }],
+	      },
+	      legend: {
+	        display: false
+	      }
+	    }
+	  });
+	}
+</script>
+{% endblock scripts %}

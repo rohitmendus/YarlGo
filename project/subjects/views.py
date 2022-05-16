@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.mixins import AdminRedirectMixin, FacultyRedirectMixin
 # Response objects
 from django.shortcuts import render, redirect
-import mimetypes, os, openpyxl, json
+import mimetypes, os, openpyxl, json, datetime
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponse
 from .utils import send_faculty_allocation_mail
@@ -30,6 +30,30 @@ def get_subject_form(request):
 	form = SubjectForm()
 	faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username', 'users__email')
 	return render(request, 'subjects/admin/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
+
+@login_required
+def get_question_date_graph(request):
+	if request.method == "GET":
+		subject = Subject.objects.get(id=request.session['subject_id'])
+		to_date = request.GET.get('to_date')
+		to_date = datetime.datetime.strptime(to_date, "%m/%d/%Y")
+		from_date = to_date.date() - datetime.timedelta(days=7)
+		question_date_set = {}
+		for i in Question.objects.filter(topic__subject=subject, 
+			date_created__date__gte=from_date, 
+			date_created__date__lte=to_date).order_by('date_created'):
+			date = i.date_created.strftime("%d %b")
+			if date in question_date_set:
+				question_date_set[date] += 1
+			else:
+				question_date_set[date] = 1
+		labels = []
+		data = []
+		for i in question_date_set:
+			labels.append(i)
+			data.append(question_date_set[i])
+		response = {'labels': labels, 'data': data}
+		return JsonResponse(response)
 
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "subjects/admin/subjects.html"
@@ -273,6 +297,28 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 					tests.append(test_obj)
 					break
 		context['tests'] = tests
+
+
+		from_date = datetime.datetime.now().date() - datetime.timedelta(days=7)
+		question_date_set = {}
+		for i in Question.objects.filter(topic__subject=subject, 
+			date_created__date__gte=from_date).order_by('date_created'):
+			date = i.date_created.strftime("%d %b")
+			if date in question_date_set:
+				question_date_set[date] += 1
+			else:
+				question_date_set[date] = 1
+		context['question_date'] = question_date_set
+
+		faculty_question_set = []
+		for i in FacultyRight.objects.filter(subject=subject):
+			faculty = f'{i.user.first_name} {i.user.last_name}'
+			obj = {'faculty': faculty, 'email': i.user.email,
+			'no_of_questions': i.user.questions_created.count()}
+			faculty_question_set.append(obj)
+
+		context['faculty_question_set'] = faculty_question_set
+
 
 		return render(request, self.template_name, context)
 

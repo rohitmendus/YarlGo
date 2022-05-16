@@ -84,5 +84,8 @@
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
         <!-- My Script -->
         <script src="{% static 'js/scripts.js' %}"></script>
+        <!-- Extra scripts -->
+        {% block scripts %}
+        {% endblock scripts %}
     </body>
 </html>
