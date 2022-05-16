@@ -886,10 +886,13 @@ $(document).ready(function(){
             let next_url = document.activeElement.href;
             window.localStorage.setItem('timer', sec);
             if (next_url.includes('take_test')) {
+                if (next_url.includes('submit')) {
+                    window.localStorage.removeItem("timer");
+                }
                 return
             }
             else {
-                window.localStorage.clear();
+                window.localStorage.removeItem("timer");
                 var s = "You have unsaved changes. Really leave?";
 
                 event = event || window.event;
@@ -898,6 +901,10 @@ $(document).ready(function(){
                 return s;
             }
         }
+
+        // window.onunload = function(event) {
+        //     $('#test-submit').submit();
+        // }
 
         $(document).on('input', '.test-option', function(){
             let option = $(this).val();

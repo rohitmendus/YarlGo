@@ -56,6 +56,9 @@ class Test(models.Model):
 		end_time = datetime.datetime.combine(self.date_scheduled, self.closing_time)
 		return start_time <= datetime.datetime.now() < end_time
 
+	def test_taken(self, user):
+		return self.reports.filter(user=user).exists()
+
 class UserQuestion(models.Model):
 	STATE_CHOICES = [
         (0, 'Wrong'),

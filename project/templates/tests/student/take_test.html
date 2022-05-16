@@ -95,9 +95,9 @@
       <div class="modal-body">Are you sure you want to submit the test?<span id="test-submit-info" class="d-block"></span></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form method="post", action="{% url 'submit_test' %}">
+        <form method="post" action="{% url 'submit_test' %}" id="test-submit">
         	{% csrf_token %}
-        	<button type="submit" class="btn btn-primary" id="test-submit-btn">Confirm</a>
+        	<button type="submit" class="btn btn-primary">Confirm</a>
         </form>
       </div>
     </div>

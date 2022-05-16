@@ -605,6 +605,8 @@ class TestPromptView(LoginRequiredMixin, StudentRedirectMixin, View):
 
 		if test.is_open != True:
 			return redirect('/unauthorized')
+		if test.test_taken(request.user):
+			return redirect('/unauthorized')
 
 		request.session['test_id'] = test_id
 		topics_dist = test.distributions['topics']
@@ -625,6 +627,8 @@ class TakeTestView(LoginRequiredMixin, StudentRedirectMixin, View):
 	def get(self, request):
 		test = Test.objects.get(id=request.session['test_id'])
 		if test.is_open != True:
+			return redirect('/unauthorized')
+		if test.test_taken(request.user):
 			return redirect('/unauthorized')
 
 		if 'test_status' not in request.session or request.session['test_status'] != 0:
@@ -757,6 +761,7 @@ def submit_test(request):
 		del request.session['test_id']
 		del request.session['test_status']
 		del request.session['test_started_on']
+		request.session.modified = True
 		batch_id = request.session['batch_id']
 		return redirect(f'/batches/batch/{batch_id}/')
 

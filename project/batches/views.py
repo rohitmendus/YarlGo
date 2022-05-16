@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from accounts.mixins import AdminRedirectMixin, StudentRedirectMixin
 # Response objects
-import json
+import json, datetime
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
@@ -220,7 +220,16 @@ class StudentBatchView(LoginRequiredMixin, StudentRedirectMixin, UpdateView):
 
 	def get(self, request, batch_id):
 		request.session['batch_id'] = batch_id
-		tests = Test.objects.filter(batch_id=batch_id)
+		now = datetime.datetime.now().time()
+		today = datetime.date.today()
+		test_list = []
+		tests = Test.objects.filter(batch_id=batch_id, date_scheduled__gte=today)
+		for test in tests:
+			if test.date_scheduled == today:
+				if test.closing_time > now:
+					test_list.append(test)
+			else:
+				test_list.append(test)
 		batch_timings = BatchTiming.objects.filter(batch_id=batch_id)
 		context = {'tests': tests, 'batch_timings': batch_timings}
 		return render(request, self.template_name, context)
