@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from subjects.models import Topic, Subject
 from batches.models import Batch
 from .models import Option, Question, Test, UserTest, UserQuestion
-from .forms import TopicDistributionForm, TestForm
+# Forms
+from .forms import TopicDistributionForm, TestForm, QuestionEditorForm
 from django.forms import formset_factory
 # CBS Views
 from django.views import View
@@ -55,7 +56,20 @@ class CreateQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 	def post(self, request):
 		subject = Subject.objects.get(id=request.session['subject_id'])
-		question = request.POST.get('question')
+		# question = request.POST.get('question')
+		form = QuestionEditorForm(request.POST)
+		if form.is_valid():
+			question = form.cleaned_data.get('question')
+		else:
+			# Sending response
+			response1 = render_to_string(self.submit_response, {'success': False, 
+				'errors': ['Question is invalid']})
+			response2 = render_to_string(self.table, {'questions': Question.objects.filter(topic__subject=subject),
+				'topics': Topic.objects.filter(subject=subject)})
+			response = {
+				'response1': response1, 'response2': response2
+			}
+			return JsonResponse(response)
 		topic_name = request.POST.get('topic')
 		topic = Topic.objects.get(name=topic_name)
 		answer_opt = request.POST.get('answer')
@@ -117,7 +131,8 @@ class CreateQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 
 	def get(self, request):
 		subject = Subject.objects.get(id=request.session['subject_id'])
-		context = {'topics': Topic.objects.filter(subject=subject)}
+		context = {'topics': Topic.objects.filter(subject=subject),
+				'question_form': QuestionEditorForm}
 		return render(request, 'tests/faculty/create_question.html', context)
 
 class DownloadQuestionTempView(LoginRequiredMixin, FacultyRedirectMixin, View):
@@ -243,11 +258,23 @@ class EditQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		question = Question.objects.get(id=question_id)
 		topics = Topic.objects.filter(subject=subject)
 		return render(request, self.template_name, {"question": question, 
-			"topics": topics})
+			"topics": topics, 'question_form': QuestionEditorForm(instance=question)})
 
 	def post(self, request, question_id):
 		subject = Subject.objects.get(id=request.session['subject_id'])
-		question = request.POST.get('edit_question')
+		form = QuestionEditorForm(request.POST)
+		if form.is_valid():
+			question = form.cleaned_data.get('question')
+		else:
+			# Sending response
+			response1 = render_to_string(self.submit_response, {'success': False, 
+				'errors': ['Question is invalid']})
+			response2 = render_to_string(self.table, {'questions': Question.objects.filter(topic__subject=subject),
+				'topics': Topic.objects.filter(subject=subject)})
+			response = {
+				'response1': response1, 'response2': response2
+			}
+			return JsonResponse(response)
 		topic_name = request.POST.get('edit_topic')
 		topic = Topic.objects.get(name=topic_name)
 		answer_opt = request.POST.get('edit_answer')

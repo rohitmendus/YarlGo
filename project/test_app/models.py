@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from subjects.models import Topic
 from batches.models import Batch
+from ckeditor_uploader.fields import RichTextUploadingField
 import datetime
 
 # Create your models here.
@@ -12,7 +13,7 @@ class Option(models.Model):
 		return self.text
 
 class Question(models.Model):
-	question = models.CharField(max_length=500, unique=True)
+	question = RichTextUploadingField(max_length=1000, unique=True)
 	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="questions")
 	answer = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="answer_question")
 	options = models.ManyToManyField(Option, related_name="option_question")

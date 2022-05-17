@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 # Forms
 from django.forms import formset_factory
 from .forms import SubjectForm, TopicForm
-from test_app.forms import TestForm, TopicDistributionForm
+from test_app.forms import TestForm, TopicDistributionForm, QuestionEditorForm
 # CBS Views
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView, UpdateView
@@ -284,6 +284,7 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context['batches'] = batches
 		questions = Question.objects.filter(topic__subject=subject)
 		context['questions'] = questions
+		context['question_form'] = QuestionEditorForm
 		
 		context['test_form'] = TestForm(request)
 		TopicDistributionFormSet = formset_factory(TopicDistributionForm)

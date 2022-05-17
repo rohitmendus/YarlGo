@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import django.conf.global_settings
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'tempus_dominus',
+    'ckeditor',
+    'ckeditor_uploader',
     'accounts',
     'exams',
     'subjects',
@@ -120,6 +123,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = "/dashboard"
 LOGOUT_REDIRECT_URL = "/accounts/login"
@@ -151,3 +158,41 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'toolbar': [
+#             ['Undo', 'Redo',
+#              '-', 'Bold', 'Italic', 'Underline',
+#              '-', 'Link', 'Unlink', 'Anchor',
+#              '-', 'Format',
+#              '-', 'SpellChecker', 'Scayt',
+#              '-', 'Maximize',
+#              '-', 'Language',
+#             ],
+#         ],
+        
+#         'toolbarCanCollapse': False,
+#     },
+# }
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Styles', 'Format'],
+            ['Bold', 'Italic', 'Underline', 'Strikethrough', 'Subscript', 'Superscript', 'Undo', 'Redo'],
+            ['NumberedList', 'BulletedList'],
+            ['Link', 'Unlink'],
+            ['Image', 'Table'],
+            {'name': 'math', 'items': ['Mathjax', ]},
+            ['RemoveFormat', 'Source']
+        ],
+        'height': '100%',
+        'width': '100%',
+        'mathJaxLib': '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+        'extraPlugins': ','.join(['mathjax', ]),
+    }
+}

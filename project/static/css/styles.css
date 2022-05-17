@@ -11890,3 +11890,6 @@ body {
 .clear-answer:hover {
   color: #9e9e9d;
 }
+.django-ckeditor-widget{
+  width: 100%;
+}

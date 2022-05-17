@@ -1,10 +1,14 @@
+{% load widget_tweaks %}
 <form action="{% url 'create_question' %}" method="post" id="create-question-form">
 	{% csrf_token %}
-	<div class="form-floating mb-3">
+	{{ question_form.media }}
+	<p class="mb-3" style="font-size: 1.15em;">Question</p>
+	{% render_field question_form.question %}
+	<!-- <div class="form-floating mb-3">
 	  <input type="text" class="form-control" id="inputQuestion" name="question" required>
 	  <label for="inputQuestion">Question</label>
-	</div>
-	<div class="form-floating mb-3">
+	</div> -->
+	<div class="form-floating my-3">
 	  <select class="form-select" id="inputTopic" name="topic">
 	  	{% for topic in topics %}
 	    <option {% if forloop.counter == 1 %}selected{% endif %} value="{{topic}}">{{topic}}</option>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Test
+from .models import Test, Question
 from subjects.models import Topic, Subject
 from batches.models import Batch
 from django.conf import settings
@@ -8,6 +8,11 @@ import datetime
 from batches.utils import is_time_between
 
 today = str(datetime.datetime.today())
+
+class QuestionEditorForm(forms.ModelForm):
+	class Meta:
+		model = Question
+		fields = ('question',)
 
 class TestForm(forms.ModelForm):
 	date_scheduled = forms.DateField(
