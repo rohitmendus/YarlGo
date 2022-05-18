@@ -31,30 +31,6 @@ def get_subject_form(request):
 	faculties = Role.objects.filter(name="faculty").values_list('users__first_name', 'users__last_name', 'users__username', 'users__email')
 	return render(request, 'subjects/admin/create_subject.html', {'form': SubjectForm(), 'faculties': faculties})
 
-@login_required
-def get_question_date_graph(request):
-	if request.method == "GET":
-		subject = Subject.objects.get(id=request.session['subject_id'])
-		to_date = request.GET.get('to_date')
-		to_date = datetime.datetime.strptime(to_date, "%m/%d/%Y")
-		from_date = to_date.date() - datetime.timedelta(days=7)
-		question_date_set = {}
-		for i in Question.objects.filter(topic__subject=subject, 
-			date_created__date__gte=from_date, 
-			date_created__date__lte=to_date).order_by('date_created'):
-			date = i.date_created.strftime("%d %b")
-			if date in question_date_set:
-				question_date_set[date] += 1
-			else:
-				question_date_set[date] = 1
-		labels = []
-		data = []
-		for i in question_date_set:
-			labels.append(i)
-			data.append(question_date_set[i])
-		response = {'labels': labels, 'data': data}
-		return JsonResponse(response)
-
 class AdminSubjectsView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "subjects/admin/subjects.html"
 	model = Subject
@@ -260,6 +236,34 @@ def get_topic_form(request):
 	form = TopicForm()
 	return render(request, 'subjects/faculty/create_topic.html', {'form_topic': form})
 
+@login_required
+def get_question_date_graph(request):
+	if request.method == "GET":
+		subject = Subject.objects.get(id=request.session['subject_id'])
+
+		from_date = request.GET.get('from_date')
+		from_date = datetime.datetime.strptime(from_date, "%m/%d/%Y")
+		to_date = from_date.date() + datetime.timedelta(days=6)
+
+		question_date_set = {}
+		for c in range(7):
+			date = from_date + datetime.timedelta(days=c)
+			date = date.strftime("%d %b")
+			question_date_set[date] = 0
+
+		for i in Question.objects.filter(topic__subject=subject, 
+			date_created__date__gte=from_date, 
+			date_created__date__lte=to_date).order_by('date_created'):
+			date = i.date_created.strftime("%d %b")
+			question_date_set[date] += 1
+
+		labels = []
+		data = []
+		for i in question_date_set:
+			labels.append(i)
+			data.append(question_date_set[i])
+		response = {'labels': labels, 'data': data}
+		return JsonResponse(response)
 
 class FacultyAllotmentView(LoginRequiredMixin, FacultyRedirectMixin, ListView):
 	context_object_name = "allotments"
@@ -300,16 +304,18 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		context['tests'] = tests
 
 
-		from_date = datetime.datetime.now().date() - datetime.timedelta(days=7)
+		from_date = datetime.datetime.now().date() - datetime.timedelta(days=6)
 		question_date_set = {}
+		for c in range(7):
+			date = from_date + datetime.timedelta(days=c)
+			date = date.strftime("%d %b")
+			question_date_set[date] = 0
 		for i in Question.objects.filter(topic__subject=subject, 
 			date_created__date__gte=from_date).order_by('date_created'):
 			date = i.date_created.strftime("%d %b")
-			if date in question_date_set:
-				question_date_set[date] += 1
-			else:
-				question_date_set[date] = 1
+			question_date_set[date] += 1
 		context['question_date'] = question_date_set
+
 
 		faculty_question_set = []
 		for i in FacultyRight.objects.filter(subject=subject):
