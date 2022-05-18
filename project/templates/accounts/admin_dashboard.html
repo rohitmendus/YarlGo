@@ -1,0 +1,93 @@
+<h1 class="my-4">Dashboard</h1>
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-white bg-info mb-3 text-center shadow-sm">
+          <div class="card-header"><i class="fa-solid fa-graduation-cap me-2"></i></i>Students</div>
+          <div class="card-body">
+            <h3 class="card-title">
+                {{ enrolled_students }} / {{ total_students }}
+            </h3>
+          </div>
+          <div class="card-footer"><h6>Enrolled / Total</h6></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-white bg-success mb-3 text-center shadow-sm">
+          <div class="card-header"><i class="fa-solid fa-users me-2"></i>Faculty</div>
+          <div class="card-body">
+            <h3 class="card-title">
+                {{ total_faculty }}
+            </h3>
+          </div>
+          <div class="card-footer"><h6>Total</h6></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-white bg-warning mb-3 text-center shadow-sm">
+          <div class="card-header"><i class="fa-solid fa-chalkboard-user me-2"></i>Batches</div>
+          <div class="card-body">
+            <h3 class="card-title hstack gap-3 justify-content-center">
+                {{ running_batches }} <div class="vr"></div> {{ upcoming_batches }}
+            </h3>
+          </div>
+          <div class="card-footer"><h6 class="hstack gap-3 justify-content-center">&nbsp;&nbsp;&nbsp;Running <div class="vr"></div> Upcoming</h6></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card text-white bg-danger mb-3 text-center shadow-sm">
+          <div class="card-header"><i class="fa-solid fa-flask-vial me-2"></i>Exams</div>
+          <div class="card-body">
+            <h3 class="card-title hstack gap-3 justify-content-center">
+                {{ total_exams }} <div class="vr"></div> {{ total_exam_cats }}
+            </h3>
+          </div>
+          <div class="card-footer"><h6 class="hstack gap-3 justify-content-center">Exam <div class="vr"></div> Exam Categories</h6></div>
+        </div>
+    </div>
+</div>
+<div class="row my-3">
+    <div class="col-12">
+        <div class="card text-center shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Running Batches</h5>
+            </div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        {% for batch in batches %}
+                        <div class="col-12 col-lg-6 col-xl-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">{{batch}}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered table-responsive">
+                                          <tbody>
+                                            <tr>
+                                              <td>Exam Category: </td>
+                                              <td>{{ batch.exam_category }}</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Started: </td>
+                                              <td>{{ batch.opening_date }}</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Closes on:</td>
+                                              <td>{{ batch.closing_date }}</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Students Enrolled</td>
+                                              <td>{{ batch.students.all|length }}</td>
+                                            </tr>
+                                          </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

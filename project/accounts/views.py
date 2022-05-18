@@ -13,14 +13,15 @@ from .forms import CustomUserCreationForm
 from .models import Profile, Role
 from django.contrib.auth.models import User
 from batches.models import Batch
+from exams.models import MainExam, ExamCategory
 # CBS Views
-from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from django.views import View
 # Others
 from django.conf import settings
 from django.core.mail import send_mail
+import datetime
 
 @login_required
 def redirect_dashboard(request):
@@ -146,8 +147,35 @@ class EditUserView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 
 
 # Create your views here.
-class DashboardView(LoginRequiredMixin, TemplateView):
+class DashboardView(LoginRequiredMixin, View):
 	template_name = "accounts/dashboard.html"
+
+	def get(self, request):
+		user_role = str(list(request.user.roles.all())[0])
+		if user_role == "admin":
+			students = User.objects.filter(roles__name="student")
+			total_students = students.count()
+			enrolled_students = 0
+			for student in students:
+				if student.batches.all().count() > 0:
+					enrolled_students += 1
+
+			total_faculty = User.objects.filter(roles__name="faculty").count()
+			today = datetime.datetime.today()
+			batches = Batch.objects.filter(opening_date__lte=today, closing_date__gte=today)
+			running_batches = batches.count()
+			upcoming_batches = Batch.objects.filter(opening_date__gt=today).count()
+			total_exams = MainExam.objects.all().count()
+			total_exam_cats = ExamCategory.objects.all().count()
+
+			context = {'total_students': total_students, 'enrolled_students': enrolled_students,
+				'total_faculty': total_faculty, 'running_batches': running_batches,
+				'upcoming_batches': upcoming_batches, 'total_exams': total_exams,
+				'total_exam_cats': total_exam_cats, 'batches': batches}
+		else:
+			context = {}
+
+		return render(request, self.template_name, context)
 
 class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 	template_name = "accounts/users.html"

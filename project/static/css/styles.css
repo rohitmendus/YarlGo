@@ -11893,3 +11893,8 @@ body {
 .django-ckeditor-widget{
   width: 100%;
 }
+.vr {
+  width: 2px;
+  opacity: 1;
+  color: white;
+}
