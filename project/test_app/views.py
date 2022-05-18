@@ -257,29 +257,30 @@ class EditQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		subject = Subject.objects.get(id=self.request.session['subject_id'])
 		question = Question.objects.get(id=question_id)
 		topics = Topic.objects.filter(subject=subject)
-		return render(request, self.template_name, {"question": question, 
-			"topics": topics, 'question_form': QuestionEditorForm(instance=question)})
+		response = render_to_string(self.template_name, {"question": question, 
+			"topics": topics, 'question_form': QuestionEditorForm(instance=question)},
+			request=request)
+		return JsonResponse(response, safe=False)
 
 	def post(self, request, question_id):
+		question_obj = Question.objects.get(id=question_id)
 		subject = Subject.objects.get(id=request.session['subject_id'])
-		form = QuestionEditorForm(request.POST)
+		form = QuestionEditorForm(request.POST, instance=question_obj)
 		if form.is_valid():
 			question = form.cleaned_data.get('question')
 		else:
+			error_messages = []
+			errors = json.loads(form.errors.as_json())
+			for x in errors:
+				for y in errors[x]:
+					error_messages.append(y['message'])
 			# Sending response
-			response1 = render_to_string(self.submit_response, {'success': False, 
-				'errors': ['Question is invalid']})
-			response2 = render_to_string(self.table, {'questions': Question.objects.filter(topic__subject=subject),
-				'topics': Topic.objects.filter(subject=subject)})
-			response = {
-				'response1': response1, 'response2': response2
-			}
+			response = {'success': False, 'errors': error_messages}
 			return JsonResponse(response)
 		topic_name = request.POST.get('edit_topic')
 		topic = Topic.objects.get(name=topic_name)
 		answer_opt = request.POST.get('edit_answer')
 		
-		question_obj = Question.objects.get(id=question_id)
 		question_obj.topic = topic
 		question_obj.question = question
 		question_obj.modified_by = request.user
@@ -332,7 +333,10 @@ class EditQuestionView(LoginRequiredMixin, FacultyRedirectMixin, View):
 			# Reponse
 			table_response = render_to_string(self.table, {'questions': Question.objects.filter(topic__subject=subject),
 				'topics': Topic.objects.filter(subject=subject)})
-			response = {'success': True, 'table_response': table_response}
+			context = {'topics': Topic.objects.filter(subject=subject),
+				'question_form': QuestionEditorForm}
+			form_response = render_to_string('tests/faculty/create_question.html', context, request=request)
+			response = {'success': True, 'table_response': table_response, 'form_response': form_response}
 			return JsonResponse(response)
 
 

@@ -642,19 +642,27 @@ $(document).ready(function(){
             });
         })
     });
+    $(document).on('click', '.edit-question', function(e){
+        const url = $(this).attr('href');
+        e.preventDefault()
+        $.get(url, function(response){
+            $('#question-heading').text('Edit Question')
+            $('#create-question').html(response);
+        })
+    });
     $(document).on('submit', '#edit-question-form', function(e){
         e.preventDefault();
         const url = $(this).attr('action');
         const data = $(this).serialize();
-        const edit_modal = $('#edit-question-modal')
         $.ajax({
             url: url,
             data: data,
             type: 'post',
             success: function(response){
-                edit_modal.modal('hide');
                 if (response.success) {
                     refresh_table(response.table_response, $('#question-table'), 'question-list-table');
+                    $('#question-heading').text('Add Question')
+                    $('#create-question').html(response.form_response);
                     $('#edit-question-success').removeClass('d-none');
                 } else {
                     let elem = $('#edit-question-fail span')

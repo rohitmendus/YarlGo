@@ -32,7 +32,7 @@
 					<td>{{ question|striptags|truncatewords:10 }}</td>
 					<td>{{question.topic}}</td>
 					<td class="text-center">
-						<a class="edit-question" hx-get="{% url 'edit_question' question.id %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#edit-question-form" style="cursor: pointer;">
+						<a class="edit-question" href="{% url 'edit_question' question.id %}">
 							<i class="fa-solid fa-pen"></i>
 						</a>
 					</td>
@@ -64,10 +64,10 @@
   </div>
 </div>
 <!-- Edit exam modal -->
-<div class="modal fade" id="edit-question-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="edit-question-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
     	<form id='edit-question-form'></form>
     </div>
   </div>
-</div>
+</div> -->
