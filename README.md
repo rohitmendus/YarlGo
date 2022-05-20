@@ -34,5 +34,5 @@ This app has the following components(apps in Django):
 
 ## How to Install
  1. Clone the repo
- 2. In your virtual env or python environment install the dependencies mentioned in the [requirments.txt]([https://link-url-here.org](https://github.com/rohitmendus/YarlGo/blob/main/requirements.txt)) file.
+ 2. In your virtual env or python environment install the dependencies mentioned in the [requirments.txt]([https://github.com/rohitmendus/YarlGo/blob/main/requirements.txt]) file.
  3. In the settings.py file replace the database configuration and the secret key with yours.
