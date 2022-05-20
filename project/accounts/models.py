@@ -25,7 +25,7 @@ class Profile(models.Model):
 	age = models.PositiveIntegerField(blank=True, null=True)
 	sex = models.CharField(choices=sex_type, max_length=15, blank=True)
 	salutation = models.CharField(choices=salutations, max_length=15, default="Mr")
-	avatar = models.ImageField(upload_to="pics", blank=True)
+	avatar = models.ImageField(upload_to="avatars", blank=True)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 	def __str__(self):

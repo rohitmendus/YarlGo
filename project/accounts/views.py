@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .mixins import AdminRedirectMixin
 # Forms
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserEditForm, ProfileForm
 # Models
 from .models import Profile, Role
 from django.contrib.auth.models import User
@@ -234,6 +234,8 @@ class DashboardView(LoginRequiredMixin, View):
 				'assigned_batches': assigned_batches, 'running_batches': running_batches.count(),
 				'ongoing_classes': ongoing_classes, 'total_students': total_students,
 				'enrolled_students': enrolled_students}
+		else:
+			context = {}
 
 		return render(request, self.template_name, context)
 
@@ -249,4 +251,36 @@ class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 		context.update({'password': User.objects.make_random_password(),
 			'roles': self.roles, 'form': self.form})
 		return context
+
+
+
+class SettingsView(LoginRequiredMixin, View):
+	template_name = "accounts/settings.html"
+
+	def get(self, request):
+		user_form = UserEditForm(instance=request.user)
+		profile_form = ProfileForm(instance=request.user.profile)
+		context = {'user_form': user_form, 'profile_form': profile_form}
+		return render(request, self.template_name, context)
+
+	def post(self, request):
+		user_form = UserEditForm(data=request.POST, instance=request.user)
+		profile_form = ProfileForm(data=request.POST, files=request.FILES, instance=request.user.profile)
+		if user_form.is_valid() and profile_form.is_valid():
+			user_form.save()
+			profile_form.save()
+			response = {'success': True}
+			return JsonResponse(response)
+		else:
+			error_messages = []
+			form1_errors = json.loads(user_form.errors.as_json())
+			for x in form1_errors:
+				for y in form1_errors[x]:
+					error_messages.append(y['message'])
+			form2_errors = json.loads(profile_form.errors.as_json())
+			for x in form2_errors:
+				for y in form2_errors[x]:
+					error_messages.append(y['message'])
+			response = {'success': False, 'errors': error_messages}
+			return JsonResponse(response)
 		

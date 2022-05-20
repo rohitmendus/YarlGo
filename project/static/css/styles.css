@@ -11912,3 +11912,43 @@ body {
 .faculty-info-container {
   height: 100px;
 }
+.img-box {
+  color: transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.img-box input {
+  display: none;
+}
+.img-box img {
+  position: absolute;
+  object-fit: cover;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  z-index: 0;
+}
+.img-box label {
+  cursor: pointer;
+  width: 200px;
+  height: 200px;
+}
+.img-box:hover label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 50%;
+  margin-bottom: 0;
+}
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}

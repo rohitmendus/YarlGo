@@ -54,6 +54,10 @@ function refresh_batch_timing_table(response, table) {
     htmx.process(document)
 }
 
+function profile_change_img(e) {
+    let filePath = URL.createObjectURL(event.target.files[0]); 
+    document.getElementById("profile-pic-img").src = filePath;
+}
 
 $(document).ready(function(){
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -987,8 +991,34 @@ $(document).ready(function(){
         let text = `${filled}/${total}`
         $('#bank-status').text(text);
     });
-     $(document).on('change', '#select-subject-questions', function(){
+    $(document).on('change', '#select-subject-questions', function(){
         let num = $("option:selected", this).data('questions');
         $('#question-num').text(num);
+    });
+
+    $(document).on('submit', '#edit-profile-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = new FormData(this);
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                if (response.success) {
+                    $('#profile-success').removeClass('d-none');
+                } else {
+                    let elem = $('#profile-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#profile-fail').removeClass('d-none');
+                }
+            }
+        });
     });
 }); 

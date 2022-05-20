@@ -1,0 +1,66 @@
+{% load static %}
+{% load widget_tweaks %}
+<form class="col-12" enctype="multipart/form-data" method="post" action="{% url 'settings' %}"id="edit-profile-form">
+	{% csrf_token %}
+	<div class="row justify-content-center mb-3">
+		<div class="col-md-6">
+			<div class="img-box">
+        <label for="profile-pic">
+          <i class="fa-solid fa-camera d-inline-flex me-2"></i>
+          <span class="d-inline-flex">Change Image</span>
+        </label>
+        <input type="file" name="avatar" accept="image/*" onchange="profile_change_img(event)" id="profile-pic">
+        {% if profile_form.instance.avatar %}
+        <img src="{% get_media_prefix %}{{ profile_form.instance.avatar }}" id="profile-pic-img"/>
+        {% else %}
+        <img src="{% static 'images/profile.jpg' %}" id="profile-pic-img"/>
+        {% endif %}
+      </div>
+		</div>
+	</div>
+  <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6">
+          <div class="mb-3 mb-md-0">
+          	<label for="profileFirstName" class="form-label">First name</label>
+          	{% render_field user_form.first_name class="form-control" id="profileFirstName" %}               
+          </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+          <div class="mb-3">
+          	<label for="profileLastName" class="form-label">Last name</label>
+          	{% render_field user_form.last_name class="form-control" id="profileLastName" %}		                
+          </div>
+      </div>
+  </div>
+  <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6">
+          <div class="mb-3 mb-md-0">
+          	<label for="profileAge" class="form-label">Age</label>
+          	{% render_field profile_form.age class="form-control" id="profileAge" %}
+          </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+          <div class="mb-3">
+          	<label for="profileSex" class="form-label">Sex</label>
+          	{% render_field profile_form.sex class="form-select" id="profileSex" %}
+          </div>
+      </div>
+  </div>
+  <div class="row mb-3 justify-content-center">
+    	<div class="col-lg-4 col-md-6">
+          <div class="mb-3">
+          	<label for="profileSalutation" class="form-label">Salutation</label>
+          	{% render_field profile_form.salutation class="form-select" id="profileSalutation" %}
+          </div>
+      </div>
+    <div class="col-lg-4 col-md-6">
+          <div class="mb-3 mb-md-0">
+          	<label for="profilePhone" class="form-label">Phone</label>
+          	{% render_field profile_form.phone class="form-control" id="profilePhone" %}
+          </div>
+      </div>
+  </div>
+  <div class="row mb-3 justify-content-center">
+  	<input type="submit" value="Save Changes" class="btn btn-primary col-7">
+  </div>
+</form>
