@@ -1,0 +1,120 @@
+{% load static %}
+<div class="row">
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body faculty-status-container">
+            <div class="card-text d-flex">
+                <span class="fs-5">Bank Status:
+                <span class="fs-4" id="bank-status">0/0</span>
+                </span>
+                <div class="ms-5">
+                    <select class="form-select form-select-sm" id="select-subject-bank">
+                      <option value="" selected disabled>Select Subject</option>
+                      {% for subject_obj in subjects %}
+                      <option value="{{ subject_obj.subject }}" data-total="{{ subject_obj.topics }}" data-filled="{{ subject_obj.filled_banks }}">{{ subject_obj.subject }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <img class="mt-3" src="{% static 'images/graph.png' %}">
+          </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body faculty-status-container">
+            <div class="card-text d-flex">
+                <span class="fs-5">Total Questions:
+                <span class="fs-4" id="question-num">0</span>
+                </span>
+                <div class="ms-5">
+                    <select class="form-select form-select-sm" id="select-subject-questions">
+                      <option value="" selected disabled>Select Subject</option>
+                      {% for subject_obj in subjects %}
+                      <option value="{{ subject_obj.subject }}" data-questions="{{ subject_obj.questions }}">{{ subject_obj.subject }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <img class="mt-3" src="{% static 'images/graph2.png' %}">
+          </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body faculty-status-container">
+            <div class="card-text text-center mb-3">
+                <span class="fs-5">Tests Scheduled</span>
+            </div>
+            <canvas id="BarChart3" width="100%" height="30"></canvas>
+          </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm bg-info text-white">
+          <div class="card-header text-center"><i class="fa-solid fa-chalkboard-user me-2"></i><h5 class=" d-inline mb-0">Batches</h5></div>
+          <div class="card-body faculty-info-container row">
+            <div class="col-6 text-center border-end border-2">
+                <h6>Assigned</h6>
+                <span class="fs-4">{{ assigned_batches }}</span>
+            </div>
+            <div class="col-6 text-center">
+                <h6>Running</h6>
+                <span class="fs-4">{{ running_batches }}</span>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm bg-warning text-white text-center">
+          <div class="card-header"><i class="fa-solid fa-school me-2"></i><h5 class=" d-inline mb-0">Ongoing Classes</h5></div>
+          <div class="card-body faculty-info-container row">
+            <dic class="card-text">
+                <span class="fs-3">{{ ongoing_classes|length }}</span>
+            </dic>
+          </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm bg-danger text-white">
+          <div class="card-header text-center"><i class="fa-solid fa-graduation-cap me-2"></i><h5 class=" d-inline mb-0">Students</h5></div>
+          <div class="card-body faculty-info-container row">
+            <div class="col-6 text-center border-end border-2">
+                <h6>Total</h6>
+                <span class="fs-4">{{ total_students }}</span>
+            </div>
+            <div class="col-6 text-center">
+                <h6>Enrolled</h6>
+                <span class="fs-4">{{ enrolled_students }}</span>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+<div class="row my-5">
+    <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header text-center"><h5 class="mb-0">Ongoing Classes</h5></div>
+          <div class="card-body p-3">
+            <table class="table table-responsive table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Batch</th>
+                  <th scope="col">Subject</th>
+                  <th scope="col">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for class in ongoing_classes %}
+                <tr {% if class.assigned %}class="table-primary"{% endif %}>
+                  <td>{{ class.batch }}</td>
+                  <td>{{ class.subject }}</td>
+                  <td>{{ class.opening_time }} - {{ class.closing_time }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+</div>

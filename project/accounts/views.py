@@ -12,8 +12,10 @@ from .forms import CustomUserCreationForm
 # Models
 from .models import Profile, Role
 from django.contrib.auth.models import User
-from batches.models import Batch
+from batches.models import Batch, BatchTiming
 from exams.models import MainExam, ExamCategory
+from subjects.models import Subject, Topic
+from test_app.models import Test
 # CBS Views
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
@@ -172,8 +174,66 @@ class DashboardView(LoginRequiredMixin, View):
 				'total_faculty': total_faculty, 'running_batches': running_batches,
 				'upcoming_batches': upcoming_batches, 'total_exams': total_exams,
 				'total_exam_cats': total_exam_cats, 'batches': batches}
-		else:
-			context = {}
+		elif user_role == "faculty":
+			subject_objs = Subject.objects.filter(faculty_rights__user=request.user)
+			today = datetime.datetime.today()
+			now = datetime.datetime.now().time()
+			subjects = []
+			for subject_obj in subject_objs:
+				topics = subject_obj.topics.all()
+				obj = {'subject': subject_obj.name, 'topics': topics.count(),
+					'filled_banks': 0, 'questions': 0}
+				for topic in topics:
+					num = topic.questions.all().count() 
+					obj['questions'] += num
+					if num > 0:
+						obj['filled_banks'] += 1
+				subjects.append(obj)
+
+			from_date = today - datetime.timedelta(days=6)
+			test_date_set = {}
+			for c in range(7):
+				date = from_date + datetime.timedelta(days=c)
+				date = date.strftime("%d %b")
+				test_date_set[date] = 0
+			for i in Test.objects.filter(
+				date_created__date__gte=from_date).order_by('date_created'):
+				for x in i.distributions['topics']:
+					topic = Topic.objects.get(id=x['topic_id'])
+					if topic.subject in subject_objs:				
+						date = i.date_created.strftime("%d %b")
+						test_date_set[date] += 1
+						break
+
+			running_batches = Batch.objects.filter(opening_date__lte=today, 
+				closing_date__gte=today).distinct()
+			assigned_batches = Batch.objects.filter(
+				exam_category__subjects__in=list(subject_objs)).distinct().count()
+
+			batch_timing_objs = BatchTiming.objects.filter(batch__in=list(running_batches),
+				opening_time__lte=now, closing_time__gte=now)
+			ongoing_classes = []
+			for i in batch_timing_objs:
+				assigned= False
+				for x in i.subject.faculty_rights.all():
+					if x.user == request.user:
+						assigned = True
+				obj = {'batch': i.batch.name, 'subject': i.subject.name, 'assigned': assigned,
+					'opening_time': i.opening_time, 'closing_time': i.closing_time,}
+				ongoing_classes.append(obj)
+			
+			students = User.objects.filter(roles__name="student")
+			total_students = students.count()
+			enrolled_students = 0
+			for student in students:
+				if student.batches.all().count() > 0:
+					enrolled_students += 1
+
+
+			context = {'subjects': subjects, 'test_date_set': test_date_set,
+				'assigned_batches': assigned_batches, 'running_batches': running_batches.count(),
+				'ongoing_classes': ongoing_classes, 'total_students': total_students,
+				'enrolled_students': enrolled_students}
 
 		return render(request, self.template_name, context)
 

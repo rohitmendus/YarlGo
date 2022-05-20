@@ -11898,3 +11898,17 @@ body {
   opacity: 1;
   color: white;
 }
+.faculty-status-container {
+  height: 210px;
+  position: relative;
+}
+.faculty-status-container img {
+  width: 75%;
+  height: 100px;
+  position: absolute;
+  left: 10%;
+  transform: translate();
+}
+.faculty-info-container {
+  height: 100px;
+}

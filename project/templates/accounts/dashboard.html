@@ -3,9 +3,52 @@
 {% block content %}
 <main>
     <div class="container-fluid px-5">
+        <h1 class="my-4">Dashboard</h1>
         {% if user_role.name == 'admin' %}
         {% include 'accounts/admin_dashboard.html' %}
+        {% elif user_role.name == 'faculty' %}
+        {% include 'accounts/faculty_dashboard.html' %}
         {% endif %}
     </div>
 </main>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    var ctx = document.getElementById("BarChart3");
+    if (ctx) {
+      var barGraph2 = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [{%for i in test_date_set%}'{{i}}',{%endfor%}],
+          datasets: [{
+            label: "Tests",
+            backgroundColor: "rgba(2,117,216,1)",
+            borderColor: "rgba(2,117,216,1)",
+            data: [{%for key, value in test_date_set.items %}'{{value}}',{%endfor%}],
+          }],
+        },
+        options: {
+          scales: {
+            xAxes: [{
+              gridLines: {
+                display: false
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                maxTicksLimit: 5,
+                beginAtZero: true
+              },
+              gridLines: {
+                display: true
+              }
+            }]
+          },
+          legend: {
+            display: false
+          }
+        }
+      });
+    }
+</script>
 {% endblock %}

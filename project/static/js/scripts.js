@@ -89,7 +89,7 @@ $(document).ready(function(){
         }
     });
 
-    $('#create-user-form').on('submit', function(e){
+    $(document).on('submit', '#create-user-form', function(e){
         e.preventDefault();
         const url = $(this).attr('action');
         const data = $(this).serialize();
@@ -979,5 +979,16 @@ $(document).ready(function(){
             barGraph2.data.datasets[0].data = response.data
             barGraph2.update();
         });
+    });
+
+    $(document).on('change', '#select-subject-bank', function(){
+        let total = $("option:selected", this).data('total');
+        let filled = $("option:selected", this).data('filled');
+        let text = `${filled}/${total}`
+        $('#bank-status').text(text);
+    });
+     $(document).on('change', '#select-subject-questions', function(){
+        let num = $("option:selected", this).data('questions');
+        $('#question-num').text(num);
     });
 }); 
