@@ -10,6 +10,23 @@
         {% include 'accounts/faculty_dashboard.html' %}
         {% endif %}
     </div>
+    {% if not profile_complete %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <i class="fa-solid fa-user me-2"></i>
+          <strong class="me-auto">Complete your Profile</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-light">
+          <span>Your profile isn't complete yet. It takes just a moment to complete.</span>
+          <div class="mt-2 pt-2 border-top">
+            <a href="{% url 'settings' %}" class="btn btn-primary btn-sm">Update Profile</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 </main>
 {% endblock %}
 {% block scripts %}
@@ -50,5 +67,12 @@
         }
       });
     }
+    {% if not profile_complete %}
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function (toastEl) {
+      return new bootstrap.Toast(toastEl, {autohide: false})
+    })
+    toastList.forEach(toast => toast.show());
+    {% endif %}
 </script>
 {% endblock %}

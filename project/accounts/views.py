@@ -237,6 +237,12 @@ class DashboardView(LoginRequiredMixin, View):
 		else:
 			context = {}
 
+		context['profile_complete'] = True
+		profile = request.user.profile
+		if True in [profile.phone == None, profile.age == None, 
+			len(profile.sex) == 0, len(profile.salutation) == 0]:
+			context['profile_complete'] = False
+
 		return render(request, self.template_name, context)
 
 class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
