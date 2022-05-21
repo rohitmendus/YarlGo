@@ -1,12 +1,13 @@
 # Response functions
 from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
-import json
 from django.shortcuts import render, redirect
+from django.contrib.auth import update_session_auth_hash
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .mixins import AdminRedirectMixin
+from django.contrib.auth.forms import PasswordChangeForm
 # Forms
 from .forms import CustomUserCreationForm, UserEditForm, ProfileForm
 # Models
@@ -23,7 +24,7 @@ from django.views import View
 # Others
 from django.conf import settings
 from django.core.mail import send_mail
-import datetime
+import datetime, json
 
 @login_required
 def redirect_dashboard(request):
@@ -289,4 +290,27 @@ class SettingsView(LoginRequiredMixin, View):
 					error_messages.append(y['message'])
 			response = {'success': False, 'errors': error_messages}
 			return JsonResponse(response)
-		
+
+
+class ChangePasswordView(LoginRequiredMixin, View):
+	template_name = "accounts/change_password.html"
+
+	def get(self, request):
+		form = PasswordChangeForm(request.user)
+		return render(request, self.template_name, {'form': form})
+
+	def post(self, request):
+		form = PasswordChangeForm(request.user, request.POST)
+		if form.is_valid():
+			user = form.save()
+			update_session_auth_hash(request, user)
+			response = {'success': True}
+			return JsonResponse(response)
+		else:
+			error_messages = []
+			errors = json.loads(form.errors.as_json())
+			for x in errors:
+				for y in errors[x]:
+					error_messages.append(y['message'])
+			response = {'success': False, 'errors': error_messages}
+			return JsonResponse(response)

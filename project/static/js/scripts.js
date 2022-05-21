@@ -1021,4 +1021,28 @@ $(document).ready(function(){
             }
         });
     });
+
+    $(document).on('submit', '#change-password-form', function(e){
+        e.preventDefault();
+        const url = $(this).attr('action');
+        const data = $(this).serialize();
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'post',
+            success: function(response){
+                if (response.success) {
+                    $('#change-pwd-success').removeClass('d-none');
+                    $('#change-password-form').trigger("reset");
+                } else {
+                    let elem = $('#change-pwd-fail span')
+                    elem.empty();
+                    for (let error of response.errors) {
+                        elem.append(error)
+                    }
+                    $('#change-pwd-fail').removeClass('d-none');
+                }
+            }
+        });
+    });
 }); 
