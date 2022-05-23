@@ -36,3 +36,4 @@ This app has the following components(apps in Django):
  1. Clone the repo
  2. In your virtual env or python environment install the dependencies mentioned in the [requirments.txt](https://github.com/rohitmendus/YarlGo/blob/main/requirements.txt) file.
  3. In the settings.py file replace the database configuration and the secret key with yours.
+ 4. The final step is to load the fixtures in the accounts app. Type in this in the terminal inside the project directory `python manage.py loaddata <fixturename>`. Do this for each fixture. For example `python manage.py loaddata admin_user.json`.
