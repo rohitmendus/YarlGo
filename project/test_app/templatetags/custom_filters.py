@@ -1,6 +1,7 @@
 from django import template
 from test_app.models import Test
 from django.contrib.auth.models import User
+from humanize.time import precisedelta
 
 register = template.Library()
 
@@ -17,3 +18,7 @@ def check_test_taken(test_id, user_id):
     test = Test.objects.get(id=test_id)
     user = User.objects.get(id=user_id)
     return test.test_taken(user)
+
+@register.filter(is_safe=True, name="duration")
+def convert_duration(value, min_unit):
+    return precisedelta(value, minimum_unit=min_unit, suppress=['days'], format="%0.0f")

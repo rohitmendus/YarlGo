@@ -797,4 +797,18 @@ def submit_test(request):
 		return redirect(f'/batches/batch/{batch_id}/')
 
 
+class ReviewAnswersView(View):
+	template_name = "tests/student/review_answers.html"
+
+	def get(self, request, test_id):
+		test_stats = UserTest.objects.get(test_id=test_id, user=request.user)
+
+		questions = UserQuestion.objects.filter(test_id=test_id, user=request.user)
+		
+		page_num = request.GET.get('page')
+		p = Paginator(questions, 10)
+		page = p.get_page(page_num)
+		context = {'test_stats': test_stats, 'questions': page}
+		return render(request, self.template_name, context)
+
 

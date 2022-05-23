@@ -12,7 +12,7 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-8">
+		<div class="col-md-8 col-12">
 			{% for question in questions %}
 			{% get_qn_val request.session questions.number "marked" as is_marked %}
 			{% get_qn_val request.session questions.number "option_choosen" as opt %}
@@ -28,7 +28,7 @@
 					<i class="fa-solid fa-bookmark mark" style="display: none;"></i>
 				</div>
 				{% endif %}
-				<span class="fs-5">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question|safe }}</span>
+				<span class="fs-5 question">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question|safe }}</span>
 				<ul class="list-group list-group-flush mt-3">
 				  <li class="list-group-item">
 				    <input class="form-check-input test-option" type="radio" value="{{ question.option1_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option1_id %}checked{% endif %}>
@@ -53,7 +53,7 @@
 			</div>
 			{% endfor %}
 		</div>
-		<div class="col-4">
+		<div class="col-md-4 col-12">
 			<div class="test-naviagtion-container shadow p-4">
 				<h5 class="text-center mb-4">Test Navigation</h5>
 				<ul class="pagination d-flex flex-wrap justify-content-center">

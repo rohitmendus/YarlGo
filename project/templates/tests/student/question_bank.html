@@ -11,7 +11,7 @@
 		<div class="container">
 			{% for question in questions %}
 			<div class="row mb-4 shadow p-4">
-				<span class="fs-5">{{forloop.counter}}.  &nbsp;&nbsp;{{ question|safe }}</span>
+				<span class="fs-5 question">{{forloop.counter}}.  &nbsp;&nbsp;{{ question|safe }}</span>
 				<ul class="list-group list-group-flush mt-3">
 					{% for option in question.options.all %}
 					<li class="list-group-item {% if option == question.answer %}active{% endif %}">{{ forloop.counter|chr }}. &nbsp;&nbsp;{{option}}</li>

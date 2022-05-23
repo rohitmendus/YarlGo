@@ -1,0 +1,35 @@
+{% load custom_filters %}
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Test Name</th>
+			<th>Started On</th>
+			<th>Finished On</th>
+			<th>Mark</th>
+			<th>Percentage</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for report in test_reports %}
+		<tr class="{% if report.passed %}table-success{% else %}table-danger}{% endif %}">
+			<td>{{report.test}}</td>
+			<td>{{report.started_on}}</td>
+			<td>{{report.completed_on}}</td>
+			<td class="text-center">{{report.marks_gained|floatformat }}/{{ report.test.max_mark|floatformat }}</td>
+			<td class="text-center">{{report.percentage|floatformat }}%</td>
+			<td>
+				<div class="dropdown">
+				  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownTestReport" data-bs-toggle="dropdown" aria-expanded="false">
+				    View Reports
+				  </button>
+				  <ul class="dropdown-menu" aria-labelledby="dropdownTestReport">
+				    <li><a class="dropdown-item">Overall Report</a></li>
+				    <li><a class="dropdown-item" href="{% url 'review_answers' report.test.id %}">My answers</a></li>
+				  </ul>
+				</div>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

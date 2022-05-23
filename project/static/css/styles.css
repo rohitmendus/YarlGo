@@ -11952,3 +11952,17 @@ body {
   height: 35px;
   border-radius: 50%;
 }
+.question p:first-child {
+  display: inline;
+}
+.answer {
+  background-color: #d1e7dd;
+}
+.question-review-container {
+  position: relative;
+}
+.question-score {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+}

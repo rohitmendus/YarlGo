@@ -1,0 +1,116 @@
+{% extends 'components/main.html' %}
+{% load custom_filters %}
+{% block title %}Review Answers{% endblock %}
+{% block content %}
+
+<div class="container p-5">
+	<div class="row mb-5">
+		<div class="col-12">
+			<h2>Review: {{ test_stats.test }}</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-12">
+			<div class="card shadow-sm">
+				<div class="card-body container px-5">
+					<div class="row">
+						<table class="col-12 table table-bordered">
+						  <tbody>
+						    <tr>
+						      <th scope="row" class="table-light">Started On</th>
+						      <td>{{ test_stats.started_on }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Finished On</th>
+						      <td>{{ test_stats.completed_on }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Time Taken</th>
+						      <td>{{ test_stats.time_taken|duration:"minutes" }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Marks</th>
+						      <td>{{ test_stats.marks_gained|floatformat }} out of {{ test_stats.test.max_mark|floatformat }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Percentage</th>
+						      <td>{{ test_stats.percentage|floatformat }}%</td>
+						    </tr>
+						  </tbody>
+						</table>
+					</div>
+					<div class="row">
+						{% for question in questions %}
+						<div class="question-review-container border border-2 p-4 mb-3">
+							<div class="question-score">
+								{% if question.state == 1 %}
+								<span>1/1</span>
+								{% else %}
+								<span>0/1</span>
+								{% endif %}
+							</div>
+							<span class="fs-5 question">{{ forloop.counter }}.  &nbsp;&nbsp;{{ question.question|safe }}</span>
+							<ul class="list-group list-group-flush mt-3">
+							  {% for option in question.question.options.all %}
+							  <li class="list-group-item {% if option == question.question.answer %}answer{% endif %}">
+							    <input class="form-check-input test-option" type="radio" {% if option == question.option_choosen %}checked{% endif %} disabled>
+							      &nbsp;&nbsp;{{ option }}
+							  </li>
+							  {% endfor %}
+							</ul>
+							<div class="question-feedback fs-6 mt-3">
+								<p>Feedback: 
+									{% if question.state == 1 %}
+									<span class="text-success fw-bold">Correct</span>
+									{% elif question.state == 0 %}
+									<span class="text-danger fw-bold">Wrong</span>
+									{% else %}
+									<span class="text-danger fw-bold">Unanswered</span>
+									{% endif %}
+								</p>
+								{% if question.state != 2 %}
+								<span>Completed in {{ question.time_taken|duration:"seconds"  }}</span>
+								{% endif %}
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-12">
+			<div class="test-naviagtion-container shadow p-4">
+				<h5 class="text-center mb-4">Test Navigation</h5>
+				<ul class="pagination d-flex flex-wrap justify-content-center">
+					{% for num in questions.paginator.page_range %}
+					    {% if questions.number == num %}
+					    <li class="page-item active"><a class="page-link" href="?page={{num}}">{{ num }}</a></li>
+					    {% else %}
+					    <li class="page-item"><a class="page-link" href="?page={{num}}">{{ num }}</a></li>
+					    {% endif %}
+				    {% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	{% if questions.paginator.num_pages != 1 %}
+	<div class="row">
+		<div class="col-md-8 col-12">
+			<div class="question-controls shadow mt-5 p-2 pt-4">
+				<nav>
+				  <ul class="pagination justify-content-center">
+				  	{% if questions.has_previous %}
+					    <li class="page-item"><a class="page-link" href="?page={{questions.previous_page_number}}">Previous</a></li>
+				    {% endif %}
+				    {% if questions.has_next %}
+					    <li class="page-item"><a class="page-link" href="?page={{questions.next_page_number}}">Next</a></li>
+				    {% endif %}
+				  </ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}

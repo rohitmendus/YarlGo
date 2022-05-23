@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from accounts.models import Role
 from .models import Batch, BatchTiming
-from test_app.models import Test
+from test_app.models import Test, UserTest
 from .forms import BatchForm, BatchTimingForm
 # CBS Views
 from django.views.generic.list import ListView
@@ -231,5 +231,7 @@ class StudentBatchView(LoginRequiredMixin, StudentRedirectMixin, UpdateView):
 			else:
 				test_list.append(test)
 		batch_timings = BatchTiming.objects.filter(batch_id=batch_id)
-		context = {'tests': tests, 'batch_timings': batch_timings}
+
+		test_reports = UserTest.objects.filter(user=request.user, test__batch__id=batch_id)
+		context = {'tests': tests, 'batch_timings': batch_timings, 'test_reports': test_reports}
 		return render(request, self.template_name, context)
