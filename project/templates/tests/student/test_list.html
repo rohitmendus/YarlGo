@@ -29,6 +29,8 @@
 				{% if test.is_open %}
 					{% if not test_taken %}
 					<a type="button" class="btn btn-primary" href="{% url 'test_prompt' test.id %}">Take Test</a>
+					{% else %}
+					<p class="text-success">Test Taken</p>
 					{% endif %}
 				{% endif %}
 			</td>

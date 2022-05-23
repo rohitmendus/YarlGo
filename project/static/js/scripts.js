@@ -881,7 +881,9 @@ $(document).ready(function(){
 
         (function (){
             let result;
-            seconds = window.localStorage.getItem('timer');
+            test_started_on = moment(test_started_on, "MM/DD/YYYY, HH:mm:ss");
+            let now = moment();
+            seconds = moment.duration(now.diff(test_started_on)).seconds();
             if (seconds) {
                 sec = seconds
             } else {
@@ -896,15 +898,15 @@ $(document).ready(function(){
 
         window.onbeforeunload = function(event) {
             let next_url = document.activeElement.href;
-            window.localStorage.setItem('timer', sec);
+            // window.localStorage.setItem('timer', sec);
             if (next_url.includes('take_test')) {
                 if (next_url.includes('submit')) {
-                    window.localStorage.removeItem("timer");
+                    // window.localStorage.removeItem("timer");
                 }
                 return
             }
             else {
-                window.localStorage.removeItem("timer");
+                // window.localStorage.removeItem("timer");
                 var s = "You have unsaved changes. Really leave?";
 
                 event = event || window.event;

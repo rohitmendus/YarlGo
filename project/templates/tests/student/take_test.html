@@ -28,7 +28,7 @@
 					<i class="fa-solid fa-bookmark mark" style="display: none;"></i>
 				</div>
 				{% endif %}
-				<span class="fs-5">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question }}</span>
+				<span class="fs-5">{{ questions.number }}.  &nbsp;&nbsp;{{ question.question|safe }}</span>
 				<ul class="list-group list-group-flush mt-3">
 				  <li class="list-group-item">
 				    <input class="form-check-input test-option" type="radio" value="{{ question.option1_id }}" name="answer" data-question-id="{{ question.id }}" data-question-no="{{ questions.number }}"{% if opt == question.option1_id %}checked{% endif %}>
@@ -103,5 +103,7 @@
     </div>
   </div>
 </div>
-
+<script type="text/javascript">
+	var test_started_on = "{{ request.session.test_started_on }}"
+</script>
 {% endblock %}

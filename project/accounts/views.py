@@ -125,7 +125,7 @@ class EditUserView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 	def form_valid(self, form):
 		user_roles = self.request.POST.getlist('user_edit_role')
 		email = form.cleaned_data.get('email')
-		if User.objects.filter(email=email).exists():
+		if User.objects.filter(email=email).exclude(id=self.kwargs.get('pk')).exists():
 			response = {'success': False, 'errors': ['Email already exists!']}
 			return JsonResponse(response)
 

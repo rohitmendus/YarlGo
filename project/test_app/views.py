@@ -620,7 +620,7 @@ class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, View):
 					questions = Question.objects.filter(topic_id=topic_id)
 					if len(questions) < 1:
 						return redirect(f'/batches/batch/{batch_id}/')
-					p = Paginator(questions, 2)
+					p = Paginator(questions, 10)
 					page_num = request.GET.get('page')
 					page = p.get_page(page_num)
 					context = {'questions': page}
