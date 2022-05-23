@@ -1,10 +1,11 @@
+{% autoescape off %}
 Hey {{name}},
 
 Greetings from YarlGo!
 Yarlgo is the one and only website where you can prepare for acing your exams!
 We welcome you to our family of learners and career builders!
 
-Sign In Link - http://127.0.0.1:8000/accounts/login/
+Sign In Link - http://127.0.0.1:8000{% url 'login' %}
 
 Please sign in with your credentials:
 Username: {{username}}
@@ -15,3 +16,4 @@ Please note to change your password after logging in to prevent any malicious at
 
 Looking for forward to see you!
 YarlGo Team
+{% endautoescape %}

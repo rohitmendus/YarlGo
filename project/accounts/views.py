@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash
+from django.urls import reverse_lazy
 # Mixins and decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -21,6 +22,7 @@ from test_app.models import Test
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from django.views import View
+from django.contrib.auth.views import PasswordResetView
 # Others
 from django.conf import settings
 from django.core.mail import send_mail
@@ -122,6 +124,11 @@ class EditUserView(LoginRequiredMixin, AdminRedirectMixin, UpdateView):
 
 	def form_valid(self, form):
 		user_roles = self.request.POST.getlist('user_edit_role')
+		email = form.cleaned_data.get('email')
+		if User.objects.filter(email=email).exists():
+			response = {'success': False, 'errors': ['Email already exists!']}
+			return JsonResponse(response)
+
 		user = form.save()
 		for role in user.roles.all():
 			if role.name not in user_roles:
@@ -314,3 +321,10 @@ class ChangePasswordView(LoginRequiredMixin, View):
 					error_messages.append(y['message'])
 			response = {'success': False, 'errors': error_messages}
 			return JsonResponse(response)
+
+
+
+class ResetPasswordView(PasswordResetView):
+	template_name = 'accounts/password_reset.html'
+	email_template_name = 'emails/password_reset_email.html'
+	success_url = reverse_lazy('reset_password_done')

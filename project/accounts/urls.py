@@ -14,6 +14,13 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
     path('settings/', views.SettingsView.as_view(), name="settings"),
     path('change_password/', views.ChangePasswordView.as_view(), name="change_password"),
+    path('reset_password/', views.ResetPasswordView.as_view(), name='reset_password'),
+    path('reset_password/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='accounts/password_reset_done.html'), name='reset_password_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name="accounts/password_reset_confirm.html"), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='accounts/password_reset_complete.html'), name='password_reset_complete'),
     path('unauthorized/', views.unauthorized, name="unauthorized"),
     path('users/', views.UsersView.as_view(), name="users"),
     path('users/create_user/', views.CreateUserView.as_view(), name="create_user"),
