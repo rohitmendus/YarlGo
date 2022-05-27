@@ -1,0 +1,132 @@
+{% extends 'components/main.html' %}
+{% load custom_filters %}
+{% block title %}Test Report{% endblock %}
+{% block content %}
+
+<div class="container p-5">
+	<div class="row mb-5">
+		<div class="col-12">
+			<h2>Report: {{ test_stats.test }}</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<div class="card shadow-sm">
+				<div class="card-body container px-5">
+					<div class="row mb-4">
+						<table class="col-12 table table-bordered">
+						  <tbody>
+						    <tr>
+						      <th scope="row" class="table-light">Started On</th>
+						      <td>{{ test_stats.started_on }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Finished On</th>
+						      <td>{{ test_stats.completed_on }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Time Taken</th>
+						      <td>{{ test_stats.time_taken|duration:"minutes" }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Marks</th>
+						      <td>{{ test_stats.marks_gained|floatformat }} out of {{ test_stats.test.max_mark|floatformat }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Percentage</th>
+						      <td>{{ test_stats.percentage|floatformat }}%</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Time Per Question</th>
+						      <td>{{ test_stats.time_per_question|duration:'seconds' }}</td>
+						    </tr>
+						    <tr>
+						    	<th scope="row" class="table-light text-center" colspan="2">
+						    		{% if test_stats.passed %}
+						    		<span class="text-success">Passed</span>
+						    		{% else %}
+						    		<span class="text-danger">Failed</span>
+						    		{% endif %}
+						    	</th>
+						    </tr>
+						  </tbody>
+						</table>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+	                        <div class="card mb-4">
+	                            <div class="card-header">
+	                                <i class="fas fa-chart-pie me-1"></i>
+	                                Question Distribution
+	                            </div>
+	                            <div class="card-body"><canvas id="myPieChart1" width="100%" height="50"></canvas></div>
+	                        </div>
+	                    </div>
+	                    <div class="col-md-6">
+							<div class="card mb-4">
+				                <div class="card-header">
+				                    <i class="fas fa-chart-bar me-1"></i>
+				                    Topic wise Performance
+				                </div>
+				                <div class="card-body"><canvas id="BarChart1" width="100%" height="50"></canvas></div>
+				            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+	var ctx1 = document.getElementById("myPieChart1");
+	var myPieChart1 = new Chart(ctx1, {
+	  type: 'pie',
+	  data: {
+	    labels: ["Wrong", "Unanswered", "Correct"],
+	    datasets: [{
+	      data: [{{ wrong }}, {{ unanswered }}, {{ correct }}],
+	      backgroundColor: ['#dc3545', '#ffc107', '#28a745'],
+	    }],
+	  },
+	});
+
+	var ctx2 = document.getElementById("BarChart1");
+	var barGraph1 = new Chart(ctx2, {
+		type: 'bar',
+		data: {
+		  labels: [{%for key in topic_mark_dist%}'{{key}}',{%endfor%}],
+		  datasets: [{
+		    label: "Marks Gained",
+		    backgroundColor: "rgba(2,117,216,1)",
+		    borderColor: "rgba(2,117,216,1)",
+		    data: [{%for key, value in topic_mark_dist.items %}'{{value}}',{%endfor%}],
+		  }],
+		},
+		options: {
+		  scales: {
+		    xAxes: [{
+		      gridLines: {
+		        display: false
+		      }
+		    }],
+		    yAxes: [{
+		      ticks: {
+		        maxTicksLimit: 5,
+		        beginAtZero: true
+		      },
+		      gridLines: {
+		        display: true
+		      }
+		    }]
+		  },
+		  legend: {
+		    display: false
+		  }
+		}
+	});
+</script>
+{% endblock scripts %}

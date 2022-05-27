@@ -14,32 +14,6 @@
 			<div class="card shadow-sm">
 				<div class="card-body container px-5">
 					<div class="row">
-						<table class="col-12 table table-bordered">
-						  <tbody>
-						    <tr>
-						      <th scope="row" class="table-light">Started On</th>
-						      <td>{{ test_stats.started_on }}</td>
-						    </tr>
-						    <tr>
-						      <th scope="row" class="table-light">Finished On</th>
-						      <td>{{ test_stats.completed_on }}</td>
-						    </tr>
-						    <tr>
-						      <th scope="row" class="table-light">Time Taken</th>
-						      <td>{{ test_stats.time_taken|duration:"minutes" }}</td>
-						    </tr>
-						    <tr>
-						      <th scope="row" class="table-light">Marks</th>
-						      <td>{{ test_stats.marks_gained|floatformat }} out of {{ test_stats.test.max_mark|floatformat }}</td>
-						    </tr>
-						    <tr>
-						      <th scope="row" class="table-light">Percentage</th>
-						      <td>{{ test_stats.percentage|floatformat }}%</td>
-						    </tr>
-						  </tbody>
-						</table>
-					</div>
-					<div class="row">
 						{% for question in questions %}
 						<div class="question-review-container border border-2 p-4 mb-3">
 							<div class="question-score">

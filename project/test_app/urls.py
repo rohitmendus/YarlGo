@@ -19,7 +19,8 @@ urlpatterns = [
     path('take_test/mark_question/', views.mark_question, name="mark_question_test"),
     path('take_test/get_info/', views.get_test_info, name="get_info_test"),
     path('take_test/submit/', views.submit_test, name="submit_test"),
-    path('test_report/<int:test_id>/review/', views.ReviewAnswersView.as_view(), name="review_answers"),
+    path('test/<int:test_id>/review/', views.ReviewAnswersView.as_view(), name="review_answers"),
+    path('test/<int:test_id>/report/', views.TestReportView.as_view(), name="test_report"),
 ]
 
 htmx_urlpatterns = [

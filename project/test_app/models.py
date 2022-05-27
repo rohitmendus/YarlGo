@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.contrib.auth.models import User
 from subjects.models import Topic
 from batches.models import Batch
@@ -96,6 +97,7 @@ class UserTest(models.Model):
 	def time_taken(self):
 		return self.completed_on - self.started_on
 
-	# @property
-	# def time_per_question(self):
-	# 	pass
+	@property
+	def time_per_question(self):
+		return self.test.user_questions.filter(user=
+			self.user).aggregate(Avg('time_taken'))['time_taken__avg']

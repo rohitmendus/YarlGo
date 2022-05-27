@@ -797,7 +797,7 @@ def submit_test(request):
 		return redirect(f'/batches/batch/{batch_id}/')
 
 
-class ReviewAnswersView(View):
+class ReviewAnswersView(LoginRequiredMixin, StudentRedirectMixin, View):
 	template_name = "tests/student/review_answers.html"
 
 	def get(self, request, test_id):
@@ -809,6 +809,35 @@ class ReviewAnswersView(View):
 		p = Paginator(questions, 10)
 		page = p.get_page(page_num)
 		context = {'test_stats': test_stats, 'questions': page}
+		return render(request, self.template_name, context)
+
+class TestReportView(LoginRequiredMixin, StudentRedirectMixin, View):
+	template_name = "tests/student/test_report.html"
+
+	def get(self, request, test_id):
+		test_stats = UserTest.objects.get(test_id=test_id, user=request.user)
+		questions = UserQuestion.objects.filter(test_id=test_id, user=request.user)
+
+		correct = UserQuestion.objects.filter(test_id=test_id, 
+			user=request.user, state=1).count()
+		wrong = UserQuestion.objects.filter(test_id=test_id, 
+			user=request.user, state=0).count()
+		unanswered = UserQuestion.objects.filter(test_id=test_id, 
+			user=request.user, state=2).count()
+
+		topic_mark_dist = {}
+		for i in test_stats.test.distributions['topics']:
+			topic = Topic.objects.get(id=i['topic_id']).name
+			topic_mark_dist[topic] = 0
+
+		for i in questions:
+			if i.state == 1:
+				topic_mark_dist[i.question.topic.name] += 1
+		print(topic_mark_dist)
+
+		context = {'test_stats': test_stats, 'correct': correct,
+			'wrong': wrong, 'unanswered': unanswered, 
+			'topic_mark_dist': topic_mark_dist}
 		return render(request, self.template_name, context)
 
 
