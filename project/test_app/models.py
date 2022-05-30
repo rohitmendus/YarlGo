@@ -58,6 +58,18 @@ class Test(models.Model):
 		end_time = datetime.datetime.combine(self.date_scheduled, self.closing_time)
 		return start_time <= datetime.datetime.now() < end_time
 
+	@property
+	def is_over(self):
+		today = datetime.datetime.now()
+		if self.date_scheduled < today.date():
+			return True
+		elif self.date_scheduled > today.date():
+			return False
+		else:
+			if self.opening_time < today.time():
+				return True
+		return False
+
 	def test_taken(self, user):
 		return self.reports.filter(user=user).exists()
 

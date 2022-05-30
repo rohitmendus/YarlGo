@@ -11859,6 +11859,7 @@ body {
 .question-container {
   position: relative;
   height: 400px;
+  overflow-y: auto;
 }
 .test-naviagtion-container .page-item{
   width: 40px;

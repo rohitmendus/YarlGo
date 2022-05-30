@@ -19,8 +19,9 @@ urlpatterns = [
     path('take_test/mark_question/', views.mark_question, name="mark_question_test"),
     path('take_test/get_info/', views.get_test_info, name="get_info_test"),
     path('take_test/submit/', views.submit_test, name="submit_test"),
-    path('test/<int:test_id>/review/', views.ReviewAnswersView.as_view(), name="review_answers"),
-    path('test/<int:test_id>/report/', views.TestReportView.as_view(), name="test_report"),
+    path('test/<int:test_id>/review/<int:user_id>/', views.ReviewAnswersView.as_view(), name="review_answers"),
+    path('test/<int:test_id>/report/<int:user_id>/', views.StudentTestReportView.as_view(), name="student_test_report"),
+    path('test/<int:test_id>/overall_report/', views.FacultyTestReportView.as_view(), name="faculty_test_report"),
 ]
 
 htmx_urlpatterns = [

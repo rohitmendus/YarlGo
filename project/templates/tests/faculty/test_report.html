@@ -1,0 +1,183 @@
+{% extends 'components/main.html' %}
+{% load custom_filters %}
+{% block title %}{{ test }} - Report{% endblock %}
+{% block content %}
+
+<div class="container p-5">
+	<div class="row">
+		<nav aria-label="breadcrumb">
+		  <ol class="breadcrumb">
+		    <li class="breadcrumb-item"><a class="subject-operate-btn" href="{% url 'faculty_operations' %}#tests" data-subject="{{subject.id}}">Tests</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">Reports</li>
+		  </ol>
+		</nav>
+	</div>
+	<div class="row mb-5">
+		<div class="col-12">
+			<h2>Report: {{ test }}</h2>
+		</div>
+	</div>
+	<div class="row mb-5">
+		<div class="col-6">
+			<div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i>
+                Attended - Missed
+            </div>
+			<div class="card mb-4">
+                <div class="card-body"><canvas id="myPieChart1" width="100%" height="50"></canvas></div>
+            </div>
+			<!-- <div class="card mb-3 shadow-sm bg-primary text-white">
+	          <div class="card-header text-center"><i class="fa-solid fa-graduation-cap me-2"></i><h5 class=" d-inline mb-0">Students</h5></div>
+	          <div class="card-body faculty-info-container row">
+	            <div class="col-6 text-center border-end border-2">
+	                <h6>Attended</h6>
+	                <span class="fs-4">{{ test_stats.attended }}</span>
+	            </div>
+	            <div class="col-6 text-center">
+	                <h6>Missed</h6>
+	                <span class="fs-4">{{ test_stats.missed }}</span>
+	            </div>
+	          </div>
+	        </div> -->
+		</div>
+		<div class="col-6">
+			<div class="card mb-4">
+				<div class="card-header">
+                    <i class="fas fa-chart-pie me-1"></i>
+                    Passed - Failed
+                </div>
+                <div class="card-body"><canvas id="myPieChart2" width="100%" height="50"></canvas></div>
+            </div>
+			<!-- <div class="card mb-3 shadow-sm bg-info text-white">
+	          <div class="card-header text-center"><i class="fa-solid fa-graduation-cap me-2"></i><h5 class=" d-inline mb-0">Students</h5></div>
+	          <div class="card-body faculty-info-container row">
+	            <div class="col-6 text-center border-end border-2">
+	                <h6>Passed</h6>
+	                <span class="fs-4">{{ test_stats.passed }}</span>
+	            </div>
+	            <div class="col-6 text-center">
+	                <h6>Failed</h6>
+	                <span class="fs-4">{{ test_stats.failed }}</span>
+	            </div>
+	          </div>
+	        </div> -->
+		</div>
+		<div class="col-6">
+			<div class="card mb-4">
+	            <div class="card-header">
+	                <i class="fas fa-chart-bar me-1"></i>
+	                Student Performance Comparison
+	            </div>
+	            <div class="card-body"><canvas id="BarChart1" width="100%" height="50"></canvas></div>
+	        </div>
+        </div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<table class="table table-bordered text-center">
+				<thead>
+					<tr>
+						<th>Rank</th>
+						<th>Student</th>
+						<th>Mark</th>
+						<th>Percentage</th>
+						<th>Time Taken</th>
+						<th>Status</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for report in student_reports %}
+					<tr>
+					  <td>{{forloop.counter}}</td>
+					  <td>{{ report.student.profile.full_name }}</td>
+					  <td>{{ report.marks_gained|floatformat }}/{{ test.max_mark|floatformat }}</td>
+					  <td>{{ report.percentage|floatformat }}%</td>
+					  <td>{{ report.time_taken|duration:"minutes" }}</td>
+					  <th>
+					  	<span class="{% if report.status == 'Passed' %}text-success{% else %}text-danger{% endif %}">{{ report.status }}</span>
+					  </th>
+					  <td>
+					  	{% if report.status != "Missed" %}
+					  	<div class="dropdown">
+						  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownTestReport" data-bs-toggle="dropdown" aria-expanded="false">
+						    View Reports
+						  </button>
+						  <ul class="dropdown-menu" aria-labelledby="dropdownTestReport">
+						    <li><a class="dropdown-item" href="{% url 'student_test_report' test.id report.student.id %}">Report</a></li>
+						    <li><a class="dropdown-item" href="{% url 'review_answers' test.id report.student.id %}">Review Answers</a></li>
+						  </ul>
+						</div>
+					  	{% endif %}
+					  </td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+	var ctx1 = document.getElementById("myPieChart1");
+	var myPieChart1 = new Chart(ctx1, {
+	  type: 'pie',
+	  data: {
+	    labels: ["Attended", "Missed"],
+	    datasets: [{
+	      data: [{{ test_stats.attended }}, {{ test_stats.missed }}],
+	      backgroundColor: ['#28a745', '#dc3545'],
+	    }],
+	  },
+	});
+	var ctx2 = document.getElementById("myPieChart2");
+	var myPieChart2 = new Chart(ctx2, {
+	  type: 'pie',
+	  data: {
+	    labels: ["Passed", "Failed"],
+	    datasets: [{
+	      data: [{{ test_stats.passed }}, {{ test_stats.failed }}],
+	      backgroundColor: ['#28a745', '#dc3545'],
+	    }],
+	  },
+	});
+
+	var ctx1 = document.getElementById("BarChart1");
+	var barGraph1 = new Chart(ctx1, {
+		type: 'bar',
+		data: {
+		  labels: ['Avg Score', 'Least Score', 'Rank 1'],
+		  datasets: [{
+		    label: "Score",
+		    backgroundColor: "rgba(2,117,216,1)",
+		    borderColor: "rgba(2,117,216,1)",
+		    data: ['{{avg_score|floatformat}}', '{{min_score|floatformat}}', '{{max_score|floatformat}}'],
+		  }],
+		},
+		options: {
+		  scales: {
+		    xAxes: [{
+		      gridLines: {
+		        display: false
+		      }
+		    }],
+		    yAxes: [{
+		      ticks: {
+		        maxTicksLimit: 5,
+		        beginAtZero: true
+		      },
+		      gridLines: {
+		        display: true
+		      }
+		    }]
+		  },
+		  legend: {
+		    display: false
+		  }
+		}
+	});
+</script>
+{% endblock scripts %}

@@ -96,13 +96,13 @@ class TestForm(forms.ModelForm):
 				opening_time = datetime.datetime.combine(test_obj.date_scheduled, test_obj.opening_time)
 				closing_time = datetime.datetime.combine(test_obj.date_scheduled, test_obj.closing_time)
 				if is_time_between(start_time, end_time, opening_time):
-					raise forms.ValidationError("These batch timings are in conflict with other timings.")
+					raise forms.ValidationError("These test timings are in conflict with other timings.")
 				if is_time_between(start_time, end_time, closing_time):
-					raise forms.ValidationError("These batch timings are in conflict with other timings.")
+					raise forms.ValidationError("These test timings are in conflict with other timings.")
 				if is_time_between(opening_time, closing_time, start_time):
-					raise forms.ValidationError("These batch timings are in conflict with other timings.")
+					raise forms.ValidationError("These test timings are in conflict with other timings.")
 				if is_time_between(opening_time, closing_time, end_time):
-					raise forms.ValidationError("These batch timings are in conflict with other timings.")
+					raise forms.ValidationError("These test timings are in conflict with other timings.")
 
 class TopicDistributionForm(forms.Form):
 	# topic = forms.ModelChoiceField(queryset=Topic.objects.all(), required=True)

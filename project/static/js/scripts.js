@@ -883,7 +883,7 @@ $(document).ready(function(){
             let result;
             test_started_on = moment(test_started_on, "MM/DD/YYYY, HH:mm:ss");
             let now = moment();
-            seconds = moment.duration(now.diff(test_started_on)).seconds();
+            seconds = moment.duration(now.diff(test_started_on)).asSeconds();
             if (seconds) {
                 sec = seconds
             } else {

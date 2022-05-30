@@ -4,9 +4,25 @@
 {% block content %}
 
 <div class="container p-5">
+	{% if user_role.name == 'faculty' %}
+	<div class="row">
+		<nav aria-label="breadcrumb">
+		  <ol class="breadcrumb">
+		    <li class="breadcrumb-item"><a class="subject-operate-btn" href="{% url 'faculty_operations' %}#tests" data-subject="{{subject.id}}">Tests</a></li>
+		    <li class="breadcrumb-item"><a href="{% url 'faculty_test_report' test_stats.test.id %}">Reports</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">User Report</li>
+		  </ol>
+		</nav>
+	</div>
+	{% endif %}
 	<div class="row mb-5">
 		<div class="col-12">
-			<h2>Report: {{ test_stats.test }}</h2>
+			<h2>
+				Report: {{ test_stats.test }}
+				{% if user_role.name == 'faculty' %}
+				({{ test_stats.user.profile.full_name }})
+				{% endif %}
+			</h2>
 		</div>
 	</div>
 	<div class="row">
@@ -27,6 +43,10 @@
 						    <tr>
 						      <th scope="row" class="table-light">Time Taken</th>
 						      <td>{{ test_stats.time_taken|duration:"minutes" }}</td>
+						    </tr>
+						    <tr>
+						      <th scope="row" class="table-light">Rank</th>
+						      <td>{{ rank }}</td>
 						    </tr>
 						    <tr>
 						      <th scope="row" class="table-light">Marks</th>
@@ -71,6 +91,30 @@
 				                <div class="card-body"><canvas id="BarChart1" width="100%" height="50"></canvas></div>
 				            </div>
 						</div>
+						<div class="col-md-6">
+							<div class="card mb-4">
+				                <div class="card-header">
+				                    <i class="fas fa-chart-bar me-1"></i>
+				                    Performance Comparison
+				                </div>
+				                <div class="card-body"><canvas id="BarChart2" width="100%" height="50"></canvas></div>
+				                <div class="card-footer">
+					            	*Comparison from other students who attended the test.
+					            </div>
+				            </div>
+						</div>
+						<div class="col-md-6">
+							<div class="card mb-4">
+				                <div class="card-header">
+				                    <i class="fas fa-chart-bar me-1"></i>
+				                    Student Performance Comparison
+				                </div>
+				                <div class="card-body"><canvas id="BarChart3" width="100%" height="50"></canvas></div>
+				                <div class="card-footer">
+					            	*Performances recorded from tests the student attended.
+					            </div>
+				            </div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -100,10 +144,83 @@
 		data: {
 		  labels: [{%for key in topic_mark_dist%}'{{key}}',{%endfor%}],
 		  datasets: [{
-		    label: "Marks Gained",
+		    label: "Percentage",
 		    backgroundColor: "rgba(2,117,216,1)",
 		    borderColor: "rgba(2,117,216,1)",
-		    data: [{%for key, value in topic_mark_dist.items %}'{{value}}',{%endfor%}],
+		    data: [{%for key, value in topic_mark_dist.items %}'{{value|floatformat}}',{%endfor%}],
+		  }],
+		},
+		options: {
+		  scales: {
+		    xAxes: [{
+		      gridLines: {
+		        display: false
+		      }
+		    }],
+		    yAxes: [{
+		      ticks: {
+		        maxTicksLimit: 5,
+		        beginAtZero: true
+		      },
+		      gridLines: {
+		        display: true
+		      }
+		    }]
+		  },
+		  legend: {
+		    display: false
+		  }
+		}
+	});
+
+	var ctx3 = document.getElementById("BarChart2");
+	var barGraph2 = new Chart(ctx3, {
+		type: 'bar',
+		data: {
+		  labels: ['My Score', 'Avg Score', 'Rank 1'],
+		  datasets: [{
+		    label: "Score",
+		    backgroundColor: "rgba(74, 232, 158,1)",
+		    borderColor: "rgba(74, 232, 158,1)",
+		    data: ['{{test_stats.marks_gained|floatformat}}', 
+		    	'{{avg_score|floatformat}}', '{{max_score|floatformat}}'],
+		  }],
+		},
+		options: {
+		  scales: {
+		    xAxes: [{
+		      gridLines: {
+		        display: false
+		      }
+		    }],
+		    yAxes: [{
+		      ticks: {
+		        maxTicksLimit: 5,
+		        beginAtZero: true
+		      },
+		      gridLines: {
+		        display: true
+		      }
+		    }]
+		  },
+		  legend: {
+		    display: false
+		  }
+		}
+	});
+
+
+	var ctx4 = document.getElementById("BarChart3");
+	var barGraph3 = new Chart(ctx4, {
+		type: 'bar',
+		data: {
+		  labels: ['Current', 'Avg', 'Previous'],
+		  datasets: [{
+		    label: "Percentage",
+		    backgroundColor: "rgba(230, 171, 11, 1)",
+		    borderColor: "rgba(230, 171, 11,1)",
+		    data: ['{{test_stats.percentage|floatformat}}', 
+		    	'{{user_stats.avg|floatformat}}', '{{user_stats.previous|floatformat}}'],
 		  }],
 		},
 		options: {

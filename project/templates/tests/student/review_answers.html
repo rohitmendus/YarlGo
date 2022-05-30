@@ -4,9 +4,25 @@
 {% block content %}
 
 <div class="container p-5">
+	{% if user_role.name == 'faculty' %}
+	<div class="row">
+		<nav aria-label="breadcrumb">
+		  <ol class="breadcrumb">
+		    <li class="breadcrumb-item"><a class="subject-operate-btn" href="{% url 'faculty_operations' %}#tests" data-subject="{{subject.id}}">Tests</a></li>
+		    <li class="breadcrumb-item"><a href="{% url 'faculty_test_report' test_stats.test.id %}">Reports</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">Review Answers</li>
+		  </ol>
+		</nav>
+	</div>
+	{% endif %}
 	<div class="row mb-5">
 		<div class="col-12">
-			<h2>Review: {{ test_stats.test }}</h2>
+			<h2>
+				Review: {{ test_stats.test }}
+				{% if user_role.name == 'faculty' %}
+				({{ test_stats.user.profile.full_name }})
+				{% endif %}
+			</h2>
 		</div>
 	</div>
 	<div class="row">

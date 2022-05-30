@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from subjects.models import Topic, Subject
 from batches.models import Batch
 from .models import Option, Question, Test, UserTest, UserQuestion
+from django.db.models import Avg, Max, Min
 # Forms
 from .forms import TopicDistributionForm, TestForm, QuestionEditorForm
 from django.forms import formset_factory
@@ -602,6 +603,56 @@ class EditTestView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		response['template'] = render_to_string('tests/faculty/tests.html', context, request=request)
 		return JsonResponse(response)
 
+class FacultyTestReportView(LoginRequiredMixin, FacultyRedirectMixin, View):
+	template_name = "tests/faculty/test_report.html"
+
+	def get(self, request, test_id):
+		test = Test.objects.get(id=test_id)
+		subject = Subject.objects.get(id=self.request.session['subject_id'])
+
+		test_reports = UserTest.objects.filter(test=test)
+		students = User.objects.filter(batches=test.batch)
+		total = students.count()
+		attended = test_reports.count()
+		missed = total-attended
+		passed = UserTest.objects.filter(test=test, 
+			marks_gained__gte=test.cutoff_mark).count()
+		failed = UserTest.objects.filter(test=test, 
+			marks_gained__lt=test.cutoff_mark).count()
+		test_stats = {'total': total, 'attended': attended, 'missed': missed,
+			'passed': passed, 'failed': failed}
+
+		student_reports = []
+		for student in students:
+			obj = {'student': student, 'marks_gained': 0}
+			if student.test_reports.filter(test=test).exists():
+				report = student.test_reports.get(test=test)
+				if report.passed:
+					obj['status'] = "Passed"
+				else:
+					obj['status'] = "Failed"
+				obj['marks_gained'] = report.marks_gained
+				obj['percentage'] = report.percentage
+				obj['time_taken'] = report.time_taken
+			else:
+				obj['status'] = "Missed"
+			student_reports.append(obj)
+		student_reports = sorted(student_reports, 
+			key=lambda d: d.get('marks_gained'), reverse=True)
+
+
+		avg_score = test_reports.aggregate(
+			Avg('marks_gained'))['marks_gained__avg']
+		max_score = test_reports.aggregate(
+			Max('marks_gained'))['marks_gained__max']
+		min_score = test_reports.aggregate(
+			Min('marks_gained'))['marks_gained__min']
+
+		context = {'subject': subject, 'test': test, 
+			'test_stats': test_stats, 'student_reports': student_reports, 
+			'avg_score': avg_score, 'max_score': max_score, 'min_score': min_score}
+		return render(request, self.template_name, context)
+
 
 # Student views
 class QuestionBankView(LoginRequiredMixin, StudentRedirectMixin, View):
@@ -797,47 +848,95 @@ def submit_test(request):
 		return redirect(f'/batches/batch/{batch_id}/')
 
 
-class ReviewAnswersView(LoginRequiredMixin, StudentRedirectMixin, View):
+class ReviewAnswersView(LoginRequiredMixin, View):
 	template_name = "tests/student/review_answers.html"
 
-	def get(self, request, test_id):
-		test_stats = UserTest.objects.get(test_id=test_id, user=request.user)
+	def get(self, request, test_id, user_id):
+		user = User.objects.get(id=user_id)
+		if str(list(request.user.roles.all())[0]) == "student":
+			subject = None
+			if user != request.user:
+				return redirect("/unauthorized")
+		else:
+			subject = Subject.objects.get(id=self.request.session['subject_id'])
 
-		questions = UserQuestion.objects.filter(test_id=test_id, user=request.user)
+		test_stats = UserTest.objects.get(test_id=test_id, user=user)
+
+		questions = UserQuestion.objects.filter(test_id=test_id, user=user)
 		
 		page_num = request.GET.get('page')
 		p = Paginator(questions, 10)
 		page = p.get_page(page_num)
-		context = {'test_stats': test_stats, 'questions': page}
+		context = {'test_stats': test_stats, 'questions': page, 'subject': subject}
 		return render(request, self.template_name, context)
 
-class TestReportView(LoginRequiredMixin, StudentRedirectMixin, View):
+class StudentTestReportView(LoginRequiredMixin, View):
 	template_name = "tests/student/test_report.html"
 
-	def get(self, request, test_id):
-		test_stats = UserTest.objects.get(test_id=test_id, user=request.user)
-		questions = UserQuestion.objects.filter(test_id=test_id, user=request.user)
+	def get(self, request, test_id, user_id):
+		user = User.objects.get(id=user_id)
+		if str(list(request.user.roles.all())[0]) == "student":
+			subject = None
+			if user != request.user:
+				return redirect("/unauthorized")
+		else:
+			subject = Subject.objects.get(id=self.request.session['subject_id'])
+
+		test_stats = UserTest.objects.get(test_id=test_id, user=user)
+		questions = UserQuestion.objects.filter(test_id=test_id, user=user)
 
 		correct = UserQuestion.objects.filter(test_id=test_id, 
-			user=request.user, state=1).count()
+			user=user, state=1).count()
 		wrong = UserQuestion.objects.filter(test_id=test_id, 
-			user=request.user, state=0).count()
+			user=user, state=0).count()
 		unanswered = UserQuestion.objects.filter(test_id=test_id, 
-			user=request.user, state=2).count()
+			user=user, state=2).count()
+
 
 		topic_mark_dist = {}
 		for i in test_stats.test.distributions['topics']:
 			topic = Topic.objects.get(id=i['topic_id']).name
-			topic_mark_dist[topic] = 0
+			topic_mark_dist[topic] = []
+			topic_mark_dist[topic].append(0)
+			topic_mark_dist[topic].append(0)
 
 		for i in questions:
 			if i.state == 1:
-				topic_mark_dist[i.question.topic.name] += 1
-		print(topic_mark_dist)
+				topic_mark_dist[i.question.topic.name][0] += 1
+			topic_mark_dist[i.question.topic.name][1] += 1
+
+		for key, value in topic_mark_dist.items():
+			topic_mark_dist[key] = (value[0] / value[1]) * 100
+
+		test_reports = UserTest.objects.filter(test_id=test_id)
+		avg_score = test_reports.aggregate(
+			Avg('marks_gained'))['marks_gained__avg']
+		max_score = test_reports.aggregate(
+			Max('marks_gained'))['marks_gained__max']
+
+		r = test_reports.count()
+		for i in list(test_reports.order_by('marks_gained')):
+			if i.id == test_stats.id:
+				break
+			r -= 1
+
+
+		s_um = 0
+		c = 0
+		for i in UserTest.objects.filter(user=user):
+			s_um += (i.marks_gained / i.test.max_mark) * 100
+			c+=1
+		user_avg_score = s_um/c
+		previous_score = list(UserTest.objects.filter(user=
+			user).order_by('test__date_scheduled', 'test__opening_time'))[0].percentage
+		user_stats = {'avg': user_avg_score, 'previous': previous_score}
+
 
 		context = {'test_stats': test_stats, 'correct': correct,
 			'wrong': wrong, 'unanswered': unanswered, 
-			'topic_mark_dist': topic_mark_dist}
+			'topic_mark_dist': topic_mark_dist, 'subject': subject,
+			'avg_score': avg_score, 'max_score': max_score, 'rank': r, 
+			'user_stats': user_stats}
 		return render(request, self.template_name, context)
 
 

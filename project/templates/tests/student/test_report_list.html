@@ -24,8 +24,8 @@
 				    View Reports
 				  </button>
 				  <ul class="dropdown-menu" aria-labelledby="dropdownTestReport">
-				    <li><a class="dropdown-item" href="{% url 'test_report' report.test.id %}">Overall Report</a></li>
-				    <li><a class="dropdown-item" href="{% url 'review_answers' report.test.id %}">My answers</a></li>
+				    <li><a class="dropdown-item" href="{% url 'student_test_report' report.test.id user.id %}">Report</a></li>
+				    <li><a class="dropdown-item" href="{% url 'review_answers' report.test.id user.id %}">My answers</a></li>
 				  </ul>
 				</div>
 			</td>

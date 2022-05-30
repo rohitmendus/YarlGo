@@ -321,7 +321,8 @@ class FacultyTemplateView(LoginRequiredMixin, FacultyRedirectMixin, View):
 		for i in FacultyRight.objects.filter(subject=subject):
 			faculty = f'{i.user.first_name} {i.user.last_name}'
 			obj = {'faculty': faculty, 'email': i.user.email,
-			'no_of_questions': i.user.questions_created.count()}
+			'no_of_questions': i.user.questions_created.filter(
+				topic__subject=subject).count()}
 			faculty_question_set.append(obj)
 
 		context['faculty_question_set'] = faculty_question_set
