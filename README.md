@@ -4,7 +4,6 @@
 To sum it up, it's a test management system with several additional features like question bank, 
 test and user reports, chatting as well as a well developed course interface. It's primary aim is to address 
 the concerns of maintaininng and developing an interface for students to be able to prepare for high level exams.
-**Please Note:  This work was done as part of an internship**
 
 ## Features
 This app has the following features:
@@ -24,13 +23,12 @@ This app has the following features:
 **P.S: Additional will be added and not all features are complete!**
 
 ## Componenets
-This app has the following components(apps in Django):
+This app has the following components(apps in Django) as of now:
  - Accounts App
  - Exams App
  - Subjects App
  - Batches App
  - Tests App
- - Chat App
 
 ## How to Install
  1. Clone the repo
