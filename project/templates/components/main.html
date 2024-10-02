@@ -45,7 +45,11 @@
                         <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
                         <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
                         <li><hr class="dropdown-divider"/></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        <li><form method="post" action="{% url 'logout' %}">
+                             {% csrf_token %}
+                             <button type="submit" class="dropdown-item">Logout</button>
+                        </form></li>
+                        <!-- <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li> -->
                     </ul>
                 </li>
             </ul>

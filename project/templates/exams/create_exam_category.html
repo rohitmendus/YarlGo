@@ -20,9 +20,11 @@
 			{{chk_box}}
 			<label class="form-check-label">{{chk_box.label}}</label>
 		</div>
+		{% empty %}
+		<p>There are no subjects yet. Please add subjects before creating the exam.</p>
 		{% endfor %}
 	</div>
 	<div class="mt-4 mb-3">
-		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Exam Category"></input></div>
+		<div class="d-grid"><input type="submit" class="btn btn-primary btn-block" value="Create Exam Category" {% if form.subjects|length == 0 %}disabled{% endif %}></input></div>
 	</div>
 </form>

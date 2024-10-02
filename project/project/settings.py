@@ -76,11 +76,12 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'yarl-go',
-        'USER': 'postgres',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'yarl_go',
+        'USER': 'root',
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost'
+        'HOST':'localhost',
+        'PORT':'3306',
     }
 }
 
@@ -161,22 +162,10 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
-# CKEDITOR_CONFIGS = {
-#     'default': {
-#         'toolbar': [
-#             ['Undo', 'Redo',
-#              '-', 'Bold', 'Italic', 'Underline',
-#              '-', 'Link', 'Unlink', 'Anchor',
-#              '-', 'Format',
-#              '-', 'SpellChecker', 'Scayt',
-#              '-', 'Maximize',
-#              '-', 'Language',
-#             ],
-#         ],
-        
-#         'toolbarCanCollapse': False,
-#     },
-# }
+# CKEDITOR_IMAGE_BACKEND = "pillow"
+# CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js' 
+
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',

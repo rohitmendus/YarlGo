@@ -3,10 +3,10 @@
     "model": "auth.user",
     "pk": 1,
     "fields": {
-      "username": "admin",
-      "password": "pbkdf2_sha256$320000$8eZzY0aJCpOBU2X9LOigXW$5IUl3Qi+RelZqMkA0xrj1TlFXaBoP0QhcHyJRtgb9+8=",
-      "email": "admin@gmail.com",
-      "first_name": "Admin"
+      "username": "rj_mendus",
+      "password": "pbkdf2_sha256$870000$aSvpe0DNx59biwixdGSyBL$KWN4g94kv211UB8rXqVrnqlPxcvkZ5p5+0jBF4yVVIA=",
+      "email": "rohitmendus@gmail.com",
+      "first_name": "Rohit"
     }
   },
   {

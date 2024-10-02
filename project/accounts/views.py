@@ -26,7 +26,10 @@ from django.contrib.auth.views import PasswordResetView
 # Others
 from django.conf import settings
 from django.core.mail import send_mail
-import datetime, json
+import datetime, json, secrets
+
+# username: rj_mendus
+# password: 123password321
 
 @login_required
 def redirect_dashboard(request):
@@ -35,7 +38,7 @@ def redirect_dashboard(request):
 @login_required
 def get_user_form(request):
 	form = CustomUserCreationForm()
-	context = {'form': form, 'password': User.objects.make_random_password()}
+	context = {'form': form, 'password': make_random_password()}
 	context['roles'] = Role.objects.values_list('name', flat=True)
 	return render(request, 'accounts/create_user_form.html', context)
 
@@ -50,6 +53,9 @@ def check_username(request):
 @login_required
 def unauthorized(request):
 	return render(request, 'errors/401.html')
+
+def make_random_password(length=10, allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'):
+    return ''.join(secrets.choice(allowed_chars) for i in range(length))
 
 class CreateUserView(LoginRequiredMixin, AdminRedirectMixin, View):
 	submit_response = 'accounts/create_user_response.html'
@@ -262,7 +268,7 @@ class UsersView(LoginRequiredMixin, AdminRedirectMixin, ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context.update({'password': User.objects.make_random_password(),
+		context.update({'password': make_random_password(),
 			'roles': self.roles, 'form': self.form})
 		return context
 

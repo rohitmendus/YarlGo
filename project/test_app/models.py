@@ -14,7 +14,7 @@ class Option(models.Model):
 		return self.text
 
 class Question(models.Model):
-	question = RichTextUploadingField(max_length=1000, unique=True)
+	question = RichTextUploadingField()
 	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="questions")
 	answer = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="answer_question")
 	options = models.ManyToManyField(Option, related_name="option_question")
