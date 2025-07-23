@@ -112,7 +112,7 @@ $(document).ready(function(){
     });
 
     $(document).on('click', '.dlt-user', function(e){
-        const url = $(this).attr('href');
+        const url = ed$(this).attr('href');
         const csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
         e.preventDefault()
         b_modal = $('#message-modal')
