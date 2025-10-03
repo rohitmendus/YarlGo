@@ -126,12 +126,12 @@ YarlGo is built as a **modular Django project**, with separate apps for each fun
 
 <img width="1351" height="606" alt="Capture" src="https://github.com/user-attachments/assets/4f40b909-be12-49df-9066-acc735cf8fd9" />
 <img width="1366" height="608" alt="Capture8" src="https://github.com/user-attachments/assets/20889e06-1f9b-4fc4-b44f-c34c1350b4d2" />
-<img width="392" height="521" alt="Capture7" src="https://github.com/user-attachments/assets/c251809b-b2bd-4004-9da7-15a7072fc79d" />
 <img width="1366" height="610" alt="Capture6" src="https://github.com/user-attachments/assets/b83cc506-b65c-4137-b8c1-65b3fbd1cdfd" />
 <img width="1366" height="608" alt="Capture5" src="https://github.com/user-attachments/assets/0a968d2e-5c28-46b3-ad4a-e1f8667fc1cb" />
 <img width="1366" height="607" alt="Capture2" src="https://github.com/user-attachments/assets/cb61a522-4839-43bf-8fcb-6f0e3cdabe13" />
 <img width="390" height="521" alt="Capture9" src="https://github.com/user-attachments/assets/9daf8082-a8d2-4b64-b487-fce23bc3a1ce" />
 <img width="1366" height="609" alt="Capture12" src="https://github.com/user-attachments/assets/bcf3ecf0-7662-4661-8311-123264cec573" />
+<img width="392" height="521" alt="Capture7" src="https://github.com/user-attachments/assets/c251809b-b2bd-4004-9da7-15a7072fc79d" />
 
 ---
 
